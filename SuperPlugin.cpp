@@ -63,7 +63,7 @@ float ControlCinemaVeriteCallback(
                                   int                  inCounter,
                                   void *               inRefcon)
 {
-    int mouseButtonDown = 0;    
+    int mouseButtonDown = 0;
 #ifdef APL
     mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
 #elif IBM
@@ -106,8 +106,8 @@ PLUGIN_API int XPluginStart(
                             char *		outDesc)
 {
     
-	strcpy(outName, "Super Plugin");
-	strcpy(outSig, "de.bwravencl.super_plugin");
+	strcpy(outName, "SuperPlugin");
+	strcpy(outSig, "de.bwravencl.superplugin");
 	strcpy(outDesc, "Enhances your X-Plane experience!");
     
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
