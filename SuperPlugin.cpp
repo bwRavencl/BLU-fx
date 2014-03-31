@@ -1,14 +1,16 @@
 #include <string.h>
 #include <unistd.h>
-#include "ApplicationServices/ApplicationServices.h"
 
-#include <stdio.h>
+#ifdef APL
+#include "ApplicationServices/ApplicationServices.h"
+#endif
 
 #include "XPLMDataAccess.h"
 #include "XPLMDefs.h"
 #include "XPLMDisplay.h"
 #include "XPLMProcessing.h"
 
+#include <stdio.h>
 #include "XPLMUtilities.h"
 
 #define FRAME_RATE 35.0f
@@ -19,10 +21,10 @@ static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f,
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
 
 float FlightCallback(
- float                inElapsedSinceLastCall,
- float                inElapsedTimeSinceLastFlightLoop,
- int                  inCounter,
- void *               inRefcon)
+                     float                inElapsedSinceLastCall,
+                     float                inElapsedTimeSinceLastFlightLoop,
+                     int                  inCounter,
+                     void *               inRefcon)
 {
     endTimeFlight = XPLMGetElapsedTime();
     float dt = endTimeFlight - startTimeFlight;
@@ -56,12 +58,19 @@ static int DrawCallback(
 }
 
 float ControlCinemaVeriteCallback(
-                                    float                inElapsedSinceLastCall,
-                                    float                inElapsedTimeSinceLastFlightLoop,
-                                    int                  inCounter,
-                                    void *               inRefcon)
+                                  float                inElapsedSinceLastCall,
+                                  float                inElapsedTimeSinceLastFlightLoop,
+                                  int                  inCounter,
+                                  void *               inRefcon)
 {
-    int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
+    int mouseButtonDown = 0;    
+#ifdef APL
+    mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
+#elif IBM
+    // TODO implement for Windows
+#elif LIN
+    // TODO implement for Linux
+#endif
     
     int currentMouseX, currentMouseY;
     XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
@@ -92,22 +101,22 @@ float ControlCinemaVeriteCallback(
 }
 
 PLUGIN_API int XPluginStart(
-						char *		outName,
-						char *		outSig,
-						char *		outDesc)
+                            char *		outName,
+                            char *		outSig,
+                            char *		outDesc)
 {
-
+    
 	strcpy(outName, "Super Plugin");
 	strcpy(outSig, "de.bwravencl.super_plugin");
 	strcpy(outDesc, "Enhances your X-Plane experience!");
-
+    
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
     
     XPLMRegisterFlightLoopCallback(FlightCallback, -1, NULL);
     XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
     XPLMRegisterDrawCallback(DrawCallback, xplm_Phase_Terrain, 1, NULL);
-
+    
 	return 1;
 }
 
@@ -126,8 +135,8 @@ PLUGIN_API int XPluginEnable(void)
 }
 
 PLUGIN_API void XPluginReceiveMessage(
-					XPLMPluginID	inFromWho,
-					long			inMessage,
-					void *			inParam)
+                                      XPLMPluginID	inFromWho,
+                                      long			inMessage,
+                                      void *			inParam)
 {
 }

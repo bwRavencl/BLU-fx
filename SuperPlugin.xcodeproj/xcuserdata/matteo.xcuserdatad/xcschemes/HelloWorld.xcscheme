@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D607B19809A556E400699BC3"
-               BuildableName = "HelloWorld.xpl"
-               BlueprintName = "HelloWorld"
-               ReferencedContainer = "container:HelloWorld.xcodeproj">
+               BuildableName = "SuperPlugin.xpl"
+               BlueprintName = "SuperPlugin"
+               ReferencedContainer = "container:SuperPlugin.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
