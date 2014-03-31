@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		952F88EC18EA0C3D0050F3C1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 952F88EB18EA0C3D0050F3C1 /* ApplicationServices.framework */; };
 		D67297EB0F9E0FCC00CFD1FA /* HelloWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67297EA0F9E0FCC00CFD1FA /* HelloWorld.cpp */; };
 		D6A7BDAA16A1DEA200D1426A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDA916A1DEA200D1426A /* OpenGL.framework */; };
 		D6A7BDC116A1DEC000D1426A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		952F88EB18EA0C3D0050F3C1 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		D607B19909A556E400699BC3 /* HelloWorld.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = HelloWorld.xpl; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67297EA0F9E0FCC00CFD1FA /* HelloWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelloWorld.cpp; sourceTree = "<group>"; };
 		D6A7BDA916A1DEA200D1426A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -28,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				952F88EC18EA0C3D0050F3C1 /* ApplicationServices.framework in Frameworks */,
 				D6A7BDAA16A1DEA200D1426A /* OpenGL.framework in Frameworks */,
 				D6A7BDC116A1DEC000D1426A /* CoreFoundation.framework in Frameworks */,
 				D6A7BDF116A1DED200D1426A /* XPLM.framework in Frameworks */,
@@ -66,6 +69,7 @@
 		D6A7BDAD16A1DEA700D1426A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				952F88EB18EA0C3D0050F3C1 /* ApplicationServices.framework */,
 				D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */,
 				D6A7BDA916A1DEA200D1426A /* OpenGL.framework */,
 				D6A7BDF016A1DED200D1426A /* XPLM.framework */,
@@ -98,6 +102,8 @@
 /* Begin PBXProject section */
 		D607B16109A5563100699BC3 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "HelloWorld" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;

@@ -1,12 +1,17 @@
 #include <string.h>
 #include <unistd.h>
+#include "ApplicationServices/ApplicationServices.h"
+
+#include <stdio.h>
 
 #include "XPLMDataAccess.h"
 #include "XPLMDefs.h"
 #include "XPLMDisplay.h"
 #include "XPLMProcessing.h"
 
-#define FRAME_RATE 33.0f
+#include "XPLMUtilities.h"
+
+#define FRAME_RATE 35.0f
 #define DISABLE_CINEMA_VERITE_TIME 5.0f
 
 static int lastMouseX = 0, lastMouseY = 0;
@@ -56,12 +61,12 @@ float ControlCinemaVeriteCallback(
                                     int                  inCounter,
                                     void *               inRefcon)
 {
-    float currentTime = XPLMGetElapsedTime();
+    int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
     
     int currentMouseX, currentMouseY;
     XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
     
-    if (currentMouseX != lastMouseX || currentMouseY != lastMouseY) {
+    if (mouseButtonDown == 1 || currentMouseX != lastMouseX || currentMouseY != lastMouseY) {
         lastMouseX = currentMouseX;
         lastMouseY = currentMouseY;
         
@@ -74,15 +79,16 @@ float ControlCinemaVeriteCallback(
         XPLMSetDatai(cinemaVeriteDataRef, 1);
     else
     {
+        float currentTime = XPLMGetElapsedTime();
         float elapsedTime = currentTime - lastMouseMovementTime;
         
-        if (elapsedTime <= DISABLE_CINEMA_VERITE_TIME)
+        if (mouseButtonDown || elapsedTime <= DISABLE_CINEMA_VERITE_TIME)
             XPLMSetDatai(cinemaVeriteDataRef, 0);
         else
             XPLMSetDatai(cinemaVeriteDataRef, 1);
     }
     
-    return 0.25f;
+    return -1.0f;
 }
 
 PLUGIN_API int XPluginStart(
@@ -91,9 +97,9 @@ PLUGIN_API int XPluginStart(
 						char *		outDesc)
 {
 
-	strcpy(outName, "FPS Limiter");
-	strcpy(outSig, "de.bwravencl.fps_limiter");
-	strcpy(outDesc, "Limits the frame rate.");
+	strcpy(outName, "Super Plugin");
+	strcpy(outSig, "de.bwravencl.super_plugin");
+	strcpy(outDesc, "Enhances your X-Plane experience!");
 
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
