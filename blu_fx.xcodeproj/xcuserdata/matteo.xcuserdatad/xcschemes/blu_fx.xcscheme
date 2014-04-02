@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D607B19809A556E400699BC3"
                BuildableName = "SuperPlugin.xpl"
-               BlueprintName = "SuperPlugin"
-               ReferencedContainer = "container:SuperPlugin.xcodeproj">
+               BlueprintName = "blu_fx"
+               ReferencedContainer = "container:blu_fx.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

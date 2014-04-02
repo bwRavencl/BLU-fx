@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		952F88EC18EA0C3D0050F3C1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 952F88EB18EA0C3D0050F3C1 /* ApplicationServices.framework */; };
-		D67297EB0F9E0FCC00CFD1FA /* SuperPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67297EA0F9E0FCC00CFD1FA /* SuperPlugin.cpp */; };
+		D67297EB0F9E0FCC00CFD1FA /* blu_fx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67297EA0F9E0FCC00CFD1FA /* blu_fx.cpp */; };
 		D6A7BDAA16A1DEA200D1426A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDA916A1DEA200D1426A /* OpenGL.framework */; };
 		D6A7BDC116A1DEC000D1426A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */; };
 		D6A7BDF116A1DED200D1426A /* XPLM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A7BDF016A1DED200D1426A /* XPLM.framework */; };
@@ -17,8 +17,8 @@
 
 /* Begin PBXFileReference section */
 		952F88EB18EA0C3D0050F3C1 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
-		D607B19909A556E400699BC3 /* SuperPlugin.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = SuperPlugin.xpl; sourceTree = BUILT_PRODUCTS_DIR; };
-		D67297EA0F9E0FCC00CFD1FA /* SuperPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SuperPlugin.cpp; sourceTree = "<group>"; };
+		D607B19909A556E400699BC3 /* blu_fx.xpl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = blu_fx.xpl; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67297EA0F9E0FCC00CFD1FA /* blu_fx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blu_fx.cpp; sourceTree = "<group>"; };
 		D6A7BDA916A1DEA200D1426A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D6A7BDC016A1DEC000D1426A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		D6A7BDF016A1DED200D1426A /* XPLM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPLM.framework; path = SDK/Libraries/Mac/XPLM.framework; sourceTree = "<group>"; };
@@ -44,7 +44,7 @@
 		AC4E46B809C2E0B3006B7E1B /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D67297EA0F9E0FCC00CFD1FA /* SuperPlugin.cpp */,
+				D67297EA0F9E0FCC00CFD1FA /* blu_fx.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 		D607B19A09A556E400699BC3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D607B19909A556E400699BC3 /* SuperPlugin.xpl */,
+				D607B19909A556E400699BC3 /* blu_fx.xpl */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,9 +81,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D607B19809A556E400699BC3 /* SuperPlugin */ = {
+		D607B19809A556E400699BC3 /* blu_fx */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D607B19B09A556E400699BC3 /* Build configuration list for PBXNativeTarget "SuperPlugin" */;
+			buildConfigurationList = D607B19B09A556E400699BC3 /* Build configuration list for PBXNativeTarget "blu_fx" */;
 			buildPhases = (
 				D607B19609A556E400699BC3 /* Sources */,
 				D607B19709A556E400699BC3 /* Frameworks */,
@@ -92,9 +92,9 @@
 			);
 			dependencies = (
 			);
-			name = SuperPlugin;
+			name = blu_fx;
 			productName = StarterPlugin;
-			productReference = D607B19909A556E400699BC3 /* SuperPlugin.xpl */;
+			productReference = D607B19909A556E400699BC3 /* blu_fx.xpl */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -104,7 +104,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "SuperPlugin" */;
+			buildConfigurationList = D607B16209A5563100699BC3 /* Build configuration list for PBXProject "blu_fx" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -119,7 +119,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D607B19809A556E400699BC3 /* SuperPlugin */,
+				D607B19809A556E400699BC3 /* blu_fx */,
 			);
 		};
 /* End PBXProject section */
@@ -129,7 +129,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D67297EB0F9E0FCC00CFD1FA /* SuperPlugin.cpp in Sources */,
+				D67297EB0F9E0FCC00CFD1FA /* blu_fx.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,21 +223,21 @@
 		D607B19C09A556E400699BC3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = SuperPlugin;
+				PRODUCT_NAME = blu_fx;
 			};
 			name = Debug;
 		};
 		D607B19D09A556E400699BC3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = SuperPlugin;
+				PRODUCT_NAME = blu_fx;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D607B16209A5563100699BC3 /* Build configuration list for PBXProject "SuperPlugin" */ = {
+		D607B16209A5563100699BC3 /* Build configuration list for PBXProject "blu_fx" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D607B16309A5563100699BC3 /* Debug */,
@@ -246,7 +246,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D607B19B09A556E400699BC3 /* Build configuration list for PBXNativeTarget "SuperPlugin" */ = {
+		D607B19B09A556E400699BC3 /* Build configuration list for PBXNativeTarget "blu_fx" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D607B19C09A556E400699BC3 /* Debug */,
