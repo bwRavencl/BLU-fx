@@ -37,18 +37,20 @@
 #define DEFAULT_RED_SCALE 0.0f
 #define DEFAULT_GREEN_SCALE 0.0f
 #define DEFAULT_BLUE_SCALE 0.0f
-#define DEFAULT_RED_OFFSET 1.0f
-#define DEFAULT_GREEN_OFFSET 1.0f
-#define DEFAULT_BLUE_OFFSET 1.0f
+#define DEFAULT_RED_OFFSET 0.0f
+#define DEFAULT_GREEN_OFFSET 0.0f
+#define DEFAULT_BLUE_OFFSET 0.0f
+#define DEFAULT_VIGNETTE 0.0f
+#define DEFAULT_NOISE 0.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
 // global variables
-static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED, lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
+static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED,lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
 static GLuint textureId = 0, program;
-static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
+static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, noise = DEFAULT_NOISE,maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
-static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider;
+static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, noiseCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, noiseSlider;
 
 // flightloop-callback that limits the number of flightcycles
 float LimiterFlightCallback(
@@ -179,6 +181,27 @@ static int PostProcessingCallback(
     
     int blueScaleLocation = glGetUniformLocation(program, "blueScale");
     glUniform1f(blueScaleLocation, blueScale);
+    
+    int redOffsetLocation = glGetUniformLocation(program, "redOffset");
+    glUniform1f(redOffsetLocation, redOffset);
+    
+    int greenOffsetLocation = glGetUniformLocation(program, "greenOffset");
+    glUniform1f(greenOffsetLocation, greenOffset);
+    
+    int blueOffsetLocation = glGetUniformLocation(program, "blueOffset");
+    glUniform1f(blueOffsetLocation, blueOffset);
+    
+    int resolutionLocation = glGetUniformLocation(program, "resolution");
+    glUniform2f(resolutionLocation, (float) x, (float) y);
+    
+    int vignetteLocation = glGetUniformLocation(program, "vignette");
+    glUniform1f(vignetteLocation, vignette);
+
+    int randomLocation = glGetUniformLocation(program, "random");
+    glUniform2f(randomLocation, XPLMGetElapsedTime(), (float) XPLMGetCycleNumber());
+    
+    int noiseLocation = glGetUniformLocation(program, "noise");
+    glUniform1f(noiseLocation, noise);
     
     int sceneLocation = glGetUniformLocation(program, "scene");
     glUniform1i(sceneLocation, 0);
@@ -358,6 +381,41 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
             XPSetWidgetDescriptor(blueScaleCaption, stringBlueScale);
         }
+        else if (inParam1 == (long) redOffsetSlider)
+        {
+            redOffset = XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringRedOffset[32];
+            sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
+            XPSetWidgetDescriptor(redOffsetCaption, stringRedOffset);
+        }
+        else if (inParam1 == (long) greenOffsetSlider)
+        {
+            greenOffset = XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringGreenOffset[32];
+            sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
+            XPSetWidgetDescriptor(greenOffsetCaption, stringGreenOffset);
+        }
+        else if (inParam1 == (long) blueOffsetSlider)
+        {
+            blueOffset = XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringBlueOffset[32];
+            sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
+            XPSetWidgetDescriptor(blueOffsetCaption, stringBlueOffset);
+        }
+        else if (inParam1 == (long) vignetteSlider)
+        {
+            vignette = XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringVignette[32];
+            sprintf(stringVignette, "Vignette: %.2f", vignette);
+            XPSetWidgetDescriptor(vignetteCaption, stringVignette);
+        }
+        else if (inParam1 == (long) noiseSlider)
+        {
+            noise = XPGetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringNoise[32];
+            sprintf(stringNoise, "Noise: %.2f", noise);
+            XPSetWidgetDescriptor(noiseCaption, stringNoise);
+        }
         
 		return 1;
 	}
@@ -452,6 +510,61 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
     
+    // add red offset caption
+    char stringRedOffset[32];
+    sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
+	redOffsetCaption = XPCreateWidget(x + 30, y - 190, x2 - 50, y - 205, 1, stringRedOffset, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add red offset slider
+	redOffsetSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, redOffset * 100.0f);
+    
+    // add green offset caption
+    char stringGreenOffset[32];
+    sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
+	greenOffsetCaption = XPCreateWidget(x + 30, y - 210, x2 - 50, y - 225, 1, stringGreenOffset, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add green offset slider
+	greenOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
+    
+    // add blue offset caption
+    char stringBlueOffset[32];
+    sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
+	blueOffsetCaption = XPCreateWidget(x + 30, y - 230, x2 - 50, y - 245, 1, stringBlueOffset, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add blue offset slider
+	blueOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
+    
+    // add vignette caption
+    char stringVignette[32];
+    sprintf(stringVignette, "Vignette: %.2f", vignette);
+	vignetteCaption = XPCreateWidget(x + 30, y - 250, x2 - 50, y - 265, 1, stringVignette, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add vignette slider
+	vignetteSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMin, 0);
+	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
+    
+    // add noise caption
+    char stringNoise[32];
+    sprintf(stringNoise, "Noise: %.2f", noise);
+	vignetteCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringNoise, 0, settingsWidget, xpWidgetClass_Caption);
+    
+    // add noise slider
+	noiseSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Noise", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarMin, 0);
+	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarMax, 500);
+	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, noise * 100.0f);
+    
 	// register widget handler
 	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
 }
@@ -538,15 +651,15 @@ PLUGIN_API int XPluginStart(
 	strcpy(outDesc, "BLU-fx enhances your X-Plane experience!");
     
     // prepare fragment-shader
-    InitShader("#version 120\nconst vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721); uniform float brightness; uniform float contrast; uniform float saturation; uniform float redScale; uniform float greenScale; uniform float blueScale; uniform sampler2D scene; void main() { vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb; vec3 colorContrasted = (color) * contrast; vec3 bright = colorContrasted + vec3(brightness,brightness,brightness); vec3 intensity = vec3(dot(bright, lumCoeff)); vec3 col = mix(intensity, bright, saturation); vec3 newColor = (col.rgb - 0.5) * 2.0; newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r)); newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g)); newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b)); newColor.r = clamp(col.r + redScale * newColor.r, 0.0, 1.0); newColor.g = clamp(col.g + greenScale * newColor.g, 0.0, 1.0); newColor.b = clamp(col.b + blueScale * newColor.b, 0.0, 1.0); gl_FragColor = vec4(newColor, 1.0); }");
+    InitShader("#version 120\nconst vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721); uniform float brightness; uniform float contrast; uniform float saturation; uniform float redScale; uniform float greenScale; uniform float blueScale; uniform float redOffset; uniform float greenOffset; uniform float blueOffset; uniform vec2 resolution; uniform float vignette; uniform vec2 random; uniform float noise; uniform sampler2D scene; void main() { vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb; vec3 colorContrasted = (color) * contrast; vec3 bright = colorContrasted + vec3(brightness,brightness,brightness); vec3 intensity = vec3(dot(bright, lumCoeff)); vec3 col = mix(intensity, bright, saturation); vec3 newColor = (col.rgb - 0.5) * 2.0; newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r)); newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g)); newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b)); newColor.r = clamp(col.r + redScale * newColor.r + redOffset, 0.0, 1.0); newColor.g = clamp(col.g + greenScale * newColor.g + greenOffset, 0.0, 1.0); newColor.b = clamp(col.b + blueScale * newColor.b + blueOffset, 0.0, 1.0); vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); float len = length(position); float vig = smoothstep(0.75, 0.75-0.45, len); newColor = mix(newColor, newColor * vig, vignette); float rand = 0.5 + 0.5 * fract(sin(dot(random.xy, vec2(12.9898, 78.233)))* 43758.5453); newColor = mix(newColor, newColor * rand, noise);  gl_FragColor = vec4(newColor, 1.0); }");
     
     // obtain datarefs
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
     
     // create menu-entries
-	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "BLU fx", 0, 1);
-	XPLMMenuID Menu = XPLMCreateMenu("BLU fx", XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
+	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "BLU-fx", 0, 1);
+	XPLMMenuID Menu = XPLMCreateMenu("BLU-fx", XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
 	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1); // settings menu entry with ItemRef = 0
 	XPLMAppendMenuItem(Menu, "About", (void*) 1, 1); // about menu entry with ItemRef = 1
     
