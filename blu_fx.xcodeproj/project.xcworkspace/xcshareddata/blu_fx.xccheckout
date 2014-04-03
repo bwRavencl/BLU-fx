@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>06829075-9BA8-4D03-AF73-2958F2837190</string>
+	<key>IDESourceControlProjectName</key>
+	<string>blu_fx</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>E879598F-1E15-4090-AE2F-C775EE2E2A0A</key>
+		<string>https://github.com/bwRavencl/SuperPlugin.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>blu_fx.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>E879598F-1E15-4090-AE2F-C775EE2E2A0A</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/bwRavencl/SuperPlugin.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>E879598F-1E15-4090-AE2F-C775EE2E2A0A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E879598F-1E15-4090-AE2F-C775EE2E2A0A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>blu_fx</string>
+		</dict>
+	</array>
+</dict>
+</plist>

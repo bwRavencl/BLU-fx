@@ -24,26 +24,26 @@
 #include <stdio.h>
 #include "XPLMUtilities.h"
 
-// Version
+// version
 #define VERSION "0.1"
 
-// Default values
+// default values
 #define DEFAULT_POST_PROCESSING_ENABLED 1
 #define DEFAULT_LIMIT_FRAMES_ENABLED 1
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
 #define DEFAULT_BRIGHTNESS 0.0f
 #define DEFAULT_CONTRAST 1.0f
 #define DEFAULT_SATURATION 1.0f
-#define DEFAULT_RED_SCALE 1.0f
-#define DEFAULT_GREEN_SCALE 1.0f
-#define DEFAULT_BLUE_SCALE 1.0f
+#define DEFAULT_RED_SCALE 0.0f
+#define DEFAULT_GREEN_SCALE 0.0f
+#define DEFAULT_BLUE_SCALE 0.0f
 #define DEFAULT_RED_OFFSET 1.0f
 #define DEFAULT_GREEN_OFFSET 1.0f
 #define DEFAULT_BLUE_OFFSET 1.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
-// Global variables
+// global variables
 static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED, lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
 static GLuint textureId = 0, program;
 static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
@@ -171,6 +171,15 @@ static int PostProcessingCallback(
     int saturationLocation = glGetUniformLocation(program, "saturation");
     glUniform1f(saturationLocation, saturation);
     
+    int redScaleLocation = glGetUniformLocation(program, "redScale");
+    glUniform1f(redScaleLocation, redScale);
+    
+    int greenScaleLocation = glGetUniformLocation(program, "greenScale");
+    glUniform1f(greenScaleLocation, greenScale);
+    
+    int blueScaleLocation = glGetUniformLocation(program, "blueScale");
+    glUniform1f(blueScaleLocation, blueScale);
+    
     int sceneLocation = glGetUniformLocation(program, "scene");
     glUniform1i(sceneLocation, 0);
     
@@ -244,9 +253,9 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 			// save config to file
 			std::fstream file;
 #if IBM
-			file.open(".\\Resources\\plugins\\FlyByWire\\fbw.ini", std::ios_base::out | std::ios_base::trunc);
+			file.open(".\\Resources\\plugins\\BLU-fx\\blu_fx.ini", std::ios_base::out | std::ios_base::trunc);
 #else
-			file.open("./Resources/plugins/FlyByWire/fbw.ini", std::ios_base::out | std::ios_base::trunc);
+			file.open("./Resources/plugins/BLU-fx/blu_fx.ini", std::ios_base::out | std::ios_base::trunc);
 #endif
 			if(file.is_open())
 			{
@@ -328,6 +337,27 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             sprintf(stringSaturation, "Saturation: %.2f", saturation);
             XPSetWidgetDescriptor(saturationCaption, stringSaturation);
         }
+        else if (inParam1 == (long) redScaleSlider)
+        {
+            redScale = XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringRedScale[32];
+            sprintf(stringRedScale, "Red Scale: %.2f", redScale);
+            XPSetWidgetDescriptor(redScaleCaption, stringRedScale);
+        }
+        else if (inParam1 == (long) greenScaleSlider)
+        {
+            greenScale = XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringGreenScale[32];
+            sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
+            XPSetWidgetDescriptor(greenScaleCaption, stringGreenScale);
+        }
+        else if (inParam1 == (long) blueScaleSlider)
+        {
+            blueScale = XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            char stringBlueScale[32];
+            sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
+            XPSetWidgetDescriptor(blueScaleCaption, stringBlueScale);
+        }
         
 		return 1;
 	}
@@ -388,6 +418,39 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMin, 0);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 500);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
+    
+    // add red scale caption
+    char stringRedScale[32];
+    sprintf(stringRedScale, "Red Scale: %.2f", redScale);
+	redScaleCaption = XPCreateWidget(x + 30, y - 130, x2 - 50, y - 145, 1, stringRedScale, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add red scale slider
+	redScaleSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, redScale * 100.0f);
+    
+    // add green scale caption
+    char stringGreenScale[32];
+    sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
+	greenScaleCaption = XPCreateWidget(x + 30, y - 150, x2 - 50, y - 165, 1, stringGreenScale, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add green scale slider
+	greenScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, greenScale * 100.0f);
+    
+    // add blue scale caption
+    char stringBlueScale[32];
+    sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
+	blueScaleCaption = XPCreateWidget(x + 30, y - 170, x2 - 50, y - 185, 1, stringBlueScale, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add blue scale slider
+	blueScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -100);
+	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 100);
+	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
     
 	// register widget handler
 	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
@@ -475,7 +538,7 @@ PLUGIN_API int XPluginStart(
 	strcpy(outDesc, "BLU-fx enhances your X-Plane experience!");
     
     // prepare fragment-shader
-    InitShader("#version 120\nconst vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721); uniform float brightness; uniform float contrast; uniform float saturation; uniform sampler2D scene; void main() { vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb; vec3 colorContrasted = (color) * contrast; vec3 bright = colorContrasted + vec3(brightness,brightness,brightness); vec3 intensity = vec3(dot(bright, lumCoeff)); vec3 col = mix(intensity, bright, saturation); gl_FragColor = vec4(col, 1.0); }");
+    InitShader("#version 120\nconst vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721); uniform float brightness; uniform float contrast; uniform float saturation; uniform float redScale; uniform float greenScale; uniform float blueScale; uniform sampler2D scene; void main() { vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb; vec3 colorContrasted = (color) * contrast; vec3 bright = colorContrasted + vec3(brightness,brightness,brightness); vec3 intensity = vec3(dot(bright, lumCoeff)); vec3 col = mix(intensity, bright, saturation); vec3 newColor = (col.rgb - 0.5) * 2.0; newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r)); newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g)); newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b)); newColor.r = clamp(col.r + redScale * newColor.r, 0.0, 1.0); newColor.g = clamp(col.g + greenScale * newColor.g, 0.0, 1.0); newColor.b = clamp(col.b + blueScale * newColor.b, 0.0, 1.0); gl_FragColor = vec4(newColor, 1.0); }");
     
     // obtain datarefs
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
