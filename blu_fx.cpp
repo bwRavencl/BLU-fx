@@ -45,7 +45,6 @@
 #define DEFAULT_GREEN_OFFSET 0.0f
 #define DEFAULT_BLUE_OFFSET 0.0f
 #define DEFAULT_VIGNETTE 0.0f
-#define DEFAULT_NOISE 0.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
@@ -63,8 +62,6 @@
                         "uniform float blueOffset;"\
                         "uniform vec2 resolution;"\
                         "uniform float vignette;"\
-                        "uniform vec2 random;"\
-                        "uniform float noise;"\
                         "uniform sampler2D scene;"\
                         "void main()"\
                         "{"\
@@ -83,14 +80,12 @@
                             "vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); float len = length(position);"\
                             "float vig = smoothstep(0.75, 0.75 - 0.45, len);"\
                             "newColor = mix(newColor, newColor * vig, vignette);"\
-                            "float rand = 0.5 + 0.5 * fract(sin(dot(random.xy, vec2(12.9898, 78.233))) * 43758.5453);"\
-                            "newColor = mix(newColor, newColor * rand, noise);"\
                             "gl_FragColor = vec4(newColor, 1.0);"\
                         "}"
 
 // global settings variables
 static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED;
-static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, noise = DEFAULT_NOISE,maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
+static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
 
 // global internal variables
 static int lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
@@ -101,7 +96,7 @@ static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f,
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
 
 // global widget variables
-static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, noiseCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, noiseSlider;
+static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, resetButton;
 
 // flightloop-callback that limits the number of flightcycles
 float LimiterFlightCallback(
@@ -245,12 +240,6 @@ static int PostProcessingCallback(
     
     int vignetteLocation = glGetUniformLocation(program, "vignette");
     glUniform1f(vignetteLocation, vignette);
-
-    int randomLocation = glGetUniformLocation(program, "random");
-    glUniform2f(randomLocation, XPLMGetElapsedTime(), (float) XPLMGetCycleNumber());
-    
-    int noiseLocation = glGetUniformLocation(program, "noise");
-    glUniform1f(noiseLocation, noise);
     
     int sceneLocation = glGetUniformLocation(program, "scene");
     glUniform1i(sceneLocation, 0);
@@ -308,9 +297,65 @@ void InitShader(const GLchar *fragmentShaderString)
     glDetachShader(program, fragmentShader);
 }
 
+// returns a float rounded to two decimal places
 float round(float f)
 {
     return ((int) (f * 100.0f)) / 100.0f;
+}
+
+// updates all caption widgets and slider positions associated with settings variables
+void UpdateSettingsWidgets()
+{
+    char stringBrightness[32];
+    sprintf(stringBrightness, "Brightness: %.2f", brightness);
+    XPSetWidgetDescriptor(brightnessCaption, stringBrightness);
+    
+    char stringContrast[32];
+    sprintf(stringContrast, "Contrast: %.2f", contrast);
+    XPSetWidgetDescriptor(contrastCaption, stringContrast);
+    
+    char stringSaturation[32];
+    sprintf(stringSaturation, "Saturation: %.2f", saturation);
+    XPSetWidgetDescriptor(saturationCaption, stringSaturation);
+    
+    char stringRedScale[32];
+    sprintf(stringRedScale, "Red Scale: %.2f", redScale);
+    XPSetWidgetDescriptor(redScaleCaption, stringRedScale);
+    
+    char stringGreenScale[32];
+    sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
+    XPSetWidgetDescriptor(greenScaleCaption, stringGreenScale);
+    
+    char stringBlueScale[32];
+    sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
+    XPSetWidgetDescriptor(blueScaleCaption, stringBlueScale);
+    
+    char stringRedOffset[32];
+    sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
+    XPSetWidgetDescriptor(redOffsetCaption, stringRedOffset);
+    
+    char stringGreenOffset[32];
+    sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
+    XPSetWidgetDescriptor(greenOffsetCaption, stringGreenOffset);
+    
+    char stringBlueOffset[32];
+    sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
+    XPSetWidgetDescriptor(blueOffsetCaption, stringBlueOffset);
+    
+    char stringVignette[32];
+    sprintf(stringVignette, "Vignette: %.2f", vignette);
+    XPSetWidgetDescriptor(vignetteCaption, stringVignette);
+    
+   	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, brightness * 1000.0f);
+   	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, contrast * 100.0f);
+    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
+    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, redScale * 100.0f);
+    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, greenScale * 100.0f);
+    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
+    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, redOffset * 100.0f);
+    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
+    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
 }
 
 // handles the settings widget
@@ -343,7 +388,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 			XPHideWidget(settingsWidget);
 		}
         
-		return 1;
+        settingsWindowOpen = 0;
 	}
     else if (inMessage == xpMsg_ButtonStateChanged)
     {
@@ -387,85 +432,46 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 	else if (inMessage == xpMsg_ScrollBarSliderPositionChanged)
 	{
         if (inParam1 == (long) brightnessSlider)
-        {
             brightness = round(XPGetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, 0) / 1000.0f);
-            char stringBrigthness[32];
-            sprintf(stringBrigthness, "Brightness: %.2f", brightness);
-            XPSetWidgetDescriptor(brightnessCaption, stringBrigthness);
-        }
         else if (inParam1 == (long) contrastSlider)
-        {
             contrast = round(XPGetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringContrast[32];
-            sprintf(stringContrast, "Contrast: %.2f", contrast);
-            XPSetWidgetDescriptor(contrastCaption, stringContrast);
-        }
         else if (inParam1 == (long) saturationSlider)
-        {
             saturation = round(XPGetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringSaturation[32];
-            sprintf(stringSaturation, "Saturation: %.2f", saturation);
-            XPSetWidgetDescriptor(saturationCaption, stringSaturation);
-        }
         else if (inParam1 == (long) redScaleSlider)
-        {
             redScale = round(XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringRedScale[32];
-            sprintf(stringRedScale, "Red Scale: %.2f", redScale);
-            XPSetWidgetDescriptor(redScaleCaption, stringRedScale);
-        }
         else if (inParam1 == (long) greenScaleSlider)
-        {
             greenScale = round(XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringGreenScale[32];
-            sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
-            XPSetWidgetDescriptor(greenScaleCaption, stringGreenScale);
-        }
         else if (inParam1 == (long) blueScaleSlider)
-        {
             blueScale = round(XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringBlueScale[32];
-            sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
-            XPSetWidgetDescriptor(blueScaleCaption, stringBlueScale);
-        }
         else if (inParam1 == (long) redOffsetSlider)
-        {
             redOffset = round(XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringRedOffset[32];
-            sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
-            XPSetWidgetDescriptor(redOffsetCaption, stringRedOffset);
-        }
         else if (inParam1 == (long) greenOffsetSlider)
-        {
             greenOffset = round(XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringGreenOffset[32];
-            sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
-            XPSetWidgetDescriptor(greenOffsetCaption, stringGreenOffset);
-        }
         else if (inParam1 == (long) blueOffsetSlider)
-        {
             blueOffset = round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringBlueOffset[32];
-            sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
-            XPSetWidgetDescriptor(blueOffsetCaption, stringBlueOffset);
-        }
         else if (inParam1 == (long) vignetteSlider)
-        {
             vignette = round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringVignette[32];
-            sprintf(stringVignette, "Vignette: %.2f", vignette);
-            XPSetWidgetDescriptor(vignetteCaption, stringVignette);
-        }
-        else if (inParam1 == (long) noiseSlider)
+        
+        UpdateSettingsWidgets();
+	}
+    else if (inMessage == xpMsg_PushButtonPressed)
+    {
+        if (inParam1 == (long) resetButton)
         {
-            noise = round(XPGetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
-            char stringNoise[32];
-            sprintf(stringNoise, "Noise: %.2f", noise);
-            XPSetWidgetDescriptor(noiseCaption, stringNoise);
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
         }
         
-		return 1;
-	}
+        UpdateSettingsWidgets();
+    }
     
     return 0;
 }
@@ -482,22 +488,25 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	// add close box
 	XPSetWidgetProperty(settingsWidget, xpProperty_MainWindowHasCloseBoxes, 1);
     
+    // add post-processing sub window
+    XPCreateWidget(x + 10, y - 30, x2 - 10, y - 315 - 10, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    
     // add post-processing settings caption
     XPCreateWidget(x + 10, y - 30, x2 - 20, y - 45, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_Caption);
     
     // add post-processing checkbox
-    postProcessingCheckbox = XPCreateWidget(x + 20, y - 50, x2 - 20, y - 65, 1, "Enable Post-Processing", 0, settingsWidget, xpWidgetClass_Button);
+    postProcessingCheckbox = XPCreateWidget(x + 20, y - 60, x2 - 20, y - 75, 1, "Enable Post-Processing", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonType, xpRadioButton);
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, postProcesssingEnabled);
     
 	// add brightness caption
-    char stringBrigthness[32];
-    sprintf(stringBrigthness, "Brightness: %.2f", brightness);
-	brightnessCaption = XPCreateWidget(x + 30, y - 70, x2 - 50, y - 85, 1, stringBrigthness, 0, settingsWidget, xpWidgetClass_Caption);
+    char stringBrightness[32];
+    sprintf(stringBrightness, "Brightness: %.2f", brightness);
+	brightnessCaption = XPCreateWidget(x + 30, y - 90, x2 - 50, y - 105, 1, stringBrightness, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add brightness slider
-	brightnessSlider = XPCreateWidget(x + 195, y - 70, x2 - 15, y - 85, 1, "Brightness", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	brightnessSlider = XPCreateWidget(x + 195, y - 90, x2 - 15, y - 105, 1, "Brightness", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMin, -500);
 	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMax, 500);
 	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, brightness * 1000.0f);
@@ -505,10 +514,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add contrast caption
     char stringContrast[32];
     sprintf(stringContrast, "Contrast: %.2f", contrast);
-	contrastCaption = XPCreateWidget(x + 30, y - 90, x2 - 50, y - 105, 1, stringContrast, 0, settingsWidget, xpWidgetClass_Caption);
+	contrastCaption = XPCreateWidget(x + 30, y - 110, x2 - 50, y - 125, 1, stringContrast, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add contrast slider
-	contrastSlider = XPCreateWidget(x + 195, y - 90, x2 - 15, y - 105, 1, "Contrast", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	contrastSlider = XPCreateWidget(x + 195, y - 110, x2 - 15, y - 125, 1, "Contrast", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMin, 0);
 	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMax, 300);
 	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, contrast * 100.0f);
@@ -516,10 +525,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add saturation caption
     char stringSaturation[32];
     sprintf(stringSaturation, "Saturation: %.2f", saturation);
-	saturationCaption = XPCreateWidget(x + 30, y - 110, x2 - 50, y - 125, 1, stringSaturation, 0, settingsWidget, xpWidgetClass_Caption);
+	saturationCaption = XPCreateWidget(x + 30, y - 130, x2 - 50, y - 145, 1, stringSaturation, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add saturation slider
-	saturationSlider = XPCreateWidget(x + 195, y - 110, x2 - 15, y - 125, 1, "Saturation", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	saturationSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Saturation", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMin, 0);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 500);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
@@ -527,10 +536,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add red scale caption
     char stringRedScale[32];
     sprintf(stringRedScale, "Red Scale: %.2f", redScale);
-	redScaleCaption = XPCreateWidget(x + 30, y - 130, x2 - 50, y - 145, 1, stringRedScale, 0, settingsWidget, xpWidgetClass_Caption);
+	redScaleCaption = XPCreateWidget(x + 30, y - 150, x2 - 50, y - 165, 1, stringRedScale, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add red scale slider
-	redScaleSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	redScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, redScale * 100.0f);
@@ -538,10 +547,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add green scale caption
     char stringGreenScale[32];
     sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
-	greenScaleCaption = XPCreateWidget(x + 30, y - 150, x2 - 50, y - 165, 1, stringGreenScale, 0, settingsWidget, xpWidgetClass_Caption);
+	greenScaleCaption = XPCreateWidget(x + 30, y - 170, x2 - 50, y - 185, 1, stringGreenScale, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add green scale slider
-	greenScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	greenScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, greenScale * 100.0f);
@@ -549,10 +558,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add blue scale caption
     char stringBlueScale[32];
     sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
-	blueScaleCaption = XPCreateWidget(x + 30, y - 170, x2 - 50, y - 185, 1, stringBlueScale, 0, settingsWidget, xpWidgetClass_Caption);
+	blueScaleCaption = XPCreateWidget(x + 30, y - 190, x2 - 50, y - 205, 1, stringBlueScale, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add blue scale slider
-	blueScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	blueScaleSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
@@ -560,10 +569,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add red offset caption
     char stringRedOffset[32];
     sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
-	redOffsetCaption = XPCreateWidget(x + 30, y - 190, x2 - 50, y - 205, 1, stringRedOffset, 0, settingsWidget, xpWidgetClass_Caption);
+	redOffsetCaption = XPCreateWidget(x + 30, y - 210, x2 - 50, y - 225, 1, stringRedOffset, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add red offset slider
-	redOffsetSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	redOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, redOffset * 100.0f);
@@ -571,10 +580,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add green offset caption
     char stringGreenOffset[32];
     sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
-	greenOffsetCaption = XPCreateWidget(x + 30, y - 210, x2 - 50, y - 225, 1, stringGreenOffset, 0, settingsWidget, xpWidgetClass_Caption);
+	greenOffsetCaption = XPCreateWidget(x + 30, y - 230, x2 - 50, y - 245, 1, stringGreenOffset, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add green offset slider
-	greenOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	greenOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
@@ -582,10 +591,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add blue offset caption
     char stringBlueOffset[32];
     sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
-	blueOffsetCaption = XPCreateWidget(x + 30, y - 230, x2 - 50, y - 245, 1, stringBlueOffset, 0, settingsWidget, xpWidgetClass_Caption);
+	blueOffsetCaption = XPCreateWidget(x + 30, y - 250, x2 - 50, y - 265, 1, stringBlueOffset, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add blue offset slider
-	blueOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	blueOffsetSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -100);
 	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
@@ -593,24 +602,17 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add vignette caption
     char stringVignette[32];
     sprintf(stringVignette, "Vignette: %.2f", vignette);
-	vignetteCaption = XPCreateWidget(x + 30, y - 250, x2 - 50, y - 265, 1, stringVignette, 0, settingsWidget, xpWidgetClass_Caption);
+	vignetteCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringVignette, 0, settingsWidget, xpWidgetClass_Caption);
     
 	// add vignette slider
-	vignetteSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	vignetteSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMin, 0);
 	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMax, 100);
 	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
     
-    // add noise caption
-    char stringNoise[32];
-    sprintf(stringNoise, "Noise: %.2f", noise);
-	noiseCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringNoise, 0, settingsWidget, xpWidgetClass_Caption);
-    
-    // add noise slider
-	noiseSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Noise", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarMin, 0);
-	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarMax, 500);
-	XPSetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, noise * 100.0f);
+    // add reset button
+    resetButton = XPCreateWidget(x + 30, y - 300, x + 30 + 80, y - 315, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(resetButton, xpProperty_ButtonType, xpPushButton);
     
 	// register widget handler
 	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
@@ -619,13 +621,10 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 // handles the about widget
 int AboutWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2)
 {
-	if (inMessage == xpMessage_CloseButtonPushed)
-	{
-		if (aboutWindowOpen == 1)
-			XPHideWidget(aboutWidget);
-        
-		return 1;
-	}
+	if (inMessage == xpMessage_CloseButtonPushed && aboutWindowOpen == 1) {
+        XPHideWidget(aboutWidget);
+        aboutWindowOpen = 0;
+    }
     
 	return 0;
 }
