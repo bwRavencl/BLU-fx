@@ -5,6 +5,7 @@
 #include "XPLMMenus.h"
 #include "XPLMProcessing.h"
 #include "XPStandardWidgets.h"
+#include "XPLMUtilities.h"
 #include "XPWidgets.h"
 
 #include <fstream>
@@ -22,12 +23,15 @@
 #endif
 
 #include <stdio.h>
-#include "XPLMUtilities.h"
+
+// name
+#define NAME "BLU-fx"
+#define NAME_LOWERCASE "blu_fx"
 
 // version
 #define VERSION "0.1"
 
-// default values
+// settings default values
 #define DEFAULT_POST_PROCESSING_ENABLED 1
 #define DEFAULT_LIMIT_FRAMES_ENABLED 1
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
@@ -45,11 +49,58 @@
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
-// global variables
-static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED,lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
+// fragment-shader code
+#define FRAGMENT_SHADER "#version 120\n"\
+                        "const vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721);"\
+                        "uniform float brightness;"\
+                        "uniform float contrast;"\
+                        "uniform float saturation;"\
+                        "uniform float redScale;"\
+                        "uniform float greenScale;"\
+                        "uniform float blueScale;"\
+                        "uniform float redOffset;"\
+                        "uniform float greenOffset;"\
+                        "uniform float blueOffset;"\
+                        "uniform vec2 resolution;"\
+                        "uniform float vignette;"\
+                        "uniform vec2 random;"\
+                        "uniform float noise;"\
+                        "uniform sampler2D scene;"\
+                        "void main()"\
+                        "{"\
+                            "vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb;"\
+                            "vec3 colorContrasted = (color) * contrast;"\
+                            "vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);"\
+                            "vec3 intensity = vec3(dot(bright, lumCoeff));"\
+                            "vec3 col = mix(intensity, bright, saturation);"\
+                            "vec3 newColor = (col.rgb - 0.5) * 2.0;"\
+                            "newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r));"\
+                            "newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g));"\
+                            "newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b));"\
+                            "newColor.r = clamp(col.r + redScale * newColor.r + redOffset, 0.0, 1.0);"\
+                            "newColor.g = clamp(col.g + greenScale * newColor.g + greenOffset, 0.0, 1.0);"\
+                            "newColor.b = clamp(col.b + blueScale * newColor.b + blueOffset, 0.0, 1.0);"\
+                            "vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); float len = length(position);"\
+                            "float vig = smoothstep(0.75, 0.75 - 0.45, len);"\
+                            "newColor = mix(newColor, newColor * vig, vignette);"\
+                            "float rand = 0.5 + 0.5 * fract(sin(dot(random.xy, vec2(12.9898, 78.233))) * 43758.5453);"\
+                            "newColor = mix(newColor, newColor * rand, noise);"\
+                            "gl_FragColor = vec4(newColor, 1.0);"\
+                        "}"
+
+// global settings variables
+static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED;
+static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, noise = DEFAULT_NOISE,maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
+
+// global internal variables
+static int lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
 static GLuint textureId = 0, program;
-static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, noise = DEFAULT_NOISE,maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
+static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
+
+// global dataref variables
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
+
+// global widget variables
 static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, noiseCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, noiseSlider;
 
 // flightloop-callback that limits the number of flightcycles
@@ -151,17 +202,15 @@ static int PostProcessingCallback(
 		XPLMGenerateTextureNumbers((int *) &textureId, 1);
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, textureId);
-		//XPLMBindTexture2d(tex_id, 0);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	} else {
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, textureId);
-        //		XPLMBindTexture2d(tex_id, 0);
     }
     
-	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, x, y);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, x, y);
 	XPLMSetGraphicsState(0, 1, 0, 0, 0,  0, 0);
     
     int brightnessLocation = glGetUniformLocation(program, "brightness");
@@ -210,18 +259,18 @@ static int PostProcessingCallback(
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glOrtho(0, x, 0, y, -1, 1);
+	glOrtho(0.0f, x, 0.0f, y, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glViewport(0, 0, x, y);
+	glViewport(0.0f, 0.0f, x, y);
     
-	glColor3f(1,1,1);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0,0);			glVertex2f(0,0);
-	glTexCoord2f(0,1);			glVertex2f(0,y);
-	glTexCoord2f(1,1);			glVertex2f(x,y);
-	glTexCoord2f(1,0);			glVertex2f(x,0);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : x / 2.0f), 0.0f);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : x / 2.0f), y);
+	glTexCoord2f(1.0f, 1.0f);                                               glVertex2f(x, y);
+	glTexCoord2f(1.0f, 0.0f);                                               glVertex2f(x, 0.0f);
 	glEnd();
 	
 	glMatrixMode(GL_PROJECTION);
@@ -236,7 +285,7 @@ static int PostProcessingCallback(
 }
 
 // function to load, compile and link the fragment-shader
-GLint InitShader(const GLchar *fragmentShaderString)
+void InitShader(const GLchar *fragmentShaderString)
 {
     program = glCreateProgram();
     
@@ -247,23 +296,21 @@ GLint InitShader(const GLchar *fragmentShaderString)
     GLint isFragmentShaderCompiled = GL_FALSE;
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isFragmentShaderCompiled);
     
-    GLsizei maxLength = 2048;
-    GLchar fragmentErrorLog[maxLength];
-    glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, fragmentErrorLog);
-    XPLMDebugString("FRAGMENT SHADER LOG:\n");
-    XPLMDebugString(fragmentErrorLog);
+    if (isFragmentShaderCompiled == GL_FALSE) {
+        GLsizei maxLength = 2048;
+        GLchar fragmentErrorLog[maxLength];
+        glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, fragmentErrorLog);
+        XPLMDebugString(NAME": The following error occured while compiling the fragment shader:\n");
+        XPLMDebugString(fragmentErrorLog);
+    }
     
     glLinkProgram(program);
-    GLint isProgramLinked = GL_FALSE;
-    glGetProgramiv(program, GL_LINK_STATUS, (int *)&isProgramLinked);
-    
     glDetachShader(program, fragmentShader);
-    
-    char out[512];
-    sprintf(out, ">>>>>>>>>>>>>>>> SHADER STATE: %d %d\n", isFragmentShaderCompiled, isProgramLinked);
-    XPLMDebugString(out);
-    
-    return isProgramLinked;
+}
+
+float round(float f)
+{
+    return ((int) (f * 100.0f)) / 100.0f;
 }
 
 // handles the settings widget
@@ -276,9 +323,9 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 			// save config to file
 			std::fstream file;
 #if IBM
-			file.open(".\\Resources\\plugins\\BLU-fx\\blu_fx.ini", std::ios_base::out | std::ios_base::trunc);
+			file.open(".\\Resources\\plugins\\"NAME"\\"NAME_LOWERCASE".ini", std::ios_base::out | std::ios_base::trunc);
 #else
-			file.open("./Resources/plugins/BLU-fx/blu_fx.ini", std::ios_base::out | std::ios_base::trunc);
+			file.open("./Resources/plugins/"NAME"/"NAME_LOWERCASE".ini", std::ios_base::out | std::ios_base::trunc);
 #endif
 			if(file.is_open())
 			{
@@ -341,77 +388,77 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 	{
         if (inParam1 == (long) brightnessSlider)
         {
-            brightness = XPGetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, 0) / 1000.0f;
+            brightness = round(XPGetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, 0) / 1000.0f);
             char stringBrigthness[32];
             sprintf(stringBrigthness, "Brightness: %.2f", brightness);
             XPSetWidgetDescriptor(brightnessCaption, stringBrigthness);
         }
         else if (inParam1 == (long) contrastSlider)
         {
-            contrast = XPGetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            contrast = round(XPGetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringContrast[32];
             sprintf(stringContrast, "Contrast: %.2f", contrast);
             XPSetWidgetDescriptor(contrastCaption, stringContrast);
         }
         else if (inParam1 == (long) saturationSlider)
         {
-            saturation = XPGetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            saturation = round(XPGetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringSaturation[32];
             sprintf(stringSaturation, "Saturation: %.2f", saturation);
             XPSetWidgetDescriptor(saturationCaption, stringSaturation);
         }
         else if (inParam1 == (long) redScaleSlider)
         {
-            redScale = XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            redScale = round(XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringRedScale[32];
             sprintf(stringRedScale, "Red Scale: %.2f", redScale);
             XPSetWidgetDescriptor(redScaleCaption, stringRedScale);
         }
         else if (inParam1 == (long) greenScaleSlider)
         {
-            greenScale = XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            greenScale = round(XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringGreenScale[32];
             sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
             XPSetWidgetDescriptor(greenScaleCaption, stringGreenScale);
         }
         else if (inParam1 == (long) blueScaleSlider)
         {
-            blueScale = XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            blueScale = round(XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringBlueScale[32];
             sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
             XPSetWidgetDescriptor(blueScaleCaption, stringBlueScale);
         }
         else if (inParam1 == (long) redOffsetSlider)
         {
-            redOffset = XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            redOffset = round(XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringRedOffset[32];
             sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
             XPSetWidgetDescriptor(redOffsetCaption, stringRedOffset);
         }
         else if (inParam1 == (long) greenOffsetSlider)
         {
-            greenOffset = XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            greenOffset = round(XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringGreenOffset[32];
             sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
             XPSetWidgetDescriptor(greenOffsetCaption, stringGreenOffset);
         }
         else if (inParam1 == (long) blueOffsetSlider)
         {
-            blueOffset = XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            blueOffset = round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringBlueOffset[32];
             sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
             XPSetWidgetDescriptor(blueOffsetCaption, stringBlueOffset);
         }
         else if (inParam1 == (long) vignetteSlider)
         {
-            vignette = XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            vignette = round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringVignette[32];
             sprintf(stringVignette, "Vignette: %.2f", vignette);
             XPSetWidgetDescriptor(vignetteCaption, stringVignette);
         }
         else if (inParam1 == (long) noiseSlider)
         {
-            noise = XPGetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f;
+            noise = round(XPGetWidgetProperty(noiseSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
             char stringNoise[32];
             sprintf(stringNoise, "Noise: %.2f", noise);
             XPSetWidgetDescriptor(noiseCaption, stringNoise);
@@ -430,7 +477,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	int y2 = y - h;
     
 	// widget window
-	settingsWidget = XPCreateWidget(x, y, x2, y2, 1, "BLU-fx Settings", 1, 0, xpWidgetClass_MainWindow);
+	settingsWidget = XPCreateWidget(x, y, x2, y2, 1, NAME" Settings", 1, 0, xpWidgetClass_MainWindow);
     
 	// add close box
 	XPSetWidgetProperty(settingsWidget, xpProperty_MainWindowHasCloseBoxes, 1);
@@ -557,7 +604,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add noise caption
     char stringNoise[32];
     sprintf(stringNoise, "Noise: %.2f", noise);
-	vignetteCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringNoise, 0, settingsWidget, xpWidgetClass_Caption);
+	noiseCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringNoise, 0, settingsWidget, xpWidgetClass_Caption);
     
     // add noise slider
 	noiseSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Noise", 0, settingsWidget, xpWidgetClass_ScrollBar);
@@ -590,13 +637,13 @@ void CreateAboutWidget(int x, int y, int w, int h)
 	int y2 = y - h;
     
 	// widget window
-	aboutWidget = XPCreateWidget(x, y, x2, y2, 1, "About BLU-fx", 1, 0, xpWidgetClass_MainWindow);
+	aboutWidget = XPCreateWidget(x, y, x2, y2, 1, "About "NAME, 1, 0, xpWidgetClass_MainWindow);
     
 	// add close box
 	XPSetWidgetProperty(aboutWidget, xpProperty_MainWindowHasCloseBoxes, 1);
     
 	// add caption widgets
-	XPCreateWidget(x + 30, y - 30, x2 - 30, y - 45, 1, "BLU-fx Plugin", 0, aboutWidget, xpWidgetClass_Caption);
+	XPCreateWidget(x + 30, y - 30, x2 - 30, y - 45, 1, NAME" Plugin", 0, aboutWidget, xpWidgetClass_Caption);
 	XPCreateWidget(x + 30, y - 70, x2 - 30, y - 85, 1, "by Matteo Hausner", 0, aboutWidget, xpWidgetClass_Caption);
     char vers[16];
 	sprintf(vers, "Version: %s", VERSION);
@@ -646,20 +693,20 @@ PLUGIN_API int XPluginStart(
                             char *		outDesc)
 {
     // set plugin info
-	strcpy(outName, "BLU-fx");
-	strcpy(outSig, "de.bwravencl.blu_fx");
-	strcpy(outDesc, "BLU-fx enhances your X-Plane experience!");
+	strcpy(outName, NAME);
+	strcpy(outSig, "de.bwravencl."NAME_LOWERCASE);
+	strcpy(outDesc, NAME" enhances your X-Plane experience!");
     
     // prepare fragment-shader
-    InitShader("#version 120\nconst vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721); uniform float brightness; uniform float contrast; uniform float saturation; uniform float redScale; uniform float greenScale; uniform float blueScale; uniform float redOffset; uniform float greenOffset; uniform float blueOffset; uniform vec2 resolution; uniform float vignette; uniform vec2 random; uniform float noise; uniform sampler2D scene; void main() { vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb; vec3 colorContrasted = (color) * contrast; vec3 bright = colorContrasted + vec3(brightness,brightness,brightness); vec3 intensity = vec3(dot(bright, lumCoeff)); vec3 col = mix(intensity, bright, saturation); vec3 newColor = (col.rgb - 0.5) * 2.0; newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r)); newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g)); newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b)); newColor.r = clamp(col.r + redScale * newColor.r + redOffset, 0.0, 1.0); newColor.g = clamp(col.g + greenScale * newColor.g + greenOffset, 0.0, 1.0); newColor.b = clamp(col.b + blueScale * newColor.b + blueOffset, 0.0, 1.0); vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); float len = length(position); float vig = smoothstep(0.75, 0.75-0.45, len); newColor = mix(newColor, newColor * vig, vignette); float rand = 0.5 + 0.5 * fract(sin(dot(random.xy, vec2(12.9898, 78.233)))* 43758.5453); newColor = mix(newColor, newColor * rand, noise);  gl_FragColor = vec4(newColor, 1.0); }");
+    InitShader(FRAGMENT_SHADER);
     
     // obtain datarefs
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
     
     // create menu-entries
-	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "BLU-fx", 0, 1);
-	XPLMMenuID Menu = XPLMCreateMenu("BLU-fx", XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
+	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
+	XPLMMenuID Menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
 	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1); // settings menu entry with ItemRef = 0
 	XPLMAppendMenuItem(Menu, "About", (void*) 1, 1); // about menu entry with ItemRef = 1
     
