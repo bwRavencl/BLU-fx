@@ -1,3 +1,5 @@
+/* Copyright 2014 Matteo Hausner */
+
 #include "XPLMDataAccess.h"
 #include "XPLMDefs.h"
 #include "XPLMDisplay.h"
@@ -9,12 +11,7 @@
 #include "XPWidgets.h"
 
 #include <fstream>
-#include <string.h>
-#include <unistd.h>
-
-#ifdef APL
-#include "ApplicationServices/ApplicationServices.h"
-#endif
+#include <sstream>
 
 #if APL
 #include <OpenGL/gl.h>
@@ -22,16 +19,30 @@
 #include <GL/gl.h>
 #endif
 
+#ifdef APL
+#include "ApplicationServices/ApplicationServices.h"
+#elif IBM
+#include <windows.h>
+#elif LIN
+#include <fcntl.h>
 #include <stdio.h>
+#endif
 
-// name
+// define name
 #define NAME "BLU-fx"
 #define NAME_LOWERCASE "blu_fx"
 
-// version
+// define version
 #define VERSION "0.1"
 
-// settings default values
+// define config file path
+#if IBM
+#define CONFIG_PATH ".\\Resources\\plugins\\"NAME_LOWERCASE"\\"NAME_LOWERCASE".ini"
+#else
+#define CONFIG_PATH "./Resources/plugins/"NAME_LOWERCASE"/"NAME_LOWERCASE".ini"
+#endif
+
+// define default values for settings
 #define DEFAULT_POST_PROCESSING_ENABLED 1
 #define DEFAULT_FPS_LIMITER_ENABLED 1
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
@@ -88,7 +99,7 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
 
 // global internal variables
-static int lastMouseX = 0, lastMouseY = 0, settingsWindowOpen = 0, aboutWindowOpen = 0;
+static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0, settingsWindowOpen = 0;
 static GLuint textureId = 0, program;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
 
@@ -96,90 +107,7 @@ static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f,
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
 
 // global widget variables
-static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, resetButton, polarizedPresetButton, crazyHazyPresetButton, hdrIshPresetButton, negativeDrabPresetButton, extraNormalPresetButton, shadowhancerPresetButton, redShiftPresetButton, greenShiftPresetButton, blueShiftPresetButton;
-
-// flightloop-callback that limits the number of flightcycles
-float LimiterFlightCallback(
-                            float                inElapsedSinceLastCall,
-                            float                inElapsedTimeSinceLastFlightLoop,
-                            int                  inCounter,
-                            void *               inRefcon)
-{
-    endTimeFlight = XPLMGetElapsedTime();
-    float dt = endTimeFlight - startTimeFlight;
-    
-    float t = 1.0f / maxFps - dt;
-    
-    if(t > 0.0f)
-        usleep((useconds_t) (t * 1000000.0f));
-    
-    startTimeFlight = XPLMGetElapsedTime();
-    
-    return -1.0f;
-}
-
-// draw-callback that limits the number of drawcycles
-static int LimiterDrawCallback(
-                               XPLMDrawingPhase     inPhase,
-                               int                  inIsBefore,
-                               void *               inRefcon)
-{
-    endTimeDraw = XPLMGetElapsedTime();
-    float dt = endTimeDraw - startTimeDraw;
-    
-    float t = 1.0f / maxFps - dt;
-    
-    if(t > 0.0f)
-        usleep((useconds_t) (t * 1000000.0f));
-    
-    startTimeDraw = XPLMGetElapsedTime();
-    
-    return 1;
-}
-
-// flightloop-callback that auto-controls cinema-verite
-float ControlCinemaVeriteCallback(
-                                  float                inElapsedSinceLastCall,
-                                  float                inElapsedTimeSinceLastFlightLoop,
-                                  int                  inCounter,
-                                  void *               inRefcon)
-{
-    int mouseButtonDown = 0;
-#ifdef APL
-    mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
-#elif IBM
-    // TODO implement for Windows
-#elif LIN
-    // TODO implement for Linux
-#endif
-    
-    int currentMouseX, currentMouseY;
-    XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
-    
-    if (mouseButtonDown == 1 || currentMouseX != lastMouseX || currentMouseY != lastMouseY) {
-        lastMouseX = currentMouseX;
-        lastMouseY = currentMouseY;
-        
-        lastMouseMovementTime = XPLMGetElapsedTime();
-    }
-    
-    int viewType = XPLMGetDatai(viewTypeDataRef);
-    
-    if (viewType != 1026) // not 3D Cockpit+
-        XPLMSetDatai(cinemaVeriteDataRef, 1);
-    else
-    {
-        float currentTime = XPLMGetElapsedTime();
-        float elapsedTime = currentTime - lastMouseMovementTime;
-        
-        if (mouseButtonDown || elapsedTime <= disableCinemaVeriteTime)
-            XPLMSetDatai(cinemaVeriteDataRef, 0);
-        else
-            XPLMSetDatai(cinemaVeriteDataRef, 1);
-    }
-    
-    return -1.0f;
-}
+static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, resetButton, polarizedPresetButton, crazyHazyPresetButton, hdrIshPresetButton, negativeDrabPresetButton, extraNormalPresetButton, shadowhancerPresetButton, redShiftPresetButton, greenShiftPresetButton, blueShiftPresetButton;
 
 // draw-callback that adds post-processing
 static int PostProcessingCallback(
@@ -192,7 +120,7 @@ static int PostProcessingCallback(
     
     glUseProgram(program);
     
-	if(textureId == 0)
+	if(textureId == 0 || lastResolutionX != x || lastResolutionY != y)
 	{
 		XPLMGenerateTextureNumbers((int *) &textureId, 1);
         glActiveTexture(GL_TEXTURE0 + 0);
@@ -200,7 +128,12 @@ static int PostProcessingCallback(
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	} else {
+        
+        lastResolutionX = x;
+        lastResolutionY = y;
+	}
+    else
+    {
         glActiveTexture(GL_TEXTURE0 + 0);
         glBindTexture(GL_TEXTURE_2D, textureId);
     }
@@ -213,7 +146,7 @@ static int PostProcessingCallback(
     
     int contrastLocation = glGetUniformLocation(program, "contrast");
     glUniform1f(contrastLocation, contrast);
-
+    
     int saturationLocation = glGetUniformLocation(program, "saturation");
     glUniform1f(saturationLocation, saturation);
     
@@ -273,6 +206,94 @@ static int PostProcessingCallback(
 	return 1;
 }
 
+// flightloop-callback that limits the number of flightcycles
+float LimiterFlightCallback(
+                            float                inElapsedSinceLastCall,
+                            float                inElapsedTimeSinceLastFlightLoop,
+                            int                  inCounter,
+                            void *               inRefcon)
+{
+    endTimeFlight = XPLMGetElapsedTime();
+    float dt = endTimeFlight - startTimeFlight;
+    
+    float t = 1.0f / maxFps - dt;
+    
+    if(t > 0.0f)
+        usleep((useconds_t) (t * 1000000.0f));
+    
+    startTimeFlight = XPLMGetElapsedTime();
+    
+    return -1.0f;
+}
+
+// draw-callback that limits the number of drawcycles
+static int LimiterDrawCallback(
+                               XPLMDrawingPhase     inPhase,
+                               int                  inIsBefore,
+                               void *               inRefcon)
+{
+    endTimeDraw = XPLMGetElapsedTime();
+    float dt = endTimeDraw - startTimeDraw;
+    
+    float t = 1.0f / maxFps - dt;
+    
+    if(t > 0.0f)
+        usleep((useconds_t) (t * 1000000.0f));
+    
+    startTimeDraw = XPLMGetElapsedTime();
+    
+    return 1;
+}
+
+// flightloop-callback that auto-controls cinema-verite
+float ControlCinemaVeriteCallback(
+                                  float                inElapsedSinceLastCall,
+                                  float                inElapsedTimeSinceLastFlightLoop,
+                                  int                  inCounter,
+                                  void *               inRefcon)
+{
+#ifdef APL
+    int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
+#elif IBM
+    // if the most significant bit is set, the key is down
+    SHORT state = GetAsyncKeyState(VK_LBUTTON);
+    SHORT msb = state >> 15;
+    int mouseButtonDown = (int) msb;
+#elif LIN
+    // if the least significant bit is set, the key is down
+    int state = open("/dev/input/mouse0", O_RDONLY);
+    int lsb = state & 1;
+    int mouseButtonDown = lsb;
+#endif
+    
+    int currentMouseX, currentMouseY;
+    XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
+    
+    if (mouseButtonDown == 1 || currentMouseX != lastMouseX || currentMouseY != lastMouseY) {
+        lastMouseX = currentMouseX;
+        lastMouseY = currentMouseY;
+        
+        lastMouseMovementTime = XPLMGetElapsedTime();
+    }
+    
+    int viewType = XPLMGetDatai(viewTypeDataRef);
+    
+    if (viewType != 1026) // not 3D Cockpit+
+        XPLMSetDatai(cinemaVeriteDataRef, 1);
+    else
+    {
+        float currentTime = XPLMGetElapsedTime();
+        float elapsedTime = currentTime - lastMouseMovementTime;
+        
+        if (mouseButtonDown || elapsedTime <= disableCinemaVeriteTime)
+            XPLMSetDatai(cinemaVeriteDataRef, 0);
+        else
+            XPLMSetDatai(cinemaVeriteDataRef, 1);
+    }
+    
+    return -1.0f;
+}
+
 // function to load, compile and link the fragment-shader
 void InitShader(const GLchar *fragmentShaderString)
 {
@@ -298,13 +319,13 @@ void InitShader(const GLchar *fragmentShaderString)
 }
 
 // returns a float rounded to two decimal places
-float round(float f)
+float round(const float f)
 {
     return ((int) (f * 100.0f)) / 100.0f;
 }
 
 // updates all caption widgets and slider positions associated with settings variables
-void UpdateSettingsWidgets()
+void UpdateSettingsWidgets(void)
 {
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, postProcesssingEnabled);
     XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, fpsLimiterEnabled);
@@ -372,6 +393,85 @@ void UpdateSettingsWidgets()
     XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, disableCinemaVeriteTime);
 }
 
+// saves current settings to the config file
+void saveSettings(void)
+{
+    std::fstream file;
+    file.open(CONFIG_PATH, std::ios_base::out | std::ios_base::trunc);
+    
+    if(file.is_open())
+    {        
+        file << "postProcesssingEnabled=" << postProcesssingEnabled << std::endl;
+        file << "fpsLimiterEnabled=" << fpsLimiterEnabled << std::endl;
+        file << "controlCinemaVeriteEnabled=" << controlCinemaVeriteEnabled << std::endl;
+        file << "brightness=" << brightness << std::endl;
+        file << "contrast=" << contrast << std::endl;
+        file << "saturation=" << saturation << std::endl;
+        file << "redScale=" << redScale << std::endl;
+        file << "greenScale=" << greenScale << std::endl;
+        file << "blueScale=" << blueScale << std::endl;
+        file << "redOffset=" << redOffset << std::endl;
+        file << "greenOffset=" << greenOffset << std::endl;
+        file << "blueOffset=" << blueOffset << std::endl;
+        file << "vignette=" << vignette << std::endl;
+        file << "maxFps=" << maxFps << std::endl;
+        file << "disableCinemaVeriteTime=" << disableCinemaVeriteTime << std::endl;
+        
+        file.close();
+    }
+}
+
+// loads settings from the config file
+void loadSettings(void)
+{
+    std::ifstream file;
+    file.open(CONFIG_PATH);
+    
+	if(file.is_open())
+	{
+        std::string line;
+        
+		while(getline(file, line))
+		{
+            std::string val = line.substr(line.find("=") + 1);
+            std::istringstream iss(val);
+            
+			if(line.find("postProcesssingEnabled") != -1)
+				iss >> postProcesssingEnabled;
+			else if(line.find("fpsLimiterEnabled") != -1)
+				iss >> fpsLimiterEnabled;
+			else if(line.find("controlCinemaVeriteEnabled") != -1)
+				iss >> controlCinemaVeriteEnabled;
+			else if(line.find("brightness") != -1)
+				iss >> brightness;
+			else if(line.find("contrast") != -1)
+				iss >> contrast;
+			else if(line.find("saturation") != -1)
+				iss >> saturation;
+			else if(line.find("redScale") != -1)
+				iss >> redScale;
+			else if(line.find("greenScale") != -1)
+				iss >> greenScale;
+            else if(line.find("blueScale") != -1)
+				iss >> blueScale;
+            else if(line.find("redOffset") != -1)
+				iss >> redOffset;
+            else if(line.find("greenOffset") != -1)
+				iss >> greenOffset;
+            else if(line.find("blueOffset") != -1)
+				iss >> blueOffset;
+            else if(line.find("vignette") != -1)
+				iss >> vignette;
+            else if(line.find("maxFps") != -1)
+				iss >> maxFps;
+            else if(line.find("disableCinemaVeriteTime") != -1)
+				iss >> disableCinemaVeriteTime;
+		}
+        
+		file.close();
+	}
+}
+
 // handles the settings widget
 int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2)
 {
@@ -379,26 +479,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 	{
 		if (settingsWindowOpen == 1)
 		{
-			// save config to file
-			std::fstream file;
-#if IBM
-			file.open(".\\Resources\\plugins\\"NAME"\\"NAME_LOWERCASE".ini", std::ios_base::out | std::ios_base::trunc);
-#else
-			file.open("./Resources/plugins/"NAME"/"NAME_LOWERCASE".ini", std::ios_base::out | std::ios_base::trunc);
-#endif
-			if(file.is_open())
-			{
-				/*file << "gmax=" << gmax << std::endl;
-                 file << "gmin=" << gmin << std::endl;
-                 file << "aoa_max=" << aoa_max << std::endl;
-                 file << "aoa_min=" << aoa_min << std::endl;
-                 file << "aoa_demand=" << aoa_demand << std::endl;
-                 file << "x_ptch=" << x_ptch << std::endl;
-                 file << "x_roll=" << x_roll << std::endl;
-                 file << "x_yaw=" << x_yaw << std::endl;*/
-				file.close();
-			}
-            
+            saveSettings();
 			XPHideWidget(settingsWidget);
 		}
         
@@ -819,45 +900,20 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMin, 1);
 	XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
     
+    // add about sub window
+    XPCreateWidget(x + 10, y - 800, x2 - 10, y - 860 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    
+    // add about caption
+    XPCreateWidget(x + 10, y - 800, x2 - 20, y - 815, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 815, x2 - 20, y - 830, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 830, x2 - 20, y - 845, 1, "Copyright 2014 for non-commerical use only!", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 845, x2 - 20, y - 860, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
+    
     // init checkbox and slider positions
     UpdateSettingsWidgets();
     
 	// register widget handler
 	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
-}
-
-// handles the about widget
-int AboutWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2)
-{
-	if (inMessage == xpMessage_CloseButtonPushed && aboutWindowOpen == 1) {
-        XPHideWidget(aboutWidget);
-        aboutWindowOpen = 0;
-    }
-    
-	return 0;
-}
-
-// creates the about widget
-void CreateAboutWidget(int x, int y, int w, int h)
-{
-	int x2 = x + w;
-	int y2 = y - h;
-    
-	// widget window
-	aboutWidget = XPCreateWidget(x, y, x2, y2, 1, "About "NAME, 1, 0, xpWidgetClass_MainWindow);
-    
-	// add close box
-	XPSetWidgetProperty(aboutWidget, xpProperty_MainWindowHasCloseBoxes, 1);
-    
-	// add caption widgets
-	XPCreateWidget(x + 30, y - 30, x2 - 30, y - 45, 1, NAME" Plugin", 0, aboutWidget, xpWidgetClass_Caption);
-	XPCreateWidget(x + 30, y - 70, x2 - 30, y - 85, 1, "by Matteo Hausner", 0, aboutWidget, xpWidgetClass_Caption);
-    char vers[16];
-	sprintf(vers, "Version: %s", VERSION);
-	XPCreateWidget(x + 30, y - 110, x2 - 30, y - 125, 1, vers, 0, aboutWidget, xpWidgetClass_Caption);
-    
-	// register widget handler
-	XPAddWidgetCallback(aboutWidget, AboutWidgetHandler);
 }
 
 // handles the menu-entries
@@ -868,28 +924,13 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
 	{
 		if (settingsWindowOpen == 0) // settings not open yet
 		{
-			CreateSettingsWidget(10, 800, 350, 790);
+			CreateSettingsWidget(10, 890, 350, 880);
 			settingsWindowOpen = 1;
 		}
 		else // settings already open
 		{
 			if (!XPIsWidgetVisible(settingsWidget))
                 XPShowWidget(settingsWidget);
-		}
-	}
-    
-	// about menu entry
-	else if ((long) inItemRef == 1)
-	{
-		if (aboutWindowOpen == 0) // about not open yet
-		{
-			CreateAboutWidget(600, 600, 180, 155);
-			aboutWindowOpen = 1;
-		}
-		else // about already open
-		{
-			if (!XPIsWidgetVisible(aboutWidget))
-                XPShowWidget(aboutWidget);
 		}
 	}
 }
@@ -915,7 +956,6 @@ PLUGIN_API int XPluginStart(
 	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
 	XPLMMenuID Menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
 	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1); // settings menu entry with ItemRef = 0
-	XPLMAppendMenuItem(Menu, "About", (void*) 1, 1); // about menu entry with ItemRef = 1
     
     // register flightloop-callbacks
     if (fpsLimiterEnabled == 1)
@@ -924,10 +964,13 @@ PLUGIN_API int XPluginStart(
         XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
     
     // register draw-callbacks
-    if (fpsLimiterEnabled == 1)
-        XPLMRegisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
     if (postProcesssingEnabled == 1)
         XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
+    if (fpsLimiterEnabled == 1)
+        XPLMRegisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
+    
+    // read and apply config file
+    loadSettings();
     
 	return 1;
 }
