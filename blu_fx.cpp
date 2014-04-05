@@ -26,7 +26,7 @@
 #elif IBM
 #include <windows.h>
 #elif LIN
-// TODO
+#include <X11/Xlib.h>
 #endif
 
 // define name
@@ -45,7 +45,7 @@
 
 // define default values for settings
 #define DEFAULT_POST_PROCESSING_ENABLED 1
-#define DEFAULT_FPS_LIMITER_ENABLED 1
+#define DEFAULT_FPS_LIMITER_ENABLED 0
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
 #define DEFAULT_BRIGHTNESS 0.0f
 #define DEFAULT_CONTRAST 1.0f
@@ -103,6 +103,9 @@ static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, satur
 static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0, settingsWindowOpen = 0;
 static GLuint textureId = 0, program;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
+#if LIN
+static Display *display = NULL;
+#endif
 
 // global dataref variables
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
@@ -261,7 +264,13 @@ float ControlCinemaVeriteCallback(
     SHORT msb = state >> 15;
     int mouseButtonDown = (int) msb;
 #elif LIN
-    int mouseButtonDown = 0;
+    if (display == NULL)
+        display = XOpenDisplay(NULL);
+    Window root, child;
+    int rootX, rootY, winX, winY;
+    unsigned int mask;
+    XQueryPointer(display, DefaultRootWindow(display), &root, &child, &rootX, &rootY, &winX, &winY, &mask);
+    int mouseButtonDown = (mask & Button1Mask) >> 8;
 #endif
     
     int currentMouseX, currentMouseY;
