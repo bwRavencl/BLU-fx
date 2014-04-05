@@ -11,7 +11,9 @@
 #include "XPWidgets.h"
 
 #include <fstream>
+#include <string.h>
 #include <sstream>
+#include <unistd.h>
 
 #if APL
 #include <OpenGL/gl.h>
@@ -19,13 +21,12 @@
 #include <GL/gl.h>
 #endif
 
-#ifdef APL
+#if APL
 #include "ApplicationServices/ApplicationServices.h"
 #elif IBM
 #include <windows.h>
 #elif LIN
-#include <fcntl.h>
-#include <stdio.h>
+// TODO
 #endif
 
 // define name
@@ -252,7 +253,7 @@ float ControlCinemaVeriteCallback(
                                   int                  inCounter,
                                   void *               inRefcon)
 {
-#ifdef APL
+#if APL
     int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
 #elif IBM
     // if the most significant bit is set, the key is down
@@ -260,10 +261,7 @@ float ControlCinemaVeriteCallback(
     SHORT msb = state >> 15;
     int mouseButtonDown = (int) msb;
 #elif LIN
-    // if the least significant bit is set, the key is down
-    int state = open("/dev/input/mouse0", O_RDONLY);
-    int lsb = state & 1;
-    int mouseButtonDown = lsb;
+    int mouseButtonDown = 0;
 #endif
     
     int currentMouseX, currentMouseY;
