@@ -33,7 +33,7 @@
 
 // settings default values
 #define DEFAULT_POST_PROCESSING_ENABLED 1
-#define DEFAULT_LIMIT_FRAMES_ENABLED 1
+#define DEFAULT_FPS_LIMITER_ENABLED 1
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
 #define DEFAULT_BRIGHTNESS 0.0f
 #define DEFAULT_CONTRAST 1.0f
@@ -84,7 +84,7 @@
                         "}"
 
 // global settings variables
-static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, limitFramesEnabled = DEFAULT_LIMIT_FRAMES_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED;
+static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterEnabled = DEFAULT_FPS_LIMITER_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED;
 static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
 
 // global internal variables
@@ -96,7 +96,7 @@ static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f,
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
 
 // global widget variables
-static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, limitFramesCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, resetButton;
+static XPWidgetID settingsWidget, aboutWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, resetButton, polarizedPresetButton, crazyHazyPresetButton, hdrIshPresetButton, negativeDrabPresetButton, extraNormalPresetButton, shadowhancerPresetButton, redShiftPresetButton, greenShiftPresetButton, blueShiftPresetButton;
 
 // flightloop-callback that limits the number of flightcycles
 float LimiterFlightCallback(
@@ -306,6 +306,10 @@ float round(float f)
 // updates all caption widgets and slider positions associated with settings variables
 void UpdateSettingsWidgets()
 {
+    XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, postProcesssingEnabled);
+    XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, fpsLimiterEnabled);
+    XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonState, controlCinemaVeriteEnabled);
+    
     char stringBrightness[32];
     sprintf(stringBrightness, "Brightness: %.2f", brightness);
     XPSetWidgetDescriptor(brightnessCaption, stringBrightness);
@@ -346,6 +350,14 @@ void UpdateSettingsWidgets()
     sprintf(stringVignette, "Vignette: %.2f", vignette);
     XPSetWidgetDescriptor(vignetteCaption, stringVignette);
     
+    char stringMaxFps[32];
+    sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
+    XPSetWidgetDescriptor(maxFpsCaption, stringMaxFps);
+    
+    char stringDisableCinemaVeriteTime[32];
+    sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
+    XPSetWidgetDescriptor(disableCinemaVeriteTimeCaption, stringDisableCinemaVeriteTime);
+    
    	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, brightness * 1000.0f);
    	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, contrast * 100.0f);
     XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
@@ -356,6 +368,8 @@ void UpdateSettingsWidgets()
     XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
 	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
     XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
+    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, maxFps);
+    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, disableCinemaVeriteTime);
 }
 
 // handles the settings widget
@@ -402,11 +416,11 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
                 XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
             
         }
-        else if (inParam1 == (long) limitFramesCheckbox)
+        else if (inParam1 == (long) fpsLimiterCheckbox)
         {
-            limitFramesEnabled = XPGetWidgetProperty(limitFramesCheckbox, xpProperty_ButtonState, 0);
+            fpsLimiterEnabled = XPGetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, 0);
             
-            if (limitFramesEnabled == 0)
+            if (fpsLimiterEnabled == 0)
             {
                 XPLMUnregisterFlightLoopCallback(LimiterFlightCallback, NULL);
                 XPLMUnregisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
@@ -451,12 +465,133 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             blueOffset = round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) vignetteSlider)
             vignette = round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+        else if (inParam1 == (long) maxFpsSlider)
+            maxFps = (float) (int) XPGetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, 0);
+        else if (inParam1 == (long) disableCinemaVeriteTimeSlider)
+            disableCinemaVeriteTime = (float) (int) XPGetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, 0);
         
         UpdateSettingsWidgets();
 	}
     else if (inMessage == xpMsg_PushButtonPressed)
     {
         if (inParam1 == (long) resetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) polarizedPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) crazyHazyPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) hdrIshPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) negativeDrabPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) extraNormalPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) shadowhancerPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) redShiftPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) greenShiftPresetButton)
+        {
+            brightness = DEFAULT_BRIGHTNESS;
+            contrast = DEFAULT_CONTRAST;
+            saturation = DEFAULT_SATURATION;
+            redScale = DEFAULT_RED_SCALE;
+            greenScale = DEFAULT_GREEN_SCALE;
+            blueScale = DEFAULT_BLUE_SCALE;
+            redOffset = DEFAULT_RED_OFFSET;
+            greenOffset = DEFAULT_GREEN_OFFSET;
+            blueOffset = DEFAULT_BLUE_OFFSET;
+            vignette = DEFAULT_VIGNETTE;
+        }
+        else if (inParam1 == (long) blueShiftPresetButton)
         {
             brightness = DEFAULT_BRIGHTNESS;
             contrast = DEFAULT_CONTRAST;
@@ -489,7 +624,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	XPSetWidgetProperty(settingsWidget, xpProperty_MainWindowHasCloseBoxes, 1);
     
     // add post-processing sub window
-    XPCreateWidget(x + 10, y - 30, x2 - 10, y - 315 - 10, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    XPCreateWidget(x + 10, y - 30, x2 - 10, y - 575 - 10, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_SubWindow);
     
     // add post-processing settings caption
     XPCreateWidget(x + 10, y - 30, x2 - 20, y - 45, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_Caption);
@@ -498,7 +633,6 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     postProcessingCheckbox = XPCreateWidget(x + 20, y - 60, x2 - 20, y - 75, 1, "Enable Post-Processing", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonType, xpRadioButton);
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
-    XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, postProcesssingEnabled);
     
 	// add brightness caption
     char stringBrightness[32];
@@ -509,7 +643,6 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	brightnessSlider = XPCreateWidget(x + 195, y - 90, x2 - 15, y - 105, 1, "Brightness", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMin, -500);
 	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMax, 500);
-	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, brightness * 1000.0f);
     
     // add contrast caption
     char stringContrast[32];
@@ -518,9 +651,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add contrast slider
 	contrastSlider = XPCreateWidget(x + 195, y - 110, x2 - 15, y - 125, 1, "Contrast", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMin, 0);
-	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMax, 300);
-	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, contrast * 100.0f);
+	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMin, 5);
+	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMax, 200);
     
     // add saturation caption
     char stringSaturation[32];
@@ -530,8 +662,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	// add saturation slider
 	saturationSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Saturation", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMin, 0);
-	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 500);
-	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
+	XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 250);
     
     // add red scale caption
     char stringRedScale[32];
@@ -540,9 +671,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add red scale slider
 	redScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, redScale * 100.0f);
+	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -75);
+	XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 75);
     
     // add green scale caption
     char stringGreenScale[32];
@@ -551,9 +681,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add green scale slider
 	greenScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, greenScale * 100.0f);
+	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -75);
+	XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 75);
     
     // add blue scale caption
     char stringBlueScale[32];
@@ -562,9 +691,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add blue scale slider
 	blueScaleSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
+	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -75);
+	XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 75);
     
     // add red offset caption
     char stringRedOffset[32];
@@ -573,9 +701,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add red offset slider
 	redOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, redOffset * 100.0f);
+	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -50);
+	XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 50);
     
     // add green offset caption
     char stringGreenOffset[32];
@@ -584,9 +711,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add green offset slider
 	greenOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
+	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -50);
+	XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 50);
     
     // add blue offset caption
     char stringBlueOffset[32];
@@ -595,9 +721,8 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     
 	// add blue offset slider
 	blueOffsetSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -100);
-	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -50);
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 50);
     
     // add vignette caption
     char stringVignette[32];
@@ -608,11 +733,94 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 	vignetteSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
 	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMin, 0);
 	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMax, 100);
-	XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
     
     // add reset button
     resetButton = XPCreateWidget(x + 30, y - 300, x + 30 + 80, y - 315, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(resetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add post-processing presets caption
+    XPCreateWidget(x + 10, y - 330, x2 - 20, y - 345, 1, "Post-Processing Presets:", 0, settingsWidget, xpWidgetClass_Caption);
+    
+    // add polarized preset button
+    polarizedPresetButton = XPCreateWidget(x + 20, y - 360, x + 30 + 110, y - 375, 1, "Polarized", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(polarizedPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add crazy hazy preset button
+    crazyHazyPresetButton = XPCreateWidget(x + 20, y - 385, x + 30 + 110, y - 400, 1, "Crazy Hazy", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(crazyHazyPresetButton, xpProperty_ButtonType, xpPushButton);
+
+    // add hdr-ish preset button
+    hdrIshPresetButton = XPCreateWidget(x + 20, y - 410, x + 30 + 110, y - 425, 1, "HDR-ish", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(hdrIshPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add negative drab preset button
+    negativeDrabPresetButton = XPCreateWidget(x + 20, y - 435, x + 30 + 110, y - 450, 1, "Negative Drab", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(negativeDrabPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add extra normal preset button
+    extraNormalPresetButton = XPCreateWidget(x + 20, y - 460, x + 30 + 110, y - 475, 1, "Extra Normal", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(extraNormalPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add shadowhancer preset button
+    shadowhancerPresetButton = XPCreateWidget(x + 20, y - 485, x + 30 + 110, y - 500, 1, "Shadowhancer", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(shadowhancerPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add red shift preset button
+    redShiftPresetButton = XPCreateWidget(x + 20, y - 510, x + 30 + 110, y - 525, 1, "Red Shift", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(redShiftPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add green shift preset button
+    greenShiftPresetButton = XPCreateWidget(x + 20, y - 535, x + 30 + 110, y - 550, 1, "Green Shift", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(greenShiftPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add blue shift preset button
+    blueShiftPresetButton = XPCreateWidget(x + 20, y - 560, x + 30 + 110, y - 575, 1, "Blue Shift", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(blueShiftPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add fps-limiter sub window
+    XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    
+    // add fps-limiter caption
+    XPCreateWidget(x + 10, y - 600, x2 - 20, y - 615, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_Caption);
+    
+    // add fps-limiter checkbox
+    fpsLimiterCheckbox = XPCreateWidget(x + 20, y - 630, x2 - 20, y - 645, 1, "Enable FPS-Limiter", 0, settingsWidget, xpWidgetClass_Button);
+    XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonType, xpRadioButton);
+    XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
+    
+    // add max fps caption
+    char stringMaxFps[32];
+    sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
+	maxFpsCaption = XPCreateWidget(x + 30, y - 660, x2 - 50, y - 675, 1, stringMaxFps, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add max fps slider
+	maxFpsSlider = XPCreateWidget(x + 195, y - 660, x2 - 15, y - 675, 1, "Max FPS", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMin, 20);
+	XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMax, 200);
+    
+    // add auto disable enable cinema verite sub window
+    XPCreateWidget(x + 10, y - 700, x2 - 10, y - 775 - 10, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    
+    // add auto disable enable cinema verite caption
+    XPCreateWidget(x + 10, y - 700, x2 - 20, y - 715, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_Caption);
+    
+    // add control cinema verite checkbox
+    controlCinemaVeriteCheckbox = XPCreateWidget(x + 20, y - 730, x2 - 20, y - 745, 1, "Control Cinema Verite", 0, settingsWidget, xpWidgetClass_Button);
+    XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonType, xpRadioButton);
+    XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
+    
+    // add disable cinema verite time caption
+    char stringDisableCinemaVeriteTime[32];
+    sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
+	disableCinemaVeriteTimeCaption = XPCreateWidget(x + 30, y - 760, x2 - 50, y - 775, 1, stringDisableCinemaVeriteTime, 0, settingsWidget, xpWidgetClass_Caption);
+    
+	// add disable cinema verite time slider
+	disableCinemaVeriteTimeSlider = XPCreateWidget(x + 195, y - 760, x2 - 15, y - 775, 1, "Disable Cinema Verite Timer", 0, settingsWidget, xpWidgetClass_ScrollBar);
+	XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMin, 1);
+	XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
+    
+    // init checkbox and slider positions
+    UpdateSettingsWidgets();
     
 	// register widget handler
 	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
@@ -660,7 +868,7 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
 	{
 		if (settingsWindowOpen == 0) // settings not open yet
 		{
-			CreateSettingsWidget(600, 600, 350, 405);
+			CreateSettingsWidget(10, 800, 350, 790);
 			settingsWindowOpen = 1;
 		}
 		else // settings already open
@@ -710,13 +918,13 @@ PLUGIN_API int XPluginStart(
 	XPLMAppendMenuItem(Menu, "About", (void*) 1, 1); // about menu entry with ItemRef = 1
     
     // register flightloop-callbacks
-    if (limitFramesEnabled == 1)
+    if (fpsLimiterEnabled == 1)
         XPLMRegisterFlightLoopCallback(LimiterFlightCallback, -1, NULL);
     if (controlCinemaVeriteEnabled == 1)
         XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
     
     // register draw-callbacks
-    if (limitFramesEnabled == 1)
+    if (fpsLimiterEnabled == 1)
         XPLMRegisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
     if (postProcesssingEnabled == 1)
         XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
