@@ -6,26 +6,26 @@
 #include "XPLMGraphics.h"
 #include "XPLMMenus.h"
 #include "XPLMProcessing.h"
-#include "XPStandardWidgets.h"
 #include "XPLMUtilities.h"
+#include "XPStandardWidgets.h"
 #include "XPWidgets.h"
 
 #include <fstream>
 #include <string.h>
 #include <sstream>
-#include <unistd.h>
 
-#if APL
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
+#if !IBM
+#include <unistd.h>
 #endif
 
 #if APL
 #include "ApplicationServices/ApplicationServices.h"
+#include <OpenGL/gl.h>
 #elif IBM
+#include <GL/glew.h>
 #include <windows.h>
 #elif LIN
+#include <GL/gl.h>
 #include <X11/Xlib.h>
 #endif
 
@@ -79,13 +79,13 @@
                         "{"\
                             "vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb;"\
                             "vec3 colorContrasted = (color) * contrast;"\
-                            "vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);"\
+                            "vec3 bright = colorContrasted + vec3(brightness, brightness, brightness);"\
                             "vec3 intensity = vec3(dot(bright, lumCoeff));"\
                             "vec3 col = mix(intensity, bright, saturation);"\
                             "vec3 newColor = (col.rgb - 0.5) * 2.0;"\
-                            "newColor.r = 2.0/3.0 * (1.0 - (newColor.r * newColor.r));"\
-                            "newColor.g = 2.0/3.0 * (1.0 - (newColor.g * newColor.g));"\
-                            "newColor.b = 2.0/3.0 * (1.0 - (newColor.b * newColor.b));"\
+                            "newColor.r = 2.0 / 3.0 * (1.0 - (newColor.r * newColor.r));"\
+                            "newColor.g = 2.0 / 3.0 * (1.0 - (newColor.g * newColor.g));"\
+                            "newColor.b = 2.0 / 3.0 * (1.0 - (newColor.b * newColor.b));"\
                             "newColor.r = clamp(col.r + redScale * newColor.r + redOffset, 0.0, 1.0);"\
                             "newColor.g = clamp(col.g + greenScale * newColor.g + greenOffset, 0.0, 1.0);"\
                             "newColor.b = clamp(col.b + blueScale * newColor.b + blueOffset, 0.0, 1.0);"\
@@ -189,14 +189,14 @@ static int PostProcessingCallback(
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glViewport(0.0f, 0.0f, x, y);
+	glViewport(0, 0, x, y);
     
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : x / 2.0f), 0.0f);
-	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : x / 2.0f), y);
-	glTexCoord2f(1.0f, 1.0f);                                               glVertex2f(x, y);
-	glTexCoord2f(1.0f, 0.0f);                                               glVertex2f(x, 0.0f);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), (GLfloat) y);
+	glTexCoord2f(1.0f, 1.0f);                                               glVertex2f((GLfloat) x, (GLfloat) y);
+	glTexCoord2f(1.0f, 0.0f);                                               glVertex2f((GLfloat) x, 0.0f);
 	glEnd();
 	
 	glMatrixMode(GL_PROJECTION);
@@ -223,7 +223,11 @@ float LimiterFlightCallback(
     float t = 1.0f / maxFps - dt;
     
     if(t > 0.0f)
+#if IBM
+		Sleep((DWORD) (t * 1000.0f));
+#else
         usleep((useconds_t) (t * 1000000.0f));
+#endif
     
     startTimeFlight = XPLMGetElapsedTime();
     
@@ -242,7 +246,11 @@ static int LimiterDrawCallback(
     float t = 1.0f / maxFps - dt;
     
     if(t > 0.0f)
+		#if IBM
+		Sleep((DWORD) (t * 1000.0f));
+#else
         usleep((useconds_t) (t * 1000000.0f));
+#endif
     
     startTimeDraw = XPLMGetElapsedTime();
     
@@ -302,7 +310,7 @@ float ControlCinemaVeriteCallback(
 }
 
 // function to load, compile and link the fragment-shader
-void InitShader(const GLchar *fragmentShaderString)
+void InitShader(const char *fragmentShaderString)
 {
     program = glCreateProgram();
     
@@ -315,10 +323,11 @@ void InitShader(const GLchar *fragmentShaderString)
     
     if (isFragmentShaderCompiled == GL_FALSE) {
         GLsizei maxLength = 2048;
-        GLchar fragmentErrorLog[maxLength];
+        GLchar *fragmentErrorLog = new GLchar[maxLength];
         glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, fragmentErrorLog);
         XPLMDebugString(NAME": The following error occured while compiling the fragment shader:\n");
         XPLMDebugString(fragmentErrorLog);
+		delete[] fragmentErrorLog;
     }
     
     glLinkProgram(program);
@@ -386,18 +395,18 @@ void UpdateSettingsWidgets(void)
     sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
     XPSetWidgetDescriptor(disableCinemaVeriteTimeCaption, stringDisableCinemaVeriteTime);
     
-   	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, brightness * 1000.0f);
-   	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, contrast * 100.0f);
-    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, saturation * 100.0f);
-    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, redScale * 100.0f);
-    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, greenScale * 100.0f);
-    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, blueScale * 100.0f);
-    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, redOffset * 100.0f);
-    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, greenOffset * 100.0f);
-	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, blueOffset * 100.0f);
-    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, vignette * 100.0f);
-    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, maxFps);
-    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, disableCinemaVeriteTime);
+   	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, (int) (brightness * 1000.0f));
+   	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, (int) (contrast * 100.0f));
+    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, (int) (saturation * 100.0f));
+    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (redScale * 100.0f));
+    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (greenScale * 100.0f));
+    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (blueScale * 100.0f));
+    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (redOffset * 100.0f));
+    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (greenOffset * 100.0f));
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (blueOffset * 100.0f));
+    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, (int) (vignette * 100.0f));
+    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, (int) (maxFps));
+    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, (int) (disableCinemaVeriteTime));
 }
 
 // saves current settings to the config file
@@ -496,7 +505,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
     {
         if (inParam1 == (long) postProcessingCheckbox)
         {
-            postProcesssingEnabled = XPGetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, 0);
+            postProcesssingEnabled = (int) XPGetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, 0);
             
             if (postProcesssingEnabled == 0)
                 XPLMUnregisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
@@ -506,7 +515,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
         }
         else if (inParam1 == (long) fpsLimiterCheckbox)
         {
-            fpsLimiterEnabled = XPGetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, 0);
+            fpsLimiterEnabled = (int) XPGetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, 0);
             
             if (fpsLimiterEnabled == 0)
             {
@@ -522,7 +531,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
         }
         else if (inParam1 == (long) controlCinemaVeriteCheckbox)
         {
-            controlCinemaVeriteEnabled = XPGetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonState, 0);
+            controlCinemaVeriteEnabled = (int) XPGetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonState, 0);
             
             if (controlCinemaVeriteEnabled == 0)
                 XPLMUnregisterFlightLoopCallback(ControlCinemaVeriteCallback, NULL);
@@ -920,7 +929,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     UpdateSettingsWidgets();
     
 	// register widget handler
-	XPAddWidgetCallback(settingsWidget, SettingsWidgetHandler);
+	XPAddWidgetCallback(settingsWidget, (XPWidgetFunc_t) SettingsWidgetHandler);
 }
 
 // handles the menu-entries

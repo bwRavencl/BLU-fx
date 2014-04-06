@@ -1,3 +1,5 @@
 .DS_STORE
 .DS_STORE?
 build
+Release
+ipch
