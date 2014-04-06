@@ -60,6 +60,114 @@
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
+// define polarized post-processing preset values
+#define PRESET_POLARIZED_BRIGHTNESS 0.05f
+#define PRESET_POLARIZED_CONTRAST 1.1f
+#define PRESET_POLARIZED_SATURATION 1.4f
+#define PRESET_POLARIZED_RED_SCALE 0.0f
+#define PRESET_POLARIZED_GREEN_SCALE 0.0f
+#define PRESET_POLARIZED_BLUE_SCALE -0.2f
+#define PRESET_POLARIZED_RED_OFFSET 0.0f
+#define PRESET_POLARIZED_GREEN_OFFSET 0.0f
+#define PRESET_POLARIZED_BLUE_OFFSET 0.0f
+#define PRESET_POLARIZED_VIGNETTE 0.7f
+
+// define crazy hazy post-processing preset values
+#define PRESET_CRAZY_HAZY_BRIGHTNESS 0.05f
+#define PRESET_CRAZY_HAZY_CONTRAST 1.2f
+#define PRESET_CRAZY_HAZY_SATURATION 0.7f
+#define PRESET_CRAZY_HAZY_RED_SCALE 0.15f
+#define PRESET_CRAZY_HAZY_GREEN_SCALE 0.15f
+#define PRESET_CRAZY_HAZY_BLUE_SCALE 0.15f
+#define PRESET_CRAZY_HAZY_RED_OFFSET 0.0f
+#define PRESET_CRAZY_HAZY_GREEN_OFFSET 0.0f
+#define PRESET_CRAZY_HAZY_BLUE_OFFSET 0.0f
+#define PRESET_CRAZY_HAZY_VIGNETTE 0.3f
+
+// define hdr-ish post-processing preset values
+#define PRESET_HDR_ISH_BRIGHTNESS 0.0f
+#define PRESET_HDR_ISH_CONTRAST 1.15f
+#define PRESET_HDR_ISH_SATURATION 0.9f
+#define PRESET_HDR_ISH_RED_SCALE 0.0f
+#define PRESET_HDR_ISH_GREEN_SCALE 0.0f
+#define PRESET_HDR_ISH_BLUE_SCALE 0.0f
+#define PRESET_HDR_ISH_RED_OFFSET 0.0f
+#define PRESET_HDR_ISH_GREEN_OFFSET 0.0f
+#define PRESET_HDR_ISH_BLUE_OFFSET 0.0f
+#define PRESET_HDR_ISH_VIGNETTE 0.6f
+
+// define negative drab post-processing preset values
+#define PRESET_NEGATIVE_DRAB_BRIGHTNESS 0.05f
+#define PRESET_NEGATIVE_DRAB_CONTRAST 1.1f
+#define PRESET_NEGATIVE_DRAB_SATURATION 1.3f
+#define PRESET_NEGATIVE_DRAB_RED_SCALE 0.0f
+#define PRESET_NEGATIVE_DRAB_GREEN_SCALE 0.0f
+#define PRESET_NEGATIVE_DRAB_BLUE_SCALE 0.0f
+#define PRESET_NEGATIVE_DRAB_RED_OFFSET 0.0f
+#define PRESET_NEGATIVE_DRAB_GREEN_OFFSET 0.0f
+#define PRESET_NEGATIVE_DRAB_BLUE_OFFSET 0.0f
+#define PRESET_NEGATIVE_DRAB_VIGNETTE 0.3f
+
+// define extra normal post-processing preset values
+#define PRESET_EXTRA_NORMAL_BRIGHTNESS 0.05f
+#define PRESET_EXTRA_NORMAL_CONTRAST 1.1f
+#define PRESET_EXTRA_NORMAL_SATURATION 1.1f
+#define PRESET_EXTRA_NORMAL_RED_SCALE 0.0f
+#define PRESET_EXTRA_NORMAL_GREEN_SCALE 0.0f
+#define PRESET_EXTRA_NORMAL_BLUE_SCALE 0.0f
+#define PRESET_EXTRA_NORMAL_RED_OFFSET 0.0f
+#define PRESET_EXTRA_NORMAL_GREEN_OFFSET 0.0f
+#define PRESET_EXTRA_NORMAL_BLUE_OFFSET 0.0f
+#define PRESET_EXTRA_NORMAL_VIGNETTE 0.0f
+
+// define shadowhancer post-processing preset values
+#define PRESET_SHADOWHANCER_BRIGHTNESS -0.15f
+#define PRESET_SHADOWHANCER_CONTRAST 1.3f
+#define PRESET_SHADOWHANCER_SATURATION 1.0f
+#define PRESET_SHADOWHANCER_RED_SCALE 0.0f
+#define PRESET_SHADOWHANCER_GREEN_SCALE 0.0f
+#define PRESET_SHADOWHANCER_BLUE_SCALE 0.0f
+#define PRESET_SHADOWHANCER_RED_OFFSET 0.0f
+#define PRESET_SHADOWHANCER_GREEN_OFFSET 0.0f
+#define PRESET_SHADOWHANCER_BLUE_OFFSET 0.0f
+#define PRESET_SHADOWHANCER_VIGNETTE 0.0f
+
+// define red shift post-processing preset values
+#define PRESET_RED_SHIFT_BRIGHTNESS 0.0f
+#define PRESET_RED_SHIFT_CONTRAST 1.1f
+#define PRESET_RED_SHIFT_SATURATION 1.1f
+#define PRESET_RED_SHIFT_RED_SCALE 0.1f
+#define PRESET_RED_SHIFT_GREEN_SCALE 0.0f
+#define PRESET_RED_SHIFT_BLUE_SCALE 0.0f
+#define PRESET_RED_SHIFT_RED_OFFSET 0.0f
+#define PRESET_RED_SHIFT_GREEN_OFFSET 0.0f
+#define PRESET_RED_SHIFT_BLUE_OFFSET 0.0f
+#define PRESET_RED_SHIFT_VIGNETTE 0.0f
+
+// define green shift post-processing preset values
+#define PRESET_GREEN_SHIFT_BRIGHTNESS 0.0f
+#define PRESET_GREEN_SHIFT_CONTRAST 1.1f
+#define PRESET_GREEN_SHIFT_SATURATION 1.1f
+#define PRESET_GREEN_SHIFT_RED_SCALE 0.0f
+#define PRESET_GREEN_SHIFT_GREEN_SCALE 0.1f
+#define PRESET_GREEN_SHIFT_BLUE_SCALE 0.0f
+#define PRESET_GREEN_SHIFT_RED_OFFSET 0.0f
+#define PRESET_GREEN_SHIFT_GREEN_OFFSET 0.0f
+#define PRESET_GREEN_SHIFT_BLUE_OFFSET 0.0f
+#define PRESET_GREEN_SHIFT_VIGNETTE 0.0f
+
+// define blue shift post-processing preset values
+#define PRESET_BLUE_SHIFT_BRIGHTNESS 0.0f
+#define PRESET_BLUE_SHIFT_CONTRAST 1.1f
+#define PRESET_BLUE_SHIFT_SATURATION 1.1f
+#define PRESET_BLUE_SHIFT_RED_SCALE 0.0f
+#define PRESET_BLUE_SHIFT_GREEN_SCALE 0.0f
+#define PRESET_BLUE_SHIFT_BLUE_SCALE 0.1f
+#define PRESET_BLUE_SHIFT_RED_OFFSET 0.0f
+#define PRESET_BLUE_SHIFT_GREEN_OFFSET 0.0f
+#define PRESET_BLUE_SHIFT_BLUE_OFFSET 0.0f
+#define PRESET_BLUE_SHIFT_VIGNETTE 0.0f
+
 // fragment-shader code
 #define FRAGMENT_SHADER "#version 120\n"\
                         "const vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721);"\
@@ -78,21 +186,23 @@
                         "void main()"\
                         "{"\
                             "vec3 color = texture2D(scene, gl_TexCoord[0].st).rgb;"\
-                            "vec3 colorContrasted = (color) * contrast;"\
-                            "vec3 bright = colorContrasted + vec3(brightness, brightness, brightness);"\
-                            "vec3 intensity = vec3(dot(bright, lumCoeff));"\
-                            "vec3 col = mix(intensity, bright, saturation);"\
-                            "vec3 newColor = (col.rgb - 0.5) * 2.0;"\
+                            "color *= contrast;"\
+                            "color += vec3(brightness, brightness, brightness);"\
+                            "vec3 intensity = vec3(dot(color, lumCoeff));"\
+                            "color = mix(intensity, color, saturation);"\
+                            "vec3 newColor = (color.rgb - 0.5) * 2.0;"\
                             "newColor.r = 2.0 / 3.0 * (1.0 - (newColor.r * newColor.r));"\
                             "newColor.g = 2.0 / 3.0 * (1.0 - (newColor.g * newColor.g));"\
                             "newColor.b = 2.0 / 3.0 * (1.0 - (newColor.b * newColor.b));"\
-                            "newColor.r = clamp(col.r + redScale * newColor.r + redOffset, 0.0, 1.0);"\
-                            "newColor.g = clamp(col.g + greenScale * newColor.g + greenOffset, 0.0, 1.0);"\
-                            "newColor.b = clamp(col.b + blueScale * newColor.b + blueOffset, 0.0, 1.0);"\
-                            "vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); float len = length(position);"\
+                            "newColor.r = clamp(color.r + redScale * newColor.r + redOffset, 0.0, 1.0);"\
+                            "newColor.g = clamp(color.g + greenScale * newColor.g + greenOffset, 0.0, 1.0);"\
+                            "newColor.b = clamp(color.b + blueScale * newColor.b + blueOffset, 0.0, 1.0);"\
+                            "color = newColor;"\
+                            "vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5);"\
+                            "float len = length(position);"\
                             "float vig = smoothstep(0.75, 0.75 - 0.45, len);"\
-                            "newColor = mix(newColor, newColor * vig, vignette);"\
-                            "gl_FragColor = vec4(newColor, 1.0);"\
+                            "color = mix(color, color * vig, vignette);"\
+                            "gl_FragColor = vec4(color, 1.0);"\
                         "}"
 
 // global settings variables
@@ -101,7 +211,7 @@ static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, satur
 
 // global internal variables
 static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0, settingsWindowOpen = 0;
-static GLuint textureId = 0, program;
+static GLuint textureId = 0, program = 0, fragmentShader = 0;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
 #if LIN
 static Display *display = NULL;
@@ -193,10 +303,14 @@ static int PostProcessingCallback(
     
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
-	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);			glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), (GLfloat) y);
-	glTexCoord2f(1.0f, 1.0f);                                               glVertex2f((GLfloat) x, (GLfloat) y);
-	glTexCoord2f(1.0f, 0.0f);                                               glVertex2f((GLfloat) x, 0.0f);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);
+    glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
+	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);
+    glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), (GLfloat) y);
+	glTexCoord2f(1.0f, 1.0f);
+    glVertex2f((GLfloat) x, (GLfloat) y);
+	glTexCoord2f(1.0f, 0.0f);
+    glVertex2f((GLfloat) x, 0.0f);
 	glEnd();
 	
 	glMatrixMode(GL_PROJECTION);
@@ -246,7 +360,7 @@ static int LimiterDrawCallback(
     float t = 1.0f / maxFps - dt;
     
     if(t > 0.0f)
-		#if IBM
+#if IBM
 		Sleep((DWORD) (t * 1000.0f));
 #else
         usleep((useconds_t) (t * 1000000.0f));
@@ -309,33 +423,61 @@ float ControlCinemaVeriteCallback(
     return -1.0f;
 }
 
+// removes the fragment-shader from video memory, if deleteProgram is set the shader-program is also removed
+void CleanupShader(int deleteProgram = 0)
+{
+    glDetachShader(program, fragmentShader);
+    glDeleteShader(fragmentShader);
+    
+    if (deleteProgram != 0)
+        glDeleteProgram(program);
+}
+
 // function to load, compile and link the fragment-shader
 void InitShader(const char *fragmentShaderString)
 {
     program = glCreateProgram();
     
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderString, 0);
     glCompileShader(fragmentShader);
     glAttachShader(program, fragmentShader);
     GLint isFragmentShaderCompiled = GL_FALSE;
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isFragmentShaderCompiled);
-    
     if (isFragmentShaderCompiled == GL_FALSE) {
         GLsizei maxLength = 2048;
-        GLchar *fragmentErrorLog = new GLchar[maxLength];
-        glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, fragmentErrorLog);
+        GLchar *log = new GLchar[maxLength];
+        glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, log);
         XPLMDebugString(NAME": The following error occured while compiling the fragment shader:\n");
-        XPLMDebugString(fragmentErrorLog);
-		delete[] fragmentErrorLog;
+        XPLMDebugString(log);
+		delete[] log;
+        
+        CleanupShader(1);
+        
+        return;
     }
     
     glLinkProgram(program);
-    glDetachShader(program, fragmentShader);
+    GLint isProgramLinked = GL_FALSE;
+    glGetProgramiv(program, GL_LINK_STATUS, &isProgramLinked);
+    if (isProgramLinked == GL_FALSE) {
+        GLsizei maxLength = 2048;
+        GLchar *log = new GLchar[maxLength];
+        glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, log);
+        XPLMDebugString(NAME": The following error occured while linking the shader program:\n");
+        XPLMDebugString(log);
+		delete[] log;
+        
+        CleanupShader(1);
+        
+        return;
+    }
+    
+    CleanupShader(0);
 }
 
 // returns a float rounded to two decimal places
-float round(const float f)
+float Round(const float f)
 {
     return ((int) (f * 100.0f)) / 100.0f;
 }
@@ -395,22 +537,22 @@ void UpdateSettingsWidgets(void)
     sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
     XPSetWidgetDescriptor(disableCinemaVeriteTimeCaption, stringDisableCinemaVeriteTime);
     
-   	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, (int) (brightness * 1000.0f));
-   	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, (int) (contrast * 100.0f));
-    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, (int) (saturation * 100.0f));
-    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (redScale * 100.0f));
-    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (greenScale * 100.0f));
-    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, (int) (blueScale * 100.0f));
-    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (redOffset * 100.0f));
-    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (greenOffset * 100.0f));
-	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, (int) (blueOffset * 100.0f));
-    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, (int) (vignette * 100.0f));
-    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, (int) (maxFps));
-    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, (int) (disableCinemaVeriteTime));
+   	XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (brightness * 1000.0f));
+   	XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (contrast * 100.0f));
+    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (saturation * 100.0f));
+    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (redScale * 100.0f));
+    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (greenScale * 100.0f));
+    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (blueScale * 100.0f));
+    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (redOffset * 100.0f));
+    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (greenOffset * 100.0f));
+	XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (blueOffset * 100.0f));
+    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (vignette * 100.0f));
+    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (maxFps));
+    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (disableCinemaVeriteTime));
 }
 
 // saves current settings to the config file
-void saveSettings(void)
+void SaveSettings(void)
 {
     std::fstream file;
     file.open(CONFIG_PATH, std::ios_base::out | std::ios_base::trunc);
@@ -438,7 +580,7 @@ void saveSettings(void)
 }
 
 // loads settings from the config file
-void loadSettings(void)
+void LoadSettings(void)
 {
     std::ifstream file;
     file.open(CONFIG_PATH);
@@ -495,7 +637,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 	{
 		if (settingsWindowOpen == 1)
 		{
-            saveSettings();
+            SaveSettings();
 			XPHideWidget(settingsWidget);
 		}
         
@@ -543,25 +685,25 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 	else if (inMessage == xpMsg_ScrollBarSliderPositionChanged)
 	{
         if (inParam1 == (long) brightnessSlider)
-            brightness = round(XPGetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, 0) / 1000.0f);
+            brightness = Round(XPGetWidgetProperty(brightnessSlider, xpProperty_ScrollBarSliderPosition, 0) / 1000.0f);
         else if (inParam1 == (long) contrastSlider)
-            contrast = round(XPGetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            contrast = Round(XPGetWidgetProperty(contrastSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) saturationSlider)
-            saturation = round(XPGetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            saturation = Round(XPGetWidgetProperty(saturationSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) redScaleSlider)
-            redScale = round(XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            redScale = Round(XPGetWidgetProperty(redScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) greenScaleSlider)
-            greenScale = round(XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            greenScale = Round(XPGetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) blueScaleSlider)
-            blueScale = round(XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            blueScale = Round(XPGetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) redOffsetSlider)
-            redOffset = round(XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            redOffset = Round(XPGetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) greenOffsetSlider)
-            greenOffset = round(XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            greenOffset = Round(XPGetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) blueOffsetSlider)
-            blueOffset = round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            blueOffset = Round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) vignetteSlider)
-            vignette = round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+            vignette = Round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) maxFpsSlider)
             maxFps = (float) (int) XPGetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, 0);
         else if (inParam1 == (long) disableCinemaVeriteTimeSlider)
@@ -586,120 +728,120 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
         }
         else if (inParam1 == (long) polarizedPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_POLARIZED_BRIGHTNESS;
+            contrast = PRESET_POLARIZED_CONTRAST;
+            saturation = PRESET_POLARIZED_SATURATION;
+            redScale = PRESET_POLARIZED_RED_SCALE;
+            greenScale = PRESET_POLARIZED_GREEN_SCALE;
+            blueScale = PRESET_POLARIZED_BLUE_SCALE;
+            redOffset = PRESET_POLARIZED_RED_OFFSET;
+            greenOffset = PRESET_POLARIZED_GREEN_OFFSET;
+            blueOffset = PRESET_POLARIZED_BLUE_OFFSET;
+            vignette = PRESET_POLARIZED_VIGNETTE;
         }
         else if (inParam1 == (long) crazyHazyPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_CRAZY_HAZY_BRIGHTNESS;
+            contrast = PRESET_CRAZY_HAZY_CONTRAST;
+            saturation = PRESET_CRAZY_HAZY_SATURATION;
+            redScale = PRESET_CRAZY_HAZY_RED_SCALE;
+            greenScale = PRESET_CRAZY_HAZY_GREEN_SCALE;
+            blueScale = PRESET_CRAZY_HAZY_BLUE_SCALE;
+            redOffset = PRESET_CRAZY_HAZY_RED_OFFSET;
+            greenOffset = PRESET_CRAZY_HAZY_GREEN_OFFSET;
+            blueOffset = PRESET_CRAZY_HAZY_BLUE_OFFSET;
+            vignette = PRESET_CRAZY_HAZY_VIGNETTE;
         }
         else if (inParam1 == (long) hdrIshPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_HDR_ISH_BRIGHTNESS;
+            contrast = PRESET_HDR_ISH_CONTRAST;
+            saturation = PRESET_HDR_ISH_SATURATION;
+            redScale = PRESET_HDR_ISH_RED_SCALE;
+            greenScale = PRESET_HDR_ISH_GREEN_SCALE;
+            blueScale = PRESET_HDR_ISH_BLUE_SCALE;
+            redOffset = PRESET_HDR_ISH_RED_OFFSET;
+            greenOffset = PRESET_HDR_ISH_GREEN_OFFSET;
+            blueOffset = PRESET_HDR_ISH_BLUE_OFFSET;
+            vignette = PRESET_HDR_ISH_VIGNETTE;
         }
         else if (inParam1 == (long) negativeDrabPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_NEGATIVE_DRAB_BRIGHTNESS;
+            contrast = PRESET_NEGATIVE_DRAB_CONTRAST;
+            saturation = PRESET_NEGATIVE_DRAB_SATURATION;
+            redScale = PRESET_NEGATIVE_DRAB_RED_SCALE;
+            greenScale = PRESET_NEGATIVE_DRAB_GREEN_SCALE;
+            blueScale = PRESET_NEGATIVE_DRAB_BLUE_SCALE;
+            redOffset = PRESET_NEGATIVE_DRAB_RED_OFFSET;
+            greenOffset = PRESET_NEGATIVE_DRAB_GREEN_OFFSET;
+            blueOffset = PRESET_NEGATIVE_DRAB_BLUE_OFFSET;
+            vignette = PRESET_NEGATIVE_DRAB_VIGNETTE;
         }
         else if (inParam1 == (long) extraNormalPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_EXTRA_NORMAL_BRIGHTNESS;
+            contrast = PRESET_EXTRA_NORMAL_CONTRAST;
+            saturation = PRESET_EXTRA_NORMAL_SATURATION;
+            redScale = PRESET_EXTRA_NORMAL_RED_SCALE;
+            greenScale = PRESET_EXTRA_NORMAL_GREEN_SCALE;
+            blueScale = PRESET_EXTRA_NORMAL_BLUE_SCALE;
+            redOffset = PRESET_EXTRA_NORMAL_RED_OFFSET;
+            greenOffset = PRESET_EXTRA_NORMAL_GREEN_OFFSET;
+            blueOffset = PRESET_EXTRA_NORMAL_BLUE_OFFSET;
+            vignette = PRESET_EXTRA_NORMAL_VIGNETTE;
         }
         else if (inParam1 == (long) shadowhancerPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_SHADOWHANCER_BRIGHTNESS;
+            contrast = PRESET_SHADOWHANCER_CONTRAST;
+            saturation = PRESET_SHADOWHANCER_SATURATION;
+            redScale = PRESET_SHADOWHANCER_RED_SCALE;
+            greenScale = PRESET_SHADOWHANCER_GREEN_SCALE;
+            blueScale = PRESET_SHADOWHANCER_BLUE_SCALE;
+            redOffset = PRESET_SHADOWHANCER_RED_OFFSET;
+            greenOffset = PRESET_SHADOWHANCER_GREEN_OFFSET;
+            blueOffset = PRESET_SHADOWHANCER_BLUE_OFFSET;
+            vignette = PRESET_SHADOWHANCER_VIGNETTE;
         }
         else if (inParam1 == (long) redShiftPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_RED_SHIFT_BRIGHTNESS;
+            contrast = PRESET_RED_SHIFT_CONTRAST;
+            saturation = PRESET_RED_SHIFT_SATURATION;
+            redScale = PRESET_RED_SHIFT_RED_SCALE;
+            greenScale = PRESET_RED_SHIFT_GREEN_SCALE;
+            blueScale = PRESET_RED_SHIFT_BLUE_SCALE;
+            redOffset = PRESET_RED_SHIFT_RED_OFFSET;
+            greenOffset = PRESET_RED_SHIFT_GREEN_OFFSET;
+            blueOffset = PRESET_RED_SHIFT_BLUE_OFFSET;
+            vignette = PRESET_RED_SHIFT_VIGNETTE;
         }
         else if (inParam1 == (long) greenShiftPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_GREEN_SHIFT_BRIGHTNESS;
+            contrast = PRESET_GREEN_SHIFT_CONTRAST;
+            saturation = PRESET_GREEN_SHIFT_SATURATION;
+            redScale = PRESET_GREEN_SHIFT_RED_SCALE;
+            greenScale = PRESET_GREEN_SHIFT_GREEN_SCALE;
+            blueScale = PRESET_GREEN_SHIFT_BLUE_SCALE;
+            redOffset = PRESET_GREEN_SHIFT_RED_OFFSET;
+            greenOffset = PRESET_GREEN_SHIFT_GREEN_OFFSET;
+            blueOffset = PRESET_GREEN_SHIFT_BLUE_OFFSET;
+            vignette = PRESET_GREEN_SHIFT_VIGNETTE;
         }
         else if (inParam1 == (long) blueShiftPresetButton)
         {
-            brightness = DEFAULT_BRIGHTNESS;
-            contrast = DEFAULT_CONTRAST;
-            saturation = DEFAULT_SATURATION;
-            redScale = DEFAULT_RED_SCALE;
-            greenScale = DEFAULT_GREEN_SCALE;
-            blueScale = DEFAULT_BLUE_SCALE;
-            redOffset = DEFAULT_RED_OFFSET;
-            greenOffset = DEFAULT_GREEN_OFFSET;
-            blueOffset = DEFAULT_BLUE_OFFSET;
-            vignette = DEFAULT_VIGNETTE;
+            brightness = PRESET_BLUE_SHIFT_BRIGHTNESS;
+            contrast = PRESET_BLUE_SHIFT_CONTRAST;
+            saturation = PRESET_BLUE_SHIFT_SATURATION;
+            redScale = PRESET_BLUE_SHIFT_RED_SCALE;
+            greenScale = PRESET_BLUE_SHIFT_GREEN_SCALE;
+            blueScale = PRESET_BLUE_SHIFT_BLUE_SCALE;
+            redOffset = PRESET_BLUE_SHIFT_RED_OFFSET;
+            greenOffset = PRESET_BLUE_SHIFT_GREEN_OFFSET;
+            blueOffset = PRESET_BLUE_SHIFT_BLUE_OFFSET;
+            vignette = PRESET_BLUE_SHIFT_VIGNETTE;
         }
         
         UpdateSettingsWidgets();
@@ -940,7 +1082,10 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
 	{
 		if (settingsWindowOpen == 0) // settings not open yet
 		{
-			CreateSettingsWidget(10, 890, 350, 880);
+            int x, y;
+            XPLMGetScreenSize(&x, &y);
+            
+			CreateSettingsWidget(10, y - 100, 350, 880);
 			settingsWindowOpen = 1;
 		}
 		else // settings already open
@@ -973,20 +1118,20 @@ PLUGIN_API int XPluginStart(
 	XPLMMenuID Menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
 	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1); // settings menu entry with ItemRef = 0
     
+    // read and apply config file
+    LoadSettings();
+    
     // register flightloop-callbacks
-    if (fpsLimiterEnabled == 1)
+    if (fpsLimiterEnabled != 0)
         XPLMRegisterFlightLoopCallback(LimiterFlightCallback, -1, NULL);
-    if (controlCinemaVeriteEnabled == 1)
+    if (controlCinemaVeriteEnabled != 0)
         XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
     
     // register draw-callbacks
-    if (postProcesssingEnabled == 1)
+    if (postProcesssingEnabled != 0)
         XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
-    if (fpsLimiterEnabled == 1)
+    if (fpsLimiterEnabled != 0)
         XPLMRegisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
-    
-    // read and apply config file
-    loadSettings();
     
 	return 1;
 }
@@ -994,6 +1139,7 @@ PLUGIN_API int XPluginStart(
 
 PLUGIN_API void	XPluginStop(void)
 {
+    CleanupShader(1);
 }
 
 PLUGIN_API void XPluginDisable(void)

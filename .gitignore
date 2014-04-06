@@ -4,3 +4,7 @@ xcuserdata
 build
 Release
 ipch
+*.suo
+*.user
+*.sln
+*.sln.docstates
