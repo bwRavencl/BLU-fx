@@ -70,7 +70,7 @@
 #define PRESET_POLARIZED_RED_OFFSET 0.0f
 #define PRESET_POLARIZED_GREEN_OFFSET 0.0f
 #define PRESET_POLARIZED_BLUE_OFFSET 0.0f
-#define PRESET_POLARIZED_VIGNETTE 0.7f
+#define PRESET_POLARIZED_VIGNETTE 0.6f
 
 // define crazy hazy post-processing preset values
 #define PRESET_CRAZY_HAZY_BRIGHTNESS 0.05f
@@ -168,6 +168,114 @@
 #define PRESET_BLUE_SHIFT_BLUE_OFFSET 0.0f
 #define PRESET_BLUE_SHIFT_VIGNETTE 0.0f
 
+// define sunny florida post-processing preset values
+#define PRESET_SUNNY_FLORIDA_BRIGHTNESS 0.1f
+#define PRESET_SUNNY_FLORIDA_CONTRAST 1.5f
+#define PRESET_SUNNY_FLORIDA_SATURATION 1.3f
+#define PRESET_SUNNY_FLORIDA_RED_SCALE 0.0f
+#define PRESET_SUNNY_FLORIDA_GREEN_SCALE 0.0f
+#define PRESET_SUNNY_FLORIDA_BLUE_SCALE 0.0f
+#define PRESET_SUNNY_FLORIDA_RED_OFFSET 0.0f
+#define PRESET_SUNNY_FLORIDA_GREEN_OFFSET 0.0f
+#define PRESET_SUNNY_FLORIDA_BLUE_OFFSET -0.1f
+#define PRESET_SUNNY_FLORIDA_VIGNETTE 0.0f
+
+// define mojave desert post-processing preset values
+#define PRESET_MOJAVE_DESERT_BRIGHTNESS 0.0f
+#define PRESET_MOJAVE_DESERT_CONTRAST 1.3f
+#define PRESET_MOJAVE_DESERT_SATURATION 1.3f
+#define PRESET_MOJAVE_DESERT_RED_SCALE 0.2f
+#define PRESET_MOJAVE_DESERT_GREEN_SCALE 0.0f
+#define PRESET_MOJAVE_DESERT_BLUE_SCALE 0.0f
+#define PRESET_MOJAVE_DESERT_RED_OFFSET 0.0f
+#define PRESET_MOJAVE_DESERT_GREEN_OFFSET 0.0f
+#define PRESET_MOJAVE_DESERT_BLUE_OFFSET 0.0f
+#define PRESET_MOJAVE_DESERT_VIGNETTE 0.6f
+
+// define winter springs post-processing preset values
+#define PRESET_WINTER_SPRINGS_BRIGHTNESS 0.07f
+#define PRESET_WINTER_SPRINGS_CONTRAST 1.15f
+#define PRESET_WINTER_SPRINGS_SATURATION 1.3f
+#define PRESET_WINTER_SPRINGS_RED_SCALE 0.0f
+#define PRESET_WINTER_SPRINGS_GREEN_SCALE 0.0f
+#define PRESET_WINTER_SPRINGS_BLUE_SCALE 0.2f
+#define PRESET_WINTER_SPRINGS_RED_OFFSET 0.0f
+#define PRESET_WINTER_SPRINGS_GREEN_OFFSET 0.05f
+#define PRESET_WINTER_SPRINGS_BLUE_OFFSET 0.0f
+#define PRESET_WINTER_SPRINGS_VIGNETTE 0.0f
+
+// define vivid dreams post-processing preset values
+#define PRESET_VIVID_DREAMS_BRIGHTNESS 0.0f
+#define PRESET_VIVID_DREAMS_CONTRAST 1.6f
+#define PRESET_VIVID_DREAMS_SATURATION 1.5f
+#define PRESET_VIVID_DREAMS_RED_SCALE 0.0f
+#define PRESET_VIVID_DREAMS_GREEN_SCALE 0.0f
+#define PRESET_VIVID_DREAMS_BLUE_SCALE -0.1f
+#define PRESET_VIVID_DREAMS_RED_OFFSET 0.0f
+#define PRESET_VIVID_DREAMS_GREEN_OFFSET 0.05f
+#define PRESET_VIVID_DREAMS_BLUE_OFFSET 0.0f
+#define PRESET_VIVID_DREAMS_VIGNETTE 0.6f
+
+// define technocolor post-processing preset values
+#define PRESET_TECHNOCOLOR_BRIGHTNESS 0.0f
+#define PRESET_TECHNOCOLOR_CONTRAST 1.6f
+#define PRESET_TECHNOCOLOR_SATURATION 1.5f
+#define PRESET_TECHNOCOLOR_RED_SCALE 0.2f
+#define PRESET_TECHNOCOLOR_GREEN_SCALE 0.0f
+#define PRESET_TECHNOCOLOR_BLUE_SCALE -0.1f
+#define PRESET_TECHNOCOLOR_RED_OFFSET 0.0f
+#define PRESET_TECHNOCOLOR_GREEN_OFFSET 0.05f
+#define PRESET_TECHNOCOLOR_BLUE_OFFSET 0.0f
+#define PRESET_TECHNOCOLOR_VIGNETTE 0.65f
+
+// define gun metal post-processing preset values
+#define PRESET_GUN_METAL_BRIGHTNESS 0.0f
+#define PRESET_GUN_METAL_CONTRAST 1.55f
+#define PRESET_GUN_METAL_SATURATION 0.6f
+#define PRESET_GUN_METAL_RED_SCALE 0.0f
+#define PRESET_GUN_METAL_GREEN_SCALE 0.05f
+#define PRESET_GUN_METAL_BLUE_SCALE 0.2f
+#define PRESET_GUN_METAL_RED_OFFSET 0.0f
+#define PRESET_GUN_METAL_GREEN_OFFSET 0.05f
+#define PRESET_GUN_METAL_BLUE_OFFSET 0.0f
+#define PRESET_GUN_METAL_VIGNETTE 0.25f
+
+// define old movie post-processing preset values
+#define PRESET_OLD_MOVIE_BRIGHTNESS 0.0f
+#define PRESET_OLD_MOVIE_CONTRAST 1.05f
+#define PRESET_OLD_MOVIE_SATURATION 0.0f
+#define PRESET_OLD_MOVIE_RED_SCALE 0.0f
+#define PRESET_OLD_MOVIE_GREEN_SCALE 0.0f
+#define PRESET_OLD_MOVIE_BLUE_SCALE 0.07f
+#define PRESET_OLD_MOVIE_RED_OFFSET 0.07f
+#define PRESET_OLD_MOVIE_GREEN_OFFSET 0.03f
+#define PRESET_OLD_MOVIE_BLUE_OFFSET 0.0f
+#define PRESET_OLD_MOVIE_VIGNETTE 0.0f
+
+// define black & white post-processing preset values
+#define PRESET_BLACK_AND_WHITE_BRIGHTNESS -0.03f
+#define PRESET_BLACK_AND_WHITE_CONTRAST 1.3f
+#define PRESET_BLACK_AND_WHITE_SATURATION 0.0f
+#define PRESET_BLACK_AND_WHITE_RED_SCALE 0.0f
+#define PRESET_BLACK_AND_WHITE_GREEN_SCALE 0.0f
+#define PRESET_BLACK_AND_WHITE_BLUE_SCALE 0.0f
+#define PRESET_BLACK_AND_WHITE_RED_OFFSET 0.0f
+#define PRESET_BLACK_AND_WHITE_GREEN_OFFSET 0.00f
+#define PRESET_BLACK_AND_WHITE_BLUE_OFFSET 0.0f
+#define PRESET_BLACK_AND_WHITE_VIGNETTE 0.65f
+
+// define ansel adams post-processing preset values
+#define PRESET_ANSEL_ADAMS_BRIGHTNESS -0.13f
+#define PRESET_ANSEL_ADAMS_CONTRAST 1.2f
+#define PRESET_ANSEL_ADAMS_SATURATION 0.0f
+#define PRESET_ANSEL_ADAMS_RED_SCALE 0.0f
+#define PRESET_ANSEL_ADAMS_GREEN_SCALE 0.0f
+#define PRESET_ANSEL_ADAMS_BLUE_SCALE 0.0f
+#define PRESET_ANSEL_ADAMS_RED_OFFSET 0.0f
+#define PRESET_ANSEL_ADAMS_GREEN_OFFSET 0.00f
+#define PRESET_ANSEL_ADAMS_BLUE_OFFSET 0.0f
+#define PRESET_ANSEL_ADAMS_VIGNETTE 0.7f
+
 // fragment-shader code
 #define FRAGMENT_SHADER "#version 120\n"\
                         "const vec3 lumCoeff = vec3(0.2125, 0.7154, 0.0721);"\
@@ -221,7 +329,7 @@ static Display *display = NULL;
 static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
 
 // global widget variables
-static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, resetButton, polarizedPresetButton, crazyHazyPresetButton, hdrIshPresetButton, negativeDrabPresetButton, extraNormalPresetButton, shadowhancerPresetButton, redShiftPresetButton, greenShiftPresetButton, blueShiftPresetButton;
+static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, resetButton, polarizedPresetButton, crazyHazyPresetButton, hdrIshPresetButton, negativeDrabPresetButton, extraNormalPresetButton, shadowhancerPresetButton, redShiftPresetButton, greenShiftPresetButton, blueShiftPresetButton, sunnyFloridaPresetButton, mojaveDesertPresentButton, winterSpringsPresetButton, vividDreamsPresetButton, technoColorPresetButton, gunMetalPresetButton, oldMoviePresetButton, blackAndWhitePresetButton, anselAdamsPresetButton;
 
 // draw-callback that adds post-processing
 static int PostProcessingCallback(
@@ -843,6 +951,123 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             blueOffset = PRESET_BLUE_SHIFT_BLUE_OFFSET;
             vignette = PRESET_BLUE_SHIFT_VIGNETTE;
         }
+        else if (inParam1 == (long) sunnyFloridaPresetButton)
+        {
+            brightness = PRESET_SUNNY_FLORIDA_BRIGHTNESS;
+            contrast = PRESET_SUNNY_FLORIDA_CONTRAST;
+            saturation = PRESET_SUNNY_FLORIDA_SATURATION;
+            redScale = PRESET_SUNNY_FLORIDA_RED_SCALE;
+            greenScale = PRESET_SUNNY_FLORIDA_GREEN_SCALE;
+            blueScale = PRESET_SUNNY_FLORIDA_BLUE_SCALE;
+            redOffset = PRESET_SUNNY_FLORIDA_RED_OFFSET;
+            greenOffset = PRESET_SUNNY_FLORIDA_GREEN_OFFSET;
+            blueOffset = PRESET_SUNNY_FLORIDA_BLUE_OFFSET;
+            vignette = PRESET_SUNNY_FLORIDA_VIGNETTE;
+        }
+        else if (inParam1 == (long) mojaveDesertPresentButton)
+        {
+            brightness = PRESET_MOJAVE_DESERT_BRIGHTNESS;
+            contrast = PRESET_MOJAVE_DESERT_CONTRAST;
+            saturation = PRESET_MOJAVE_DESERT_SATURATION;
+            redScale = PRESET_MOJAVE_DESERT_RED_SCALE;
+            greenScale = PRESET_MOJAVE_DESERT_GREEN_SCALE;
+            blueScale = PRESET_MOJAVE_DESERT_BLUE_SCALE;
+            redOffset = PRESET_MOJAVE_DESERT_RED_OFFSET;
+            greenOffset = PRESET_MOJAVE_DESERT_GREEN_OFFSET;
+            blueOffset = PRESET_MOJAVE_DESERT_BLUE_OFFSET;
+            vignette = PRESET_MOJAVE_DESERT_VIGNETTE;
+        }
+        else if (inParam1 == (long) winterSpringsPresetButton)
+        {
+            brightness = PRESET_WINTER_SPRINGS_BRIGHTNESS;
+            contrast = PRESET_WINTER_SPRINGS_CONTRAST;
+            saturation = PRESET_WINTER_SPRINGS_SATURATION;
+            redScale = PRESET_WINTER_SPRINGS_RED_SCALE;
+            greenScale = PRESET_WINTER_SPRINGS_GREEN_SCALE;
+            blueScale = PRESET_WINTER_SPRINGS_BLUE_SCALE;
+            redOffset = PRESET_WINTER_SPRINGS_RED_OFFSET;
+            greenOffset = PRESET_WINTER_SPRINGS_GREEN_OFFSET;
+            blueOffset = PRESET_WINTER_SPRINGS_BLUE_OFFSET;
+            vignette = PRESET_WINTER_SPRINGS_VIGNETTE;
+        }
+        else if (inParam1 == (long) vividDreamsPresetButton)
+        {
+            brightness = PRESET_VIVID_DREAMS_BRIGHTNESS;
+            contrast = PRESET_VIVID_DREAMS_CONTRAST;
+            saturation = PRESET_VIVID_DREAMS_SATURATION;
+            redScale = PRESET_VIVID_DREAMS_RED_SCALE;
+            greenScale = PRESET_VIVID_DREAMS_GREEN_SCALE;
+            blueScale = PRESET_VIVID_DREAMS_BLUE_SCALE;
+            redOffset = PRESET_VIVID_DREAMS_RED_OFFSET;
+            greenOffset = PRESET_VIVID_DREAMS_GREEN_OFFSET;
+            blueOffset = PRESET_VIVID_DREAMS_BLUE_OFFSET;
+            vignette = PRESET_VIVID_DREAMS_VIGNETTE;
+        }
+        else if (inParam1 == (long) technoColorPresetButton)
+        {
+            brightness = PRESET_TECHNOCOLOR_BRIGHTNESS;
+            contrast = PRESET_TECHNOCOLOR_CONTRAST;
+            saturation = PRESET_TECHNOCOLOR_SATURATION;
+            redScale = PRESET_TECHNOCOLOR_RED_SCALE;
+            greenScale = PRESET_TECHNOCOLOR_GREEN_SCALE;
+            blueScale = PRESET_TECHNOCOLOR_BLUE_SCALE;
+            redOffset = PRESET_TECHNOCOLOR_RED_OFFSET;
+            greenOffset = PRESET_TECHNOCOLOR_GREEN_OFFSET;
+            blueOffset = PRESET_TECHNOCOLOR_BLUE_OFFSET;
+            vignette = PRESET_TECHNOCOLOR_VIGNETTE;
+        }
+        else if (inParam1 == (long) gunMetalPresetButton)
+        {
+            brightness = PRESET_GUN_METAL_BRIGHTNESS;
+            contrast = PRESET_GUN_METAL_CONTRAST;
+            saturation = PRESET_GUN_METAL_SATURATION;
+            redScale = PRESET_GUN_METAL_RED_SCALE;
+            greenScale = PRESET_GUN_METAL_GREEN_SCALE;
+            blueScale = PRESET_GUN_METAL_BLUE_SCALE;
+            redOffset = PRESET_GUN_METAL_RED_OFFSET;
+            greenOffset = PRESET_GUN_METAL_GREEN_OFFSET;
+            blueOffset = PRESET_GUN_METAL_BLUE_OFFSET;
+            vignette = PRESET_GUN_METAL_VIGNETTE;
+        }
+        else if (inParam1 == (long) oldMoviePresetButton)
+        {
+            brightness = PRESET_OLD_MOVIE_BRIGHTNESS;
+            contrast = PRESET_OLD_MOVIE_CONTRAST;
+            saturation = PRESET_OLD_MOVIE_SATURATION;
+            redScale = PRESET_OLD_MOVIE_RED_SCALE;
+            greenScale = PRESET_OLD_MOVIE_GREEN_SCALE;
+            blueScale = PRESET_OLD_MOVIE_BLUE_SCALE;
+            redOffset = PRESET_OLD_MOVIE_RED_OFFSET;
+            greenOffset = PRESET_OLD_MOVIE_GREEN_OFFSET;
+            blueOffset = PRESET_OLD_MOVIE_BLUE_OFFSET;
+            vignette = PRESET_OLD_MOVIE_VIGNETTE;
+        }
+        else if (inParam1 == (long) blackAndWhitePresetButton)
+        {
+            brightness = PRESET_BLACK_AND_WHITE_BRIGHTNESS;
+            contrast = PRESET_BLACK_AND_WHITE_CONTRAST;
+            saturation = PRESET_BLACK_AND_WHITE_SATURATION;
+            redScale = PRESET_BLACK_AND_WHITE_RED_SCALE;
+            greenScale = PRESET_BLACK_AND_WHITE_GREEN_SCALE;
+            blueScale = PRESET_BLACK_AND_WHITE_BLUE_SCALE;
+            redOffset = PRESET_BLACK_AND_WHITE_RED_OFFSET;
+            greenOffset = PRESET_BLACK_AND_WHITE_GREEN_OFFSET;
+            blueOffset = PRESET_BLACK_AND_WHITE_BLUE_OFFSET;
+            vignette = PRESET_BLACK_AND_WHITE_VIGNETTE;
+        }
+        else if (inParam1 == (long) anselAdamsPresetButton)
+        {
+            brightness = PRESET_ANSEL_ADAMS_BRIGHTNESS;
+            contrast = PRESET_ANSEL_ADAMS_CONTRAST;
+            saturation = PRESET_ANSEL_ADAMS_SATURATION;
+            redScale = PRESET_ANSEL_ADAMS_RED_SCALE;
+            greenScale = PRESET_ANSEL_ADAMS_GREEN_SCALE;
+            blueScale = PRESET_ANSEL_ADAMS_BLUE_SCALE;
+            redOffset = PRESET_ANSEL_ADAMS_RED_OFFSET;
+            greenOffset = PRESET_ANSEL_ADAMS_GREEN_OFFSET;
+            blueOffset = PRESET_ANSEL_ADAMS_BLUE_OFFSET;
+            vignette = PRESET_ANSEL_ADAMS_VIGNETTE;
+        }
         
         UpdateSettingsWidgets();
     }
@@ -980,41 +1205,81 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     // add post-processing presets caption
     XPCreateWidget(x + 10, y - 330, x2 - 20, y - 345, 1, "Post-Processing Presets:", 0, settingsWidget, xpWidgetClass_Caption);
     
+    // first preset button column
+    
     // add polarized preset button
-    polarizedPresetButton = XPCreateWidget(x + 20, y - 360, x + 30 + 110, y - 375, 1, "Polarized", 0, settingsWidget, xpWidgetClass_Button);
+    polarizedPresetButton = XPCreateWidget(x + 20, y - 360, x + 20 + 125, y - 375, 1, "Polarized", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(polarizedPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add crazy hazy preset button
-    crazyHazyPresetButton = XPCreateWidget(x + 20, y - 385, x + 30 + 110, y - 400, 1, "Crazy Hazy", 0, settingsWidget, xpWidgetClass_Button);
+    crazyHazyPresetButton = XPCreateWidget(x + 20, y - 385, x + 20 + 125, y - 400, 1, "Crazy Hazy", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(crazyHazyPresetButton, xpProperty_ButtonType, xpPushButton);
 
     // add hdr-ish preset button
-    hdrIshPresetButton = XPCreateWidget(x + 20, y - 410, x + 30 + 110, y - 425, 1, "HDR-ish", 0, settingsWidget, xpWidgetClass_Button);
+    hdrIshPresetButton = XPCreateWidget(x + 20, y - 410, x + 20 + 125, y - 425, 1, "HDR-ish", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(hdrIshPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add negative drab preset button
-    negativeDrabPresetButton = XPCreateWidget(x + 20, y - 435, x + 30 + 110, y - 450, 1, "Negative Drab", 0, settingsWidget, xpWidgetClass_Button);
+    negativeDrabPresetButton = XPCreateWidget(x + 20, y - 435, x + 20 + 125, y - 450, 1, "Negative Drab", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(negativeDrabPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add extra normal preset button
-    extraNormalPresetButton = XPCreateWidget(x + 20, y - 460, x + 30 + 110, y - 475, 1, "Extra Normal", 0, settingsWidget, xpWidgetClass_Button);
+    extraNormalPresetButton = XPCreateWidget(x + 20, y - 460, x + 20 + 125, y - 475, 1, "Extra Normal", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(extraNormalPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add shadowhancer preset button
-    shadowhancerPresetButton = XPCreateWidget(x + 20, y - 485, x + 30 + 110, y - 500, 1, "Shadowhancer", 0, settingsWidget, xpWidgetClass_Button);
+    shadowhancerPresetButton = XPCreateWidget(x + 20, y - 485, x + 20 + 125, y - 500, 1, "Shadowhancer", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(shadowhancerPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add red shift preset button
-    redShiftPresetButton = XPCreateWidget(x + 20, y - 510, x + 30 + 110, y - 525, 1, "Red Shift", 0, settingsWidget, xpWidgetClass_Button);
+    redShiftPresetButton = XPCreateWidget(x + 20, y - 510, x + 20 + 125, y - 525, 1, "Red Shift", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(redShiftPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add green shift preset button
-    greenShiftPresetButton = XPCreateWidget(x + 20, y - 535, x + 30 + 110, y - 550, 1, "Green Shift", 0, settingsWidget, xpWidgetClass_Button);
+    greenShiftPresetButton = XPCreateWidget(x + 20, y - 535, x + 20 + 125, y - 550, 1, "Green Shift", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(greenShiftPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add blue shift preset button
-    blueShiftPresetButton = XPCreateWidget(x + 20, y - 560, x + 30 + 110, y - 575, 1, "Blue Shift", 0, settingsWidget, xpWidgetClass_Button);
+    blueShiftPresetButton = XPCreateWidget(x + 20, y - 560, x + 20 + 125, y - 575, 1, "Blue Shift", 0, settingsWidget, xpWidgetClass_Button);
 	XPSetWidgetProperty(blueShiftPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // second preset button column
+    
+    // add sunny florida preset button
+    sunnyFloridaPresetButton = XPCreateWidget(x2 - 20 - 125, y - 360, x2 - 20, y - 375, 1, "Sunny Florida", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(polarizedPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add mojave desert preset button
+    mojaveDesertPresentButton = XPCreateWidget(x2 - 20 - 125, y - 385, x2 - 20, y - 400, 1, "Mojave Desert", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(crazyHazyPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add winter springs preset button
+    winterSpringsPresetButton = XPCreateWidget(x2 - 20 - 125, y - 410, x2 - 20, y - 425, 1, "Winter Springs", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(winterSpringsPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add vivid dreams preset button
+    vividDreamsPresetButton = XPCreateWidget(x2 - 20 - 125, y - 435, x2 - 20, y - 450, 1, "Vivid Dreams", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(vividDreamsPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add extra normal preset button
+    technoColorPresetButton = XPCreateWidget(x2 - 20 - 125, y - 460, x2 - 20, y - 475, 1, "Technocolor", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(technoColorPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add gun metal preset button
+    gunMetalPresetButton = XPCreateWidget(x2 - 20 - 125, y - 485, x2 - 20, y - 500, 1, "Gun Metal", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(gunMetalPresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add old movie preset button
+    oldMoviePresetButton = XPCreateWidget(x2 - 20 - 125, y - 510, x2 - 20, y - 525, 1, "Old Movie", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(oldMoviePresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add black & white preset button
+    blackAndWhitePresetButton = XPCreateWidget(x2 - 20 - 125, y - 535, x2 - 20, y - 550, 1, "Black & White", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(blackAndWhitePresetButton, xpProperty_ButtonType, xpPushButton);
+    
+    // add ansel adams preset button
+    anselAdamsPresetButton = XPCreateWidget(x2 - 20 - 125, y - 560, x2 - 20, y - 575, 1, "Ansel Adams", 0, settingsWidget, xpWidgetClass_Button);
+	XPSetWidgetProperty(anselAdamsPresetButton, xpProperty_ButtonType, xpPushButton);
     
     // add fps-limiter sub window
     XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
