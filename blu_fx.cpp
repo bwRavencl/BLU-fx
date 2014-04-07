@@ -318,7 +318,7 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float brightness = DEFAULT_BRIGHTNESS, contrast = DEFAULT_CONTRAST, saturation = DEFAULT_SATURATION, redScale = DEFAULT_RED_SCALE, greenScale = DEFAULT_GREEN_SCALE, blueScale = DEFAULT_BLUE_SCALE, redOffset = DEFAULT_RED_OFFSET, greenOffset = DEFAULT_GREEN_OFFSET, blueOffset = DEFAULT_BLUE_OFFSET, vignette = DEFAULT_VIGNETTE, maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
 
 // global internal variables
-static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0, settingsWindowOpen = 0;
+static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
 static GLuint textureId = 0, program = 0, fragmentShader = 0;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
 #if LIN
@@ -340,8 +340,6 @@ static int PostProcessingCallback(
     int x, y;
 	XPLMGetScreenSize(&x, &y);
     
-    glUseProgram(program);
-    
 	if(textureId == 0 || lastResolutionX != x || lastResolutionY != y)
 	{
 		XPLMGenerateTextureNumbers((int *) &textureId, 1);
@@ -362,6 +360,8 @@ static int PostProcessingCallback(
     
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, x, y);
 	XPLMSetGraphicsState(0, 1, 0, 0, 0,  0, 0);
+    
+    glUseProgram(program);
     
     int brightnessLocation = glGetUniformLocation(program, "brightness");
     glUniform1f(brightnessLocation, brightness);
@@ -411,6 +411,7 @@ static int PostProcessingCallback(
     
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
+    int settingsWindowOpen = XPIsWidgetVisible(settingsWidget);
 	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);
     glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
 	glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);
@@ -743,13 +744,11 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 {
 	if (inMessage == xpMessage_CloseButtonPushed)
 	{
-		if (settingsWindowOpen == 1)
+		if (XPIsWidgetVisible(settingsWidget))
 		{
             SaveSettings();
 			XPHideWidget(settingsWidget);
 		}
-        
-        settingsWindowOpen = 0;
 	}
     else if (inMessage == xpMsg_ButtonStateChanged)
     {
@@ -1345,15 +1344,14 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
 	// settings menu entry
 	if ((long) inItemRef == 0)
 	{
-		if (settingsWindowOpen == 0) // settings not open yet
+		if (settingsWidget == 0) // settings not created yet
 		{
             int x, y;
             XPLMGetScreenSize(&x, &y);
             
 			CreateSettingsWidget(10, y - 100, 350, 880);
-			settingsWindowOpen = 1;
 		}
-		else // settings already open
+		else // settings already created
 		{
 			if (!XPIsWidgetVisible(settingsWidget))
                 XPShowWidget(settingsWidget);
