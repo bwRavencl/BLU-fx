@@ -34,7 +34,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 // define config file path
 #if IBM
@@ -1369,6 +1369,16 @@ PLUGIN_API int XPluginStart(
 	strcpy(outSig, "de.bwravencl."NAME_LOWERCASE);
 	strcpy(outDesc, NAME" enhances your X-Plane experience!");
     
+    // init glew
+#if IBM
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		XPLMDebugString(NAME": The following error occured while initializing GLEW:\n");
+        XPLMDebugString((const char*) glewGetErrorString(err));
+	}
+#endif
+
     // prepare fragment-shader
     InitShader(FRAGMENT_SHADER);
     
@@ -1379,7 +1389,7 @@ PLUGIN_API int XPluginStart(
     // create menu-entries
 	int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
 	XPLMMenuID Menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
-	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1); // settings menu entry with ItemRef = 0
+	XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1);
     
     // read and apply config file
     LoadSettings();
