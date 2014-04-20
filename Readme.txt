@@ -1,4 +1,4 @@
-BLU-fx 0.2 by Matteo Hausner
+BLU-fx 0.3 by Matteo Hausner
 ----------------------------
 
 > License Information:
