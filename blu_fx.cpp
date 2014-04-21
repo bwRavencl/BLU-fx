@@ -5,6 +5,7 @@
 #include "XPLMDisplay.h"
 #include "XPLMGraphics.h"
 #include "XPLMMenus.h"
+#include "XPLMPlugin.h"
 #include "XPLMProcessing.h"
 #include "XPLMUtilities.h"
 #include "XPStandardWidgets.h"
@@ -34,7 +35,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.3"
+#define VERSION "0.4"
 
 // define config file path
 #if IBM
@@ -46,6 +47,7 @@
 #define DEFAULT_POST_PROCESSING_ENABLED 1
 #define DEFAULT_FPS_LIMITER_ENABLED 0
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
+#define DEFAULT_RALEIGH_SCALE 13.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
@@ -79,252 +81,252 @@ typedef BLUfxPreset_t BLUfxPreset;
 
 BLUfxPreset BLUfxPresets [PRESET_MAX] =
 {
-    /* PRESET_DEFAULT */
+    // PRESET_DEFAULT
     {
-        .brightness = 0.0,
-        .contrast = 1.0,
-        .saturation = 1.0,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.0f,
+        .contrast = 1.0f,
+        .saturation = 1.0f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_POLAROID */
+    // PRESET_POLAROID
     {
-        .brightness = 0.05,
-        .contrast = 1.1,
-        .saturation = 1.4,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = -0.2,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.6
+        .brightness = 0.05f,
+        .contrast = 1.1f,
+        .saturation = 1.4f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = -0.2f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.6f
     },
-    /* PRESET_FOGGED_UP */
+    // PRESET_FOGGED_UP
     {
-        .brightness = 0.05,
-        .contrast = 1.2,
-        .saturation = 0.7,
-        .redScale = 0.15,
-        .greenScale = 0.15,
-        .blueScale = 0.15,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.3
+        .brightness = 0.05f,
+        .contrast = 1.2f,
+        .saturation = 0.7f,
+        .redScale = 0.15f,
+        .greenScale = 0.15f,
+        .blueScale = 0.15f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.3f
     },
-    /* PRESET_HIGH_DYNAMIC_RANGE */
+    // PRESET_HIGH_DYNAMIC_RANGE
     {
-        .brightness = 0.00,
-        .contrast = 1.15,
-        .saturation = 0.9,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.6
+        .brightness = 0.0f,
+        .contrast = 1.15f,
+        .saturation = 0.9f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.6f
     },
-    /* PRESET_EDITORS_CHOICE */
+    // PRESET_EDITORS_CHOICE
     {
-        .brightness = 0.05,
-        .contrast = 1.1,
-        .saturation = 1.3,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.3
+        .brightness = 0.05f,
+        .contrast = 1.1f,
+        .saturation = 1.3f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.3f
     },
-    /* PRESET_SLIGHTLY_ENHANCED */
+    // PRESET_SLIGHTLY_ENHANCED
     {
-        .brightness = 0.05,
-        .contrast = 1.1,
-        .saturation = 1.1,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.05f,
+        .contrast = 1.1f,
+        .saturation = 1.1f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_EXTRA_GLOOMY */
+    // PRESET_EXTRA_GLOOMY
     {
-        .brightness = -0.15,
-        .contrast = 1.3,
-        .saturation = 1.0,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = -0.15f,
+        .contrast = 1.3f,
+        .saturation = 1.0f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_RED_ISH */
+    // PRESET_RED_ISH
     {
-        .brightness = 0.0,
-        .contrast = 1.1,
-        .saturation = 1.1,
-        .redScale = 0.1,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.0f,
+        .contrast = 1.1f,
+        .saturation = 1.1f,
+        .redScale = 0.1f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_GREEN_ISH */
+    // PRESET_GREEN_ISH
     {
-        .brightness = 0.0,
-        .contrast = 1.1,
-        .saturation = 1.1,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.1,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.0f,
+        .contrast = 1.1f,
+        .saturation = 1.1f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.1f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_BLUE_ISH */
+    // PRESET_BLUE_ISH
     {
-        .brightness = 0.0,
-        .contrast = 1.1,
-        .saturation = 1.1,
-        .redScale = 0.0,
-        .greenScale = 0.1,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.0f,
+        .contrast = 1.1f,
+        .saturation = 1.1f,
+        .redScale = 0.0f,
+        .greenScale = 0.1f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_SHINY_CALIFORNIA */
+    // PRESET_SHINY_CALIFORNIA
     {
-        .brightness = 0.1,
-        .contrast = 1.5,
-        .saturation = 1.3,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = -0.1,
-        .vignette = 0.0
+        .brightness = 0.1f,
+        .contrast = 1.5f,
+        .saturation = 1.3f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = -0.1f,
+        .vignette = 0.0f
     },
-    /* PRESET_DUSTY_DRY */
+    // PRESET_DUSTY_DRY
     {
-        .brightness = 0.0,
-        .contrast = 1.3,
-        .saturation = 1.3,
-        .redScale = 0.2,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.0,
-        .blueOffset = 0.0,
-        .vignette = 0.6
+        .brightness = 0.0f,
+        .contrast = 1.3f,
+        .saturation = 1.3f,
+        .redScale = 0.2f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.0f,
+        .blueOffset = 0.0f,
+        .vignette = 0.6f
     },
-    /* PRESET_GRAY_WINTER */
+    // PRESET_GRAY_WINTER
     {
-        .brightness = 0.07,
-        .contrast = 1.15,
-        .saturation = 1.3,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.2,
-        .redOffset = 0.0,
-        .greenOffset = 0.05,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.07f,
+        .contrast = 1.15f,
+        .saturation = 1.3f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.2f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.05f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_FANCY_IMAGINATION */
+    // PRESET_FANCY_IMAGINATION
     {
-        .brightness = 0.0,
-        .contrast = 1.6,
-        .saturation = 1.5,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = -0.1,
-        .redOffset = 0.0,
-        .greenOffset = 0.05,
-        .blueOffset = 0.0,
-        .vignette = 0.6
+        .brightness = 0.0f,
+        .contrast = 1.6f,
+        .saturation = 1.5f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = -0.1f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.05f,
+        .blueOffset = 0.0f,
+        .vignette = 0.6f
     },
-    /* PRESET_SIXTIES */
+    // PRESET_SIXTIES
     {
-        .brightness = 0.0,
-        .contrast = 1.6,
-        .saturation = 1.5,
-        .redScale = 0.2,
-        .greenScale = 0.0,
-        .blueScale = -0.1,
-        .redOffset = 0.0,
-        .greenOffset = 0.05,
-        .blueOffset = 0.0,
-        .vignette = 0.65
+        .brightness = 0.0f,
+        .contrast = 1.6f,
+        .saturation = 1.5f,
+        .redScale = 0.2f,
+        .greenScale = 0.0f,
+        .blueScale = -0.1f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.05f,
+        .blueOffset = 0.0f,
+        .vignette = 0.65f
     },
-    /* PRESET_COLD_WINTER */
+    // PRESET_COLD_WINTER
     {
-        .brightness = 0.0,
-        .contrast = 1.55,
-        .saturation = 0.6,
-        .redScale = 0.0,
-        .greenScale = 0.05,
-        .blueScale = 0.2,
-        .redOffset = 0.0,
-        .greenOffset = 0.05,
-        .blueOffset = 0.0,
-        .vignette = 0.25
+        .brightness = 0.0f,
+        .contrast = 1.55f,
+        .saturation = 0.6f,
+        .redScale = 0.0f,
+        .greenScale = 0.05f,
+        .blueScale = 0.2f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.05f,
+        .blueOffset = 0.0f,
+        .vignette = 0.25f
     },
-    /* PRESET_VINTAGE_FILM */
+    // PRESET_VINTAGE_FILM
     {
-        .brightness = 0.0,
-        .contrast = 1.05,
-        .saturation = 0.0,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.07,
-        .redOffset = 0.07,
-        .greenOffset = 0.03,
-        .blueOffset = 0.0,
-        .vignette = 0.0
+        .brightness = 0.0f,
+        .contrast = 1.05f,
+        .saturation = 0.0f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.07f,
+        .redOffset = 0.07f,
+        .greenOffset = 0.03f,
+        .blueOffset = 0.0f,
+        .vignette = 0.0f
     },
-    /* PRESET_COLORLESS */
+    // PRESET_COLORLESS
     {
-        .brightness = -0.03,
-        .contrast = 1.3,
-        .saturation = 0.0,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.03,
-        .blueOffset = 0.0,
-        .vignette = 0.65
+        .brightness = -0.03f,
+        .contrast = 1.3f,
+        .saturation = 0.0f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.03f,
+        .blueOffset = 0.0f,
+        .vignette = 0.65f
     },
-    /* PRESET_MONOCHROME */
+    // PRESET_MONOCHROME
     {
-        .brightness = -0.13,
-        .contrast = 1.2,
-        .saturation = 0.0,
-        .redScale = 0.0,
-        .greenScale = 0.0,
-        .blueScale = 0.0,
-        .redOffset = 0.0,
-        .greenOffset = 0.03,
-        .blueOffset = 0.0,
-        .vignette = 0.7
+        .brightness = -0.13f,
+        .contrast = 1.2f,
+        .saturation = 0.0f,
+        .redScale = 0.0f,
+        .greenScale = 0.0f,
+        .blueScale = 0.0f,
+        .redOffset = 0.0f,
+        .greenOffset = 0.03f,
+        .blueOffset = 0.0f,
+        .vignette = 0.7f
     }
 };
 
@@ -378,7 +380,8 @@ static float brightness = BLUfxPresets[PRESET_DEFAULT].brightness,
              redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset,
              greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset,
              blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset,
-             vignette = BLUfxPresets[PRESET_DEFAULT].vignette;
+             vignette = BLUfxPresets[PRESET_DEFAULT].vignette,
+             raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
 static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
@@ -389,12 +392,10 @@ static Display *display = NULL;
 #endif
 
 // global dataref variables
-static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef;
+static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef, raleighScaleDataRef;
 
 // global widget variables
-static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, maxFpsSlider, disableCinemaVeriteTimeSlider;
-
-static XPWidgetID presetButtons[PRESET_MAX];
+static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, raleighScaleCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, raleighScaleSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, presetButtons[PRESET_MAX], resetRaleighScaleButton;
 
 // draw-callback that adds post-processing
 static int PostProcessingCallback(
@@ -659,6 +660,15 @@ float Round(const float f)
     return ((int) (f * 100.0f)) / 100.0f;
 }
 
+// sets the raleigh scale dataref to the selected raleigh scale value, passing reset = 1 resets the dataref to its default value
+void UpdateRaleighScale(int reset)
+{
+    if (raleighScaleDataRef == NULL)
+        raleighScaleDataRef = XPLMFindDataRef("sim/private/controls/atmo/atmo_scale_raleigh");
+    if (raleighScaleDataRef != NULL)
+        XPLMSetDataf(raleighScaleDataRef, reset == 0 ? raleighScale : DEFAULT_RALEIGH_SCALE);
+}
+
 // updates all caption widgets and slider positions associated with settings variables
 void UpdateSettingsWidgets(void)
 {
@@ -706,6 +716,10 @@ void UpdateSettingsWidgets(void)
     sprintf(stringVignette, "Vignette: %.2f", vignette);
     XPSetWidgetDescriptor(vignetteCaption, stringVignette);
 
+    char stringRaleighScale[32];
+    sprintf(stringRaleighScale, "Raleigh Scale: %.2f", raleighScale);
+    XPSetWidgetDescriptor(raleighScaleCaption, stringRaleighScale);
+
     char stringMaxFps[32];
     sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
     XPSetWidgetDescriptor(maxFpsCaption, stringMaxFps);
@@ -724,6 +738,7 @@ void UpdateSettingsWidgets(void)
     XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (greenOffset * 100.0f));
     XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (blueOffset * 100.0f));
     XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (vignette * 100.0f));
+    XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) raleighScale);
     XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (maxFps));
     XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarSliderPosition, (intptr_t) (disableCinemaVeriteTime));
 }
@@ -749,6 +764,7 @@ void SaveSettings(void)
         file << "greenOffset=" << greenOffset << std::endl;
         file << "blueOffset=" << blueOffset << std::endl;
         file << "vignette=" << vignette << std::endl;
+        file << "raleighScale=" << raleighScale << std::endl;
         file << "maxFps=" << maxFps << std::endl;
         file << "disableCinemaVeriteTime=" << disableCinemaVeriteTime << std::endl;
 
@@ -797,6 +813,8 @@ void LoadSettings(void)
                 iss >> blueOffset;
             else if(line.find("vignette") != -1)
                 iss >> vignette;
+            else if(line.find("raleighScale") != -1)
+                iss >> raleighScale;
             else if(line.find("maxFps") != -1)
                 iss >> maxFps;
             else if(line.find("disableCinemaVeriteTime") != -1)
@@ -825,9 +843,15 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             postProcesssingEnabled = (int) XPGetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, 0);
 
             if (postProcesssingEnabled == 0)
+            {
                 XPLMUnregisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
+                UpdateRaleighScale(1);
+            }
             else
+            {
                 XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
+                UpdateRaleighScale(0);
+            }
 
         }
         else if (inParam1 == (long) fpsLimiterCheckbox)
@@ -879,6 +903,11 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             blueOffset = Round(XPGetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) vignetteSlider)
             vignette = Round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
+        else if (inParam1 == (long) raleighScaleSlider)
+        {
+            raleighScale = Round(XPGetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarSliderPosition, 0));
+            UpdateRaleighScale(0);
+        }
         else if (inParam1 == (long) maxFpsSlider)
             maxFps = (float) (int) XPGetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarSliderPosition, 0);
         else if (inParam1 == (long) disableCinemaVeriteTimeSlider)
@@ -888,24 +917,34 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
     }
     else if (inMessage == xpMsg_PushButtonPressed)
     {
-        int i;
-        for (i=0; i < PRESET_MAX; i++)
+        if ((long) inParam1 == (long) resetRaleighScaleButton)
         {
-            if ((long) presetButtons[i] == (long) inParam1)
+            raleighScale = DEFAULT_RALEIGH_SCALE;
+            UpdateRaleighScale(1);
+        }
+        else
+        {
+            int i;
+            for (i=0; i < PRESET_MAX; i++)
             {
-                brightness = BLUfxPresets[i].brightness;
-                contrast = BLUfxPresets[i].contrast;
-                saturation = BLUfxPresets[i].saturation;
-                redScale = BLUfxPresets[i].redScale;
-                greenScale = BLUfxPresets[i].greenScale;
-                blueScale = BLUfxPresets[i].blueScale;
-                redOffset = BLUfxPresets[i].redOffset;
-                greenOffset = BLUfxPresets[i].greenOffset;
-                blueOffset = BLUfxPresets[i].blueOffset;
-                vignette = BLUfxPresets[i].vignette;
-                break;
+                if ((long) presetButtons[i] == (long) inParam1)
+                {
+                    brightness = BLUfxPresets[i].brightness;
+                    contrast = BLUfxPresets[i].contrast;
+                    saturation = BLUfxPresets[i].saturation;
+                    redScale = BLUfxPresets[i].redScale;
+                    greenScale = BLUfxPresets[i].greenScale;
+                    blueScale = BLUfxPresets[i].blueScale;
+                    redOffset = BLUfxPresets[i].redOffset;
+                    greenOffset = BLUfxPresets[i].greenOffset;
+                    blueOffset = BLUfxPresets[i].blueOffset;
+                    vignette = BLUfxPresets[i].vignette;
+
+                    break;
+                }
             }
         }
+
         UpdateSettingsWidgets();
     }
 
@@ -1118,56 +1157,76 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     presetButtons[PRESET_MONOCHROME] = XPCreateWidget(x2 - 20 - 125, y - 560, x2 - 20, y - 575, 1, "Monochrome", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(presetButtons[PRESET_MONOCHROME], xpProperty_ButtonType, xpPushButton);
 
+    // add raleigh scale sub window
+    XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+    // add raleigh scale caption
+    XPCreateWidget(x + 10, y - 600, x2 - 20, y - 615, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_Caption);
+
+    // add raleigh scale caption
+    char stringRaleighScale[32];
+    sprintf(stringRaleighScale, "Raleigh Scale: %.0f", raleighScale);
+    raleighScaleCaption = XPCreateWidget(x + 30, y - 630, x2 - 50, y - 645, 1, stringRaleighScale, 0, settingsWidget, xpWidgetClass_Caption);
+
+    // add raleigh scale slider
+    raleighScaleSlider = XPCreateWidget(x + 195, y - 630, x2 - 15, y - 645, 1, "Raleigh Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+    XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMin, 1);
+    XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMax, 100);
+
+    // add raleigh scale reset button
+    resetRaleighScaleButton = XPCreateWidget(x + 30, y - 660, x + 30 + 80, y - 675, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
+    XPSetWidgetProperty(resetRaleighScaleButton, xpProperty_ButtonType, xpPushButton);
+
     // add fps-limiter sub window
-    XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    XPCreateWidget(x + 10, y - 700, x2 - 10, y - 775 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
 
     // add fps-limiter caption
-    XPCreateWidget(x + 10, y - 600, x2 - 20, y - 615, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 700, x2 - 20, y - 715, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_Caption);
 
     // add fps-limiter checkbox
-    fpsLimiterCheckbox = XPCreateWidget(x + 20, y - 630, x2 - 20, y - 645, 1, "Enable FPS-Limiter", 0, settingsWidget, xpWidgetClass_Button);
+    fpsLimiterCheckbox = XPCreateWidget(x + 20, y - 730, x2 - 20, y - 745, 1, "Enable FPS-Limiter", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonType, xpRadioButton);
     XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
 
     // add max fps caption
     char stringMaxFps[32];
     sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
-    maxFpsCaption = XPCreateWidget(x + 30, y - 660, x2 - 50, y - 675, 1, stringMaxFps, 0, settingsWidget, xpWidgetClass_Caption);
+    maxFpsCaption = XPCreateWidget(x + 30, y - 760, x2 - 50, y - 775, 1, stringMaxFps, 0, settingsWidget, xpWidgetClass_Caption);
 
     // add max fps slider
-    maxFpsSlider = XPCreateWidget(x + 195, y - 660, x2 - 15, y - 675, 1, "Max FPS", 0, settingsWidget, xpWidgetClass_ScrollBar);
+    maxFpsSlider = XPCreateWidget(x + 195, y - 760, x2 - 15, y - 775, 1, "Max FPS", 0, settingsWidget, xpWidgetClass_ScrollBar);
     XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMin, 20);
     XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMax, 200);
 
     // add auto disable enable cinema verite sub window
-    XPCreateWidget(x + 10, y - 700, x2 - 10, y - 775 - 10, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    XPCreateWidget(x + 10, y - 800, x2 - 10, y - 875 - 10, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_SubWindow);
 
     // add auto disable enable cinema verite caption
-    XPCreateWidget(x + 10, y - 700, x2 - 20, y - 715, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 800, x2 - 20, y - 815, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_Caption);
 
     // add control cinema verite checkbox
-    controlCinemaVeriteCheckbox = XPCreateWidget(x + 20, y - 730, x2 - 20, y - 745, 1, "Control Cinema Verite", 0, settingsWidget, xpWidgetClass_Button);
+    controlCinemaVeriteCheckbox = XPCreateWidget(x + 20, y - 830, x2 - 20, y - 845, 1, "Control Cinema Verite", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonType, xpRadioButton);
     XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
 
     // add disable cinema verite time caption
     char stringDisableCinemaVeriteTime[32];
     sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
-    disableCinemaVeriteTimeCaption = XPCreateWidget(x + 30, y - 760, x2 - 50, y - 775, 1, stringDisableCinemaVeriteTime, 0, settingsWidget, xpWidgetClass_Caption);
+    disableCinemaVeriteTimeCaption = XPCreateWidget(x + 30, y - 850, x2 - 50, y - 865, 1, stringDisableCinemaVeriteTime, 0, settingsWidget, xpWidgetClass_Caption);
 
     // add disable cinema verite time slider
-    disableCinemaVeriteTimeSlider = XPCreateWidget(x + 195, y - 760, x2 - 15, y - 775, 1, "Disable Cinema Verite Timer", 0, settingsWidget, xpWidgetClass_ScrollBar);
+    disableCinemaVeriteTimeSlider = XPCreateWidget(x + 195, y - 850, x2 - 15, y - 865, 1, "Disable Cinema Verite Timer", 0, settingsWidget, xpWidgetClass_ScrollBar);
     XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMin, 1);
     XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
 
     // add about sub window
-    XPCreateWidget(x + 10, y - 800, x2 - 10, y - 860 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    XPCreateWidget(x + 10, y - 900, x2 - 10, y - 960 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
 
     // add about caption
-    XPCreateWidget(x + 10, y - 800, x2 - 20, y - 815, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 815, x2 - 20, y - 830, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 830, x2 - 20, y - 845, 1, "Copyright 2014 for non-commerical use only!", 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 845, x2 - 20, y - 860, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Copyright 2014 for non-commerical use only!", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 945, x2 - 20, y - 960, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
 
     // init checkbox and slider positions
     UpdateSettingsWidgets();
@@ -1187,7 +1246,7 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
             int x, y;
             XPLMGetScreenSize(&x, &y);
 
-            CreateSettingsWidget(10, y - 100, 350, 880);
+            CreateSettingsWidget(10, y - 100, 350, 980);
         }
         else // settings already created
         {
@@ -1255,6 +1314,7 @@ PLUGIN_API void	XPluginStop(void)
 
 PLUGIN_API void XPluginDisable(void)
 {
+    UpdateRaleighScale(1);
 }
 
 PLUGIN_API int XPluginEnable(void)
@@ -1267,4 +1327,6 @@ PLUGIN_API void XPluginReceiveMessage(
     long			inMessage,
     void *			inParam)
 {
+    if (inMessage == XPLM_MSG_SCENERY_LOADED)
+        UpdateRaleighScale(0);
 }
