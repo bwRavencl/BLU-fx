@@ -1069,15 +1069,15 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     XPSetWidgetProperty(presetButtons[PRESET_EXTRA_GLOOMY], xpProperty_ButtonType, xpPushButton);
 
     // add red shift preset button
-    presetButtons[PRESET_RED_ISH] = XPCreateWidget(x + 20, y - 510, x + 20 + 125, y - 525, 1, "Red Shift", 0, settingsWidget, xpWidgetClass_Button);
+    presetButtons[PRESET_RED_ISH] = XPCreateWidget(x + 20, y - 510, x + 20 + 125, y - 525, 1, "Red-ish", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(presetButtons[PRESET_RED_ISH], xpProperty_ButtonType, xpPushButton);
 
     // add green shift preset button
-    presetButtons[PRESET_GREEN_ISH] = XPCreateWidget(x + 20, y - 535, x + 20 + 125, y - 550, 1, "Green Shift", 0, settingsWidget, xpWidgetClass_Button);
+    presetButtons[PRESET_GREEN_ISH] = XPCreateWidget(x + 20, y - 535, x + 20 + 125, y - 550, 1, "Green-ish", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(presetButtons[PRESET_GREEN_ISH], xpProperty_ButtonType, xpPushButton);
 
     // add blue shift preset button
-    presetButtons[PRESET_BLUE_ISH] = XPCreateWidget(x + 20, y - 560, x + 20 + 125, y - 575, 1, "Blue Shift", 0, settingsWidget, xpWidgetClass_Button);
+    presetButtons[PRESET_BLUE_ISH] = XPCreateWidget(x + 20, y - 560, x + 20 + 125, y - 575, 1, "Blue-ish", 0, settingsWidget, xpWidgetClass_Button);
     XPSetWidgetProperty(presetButtons[PRESET_BLUE_ISH], xpProperty_ButtonType, xpPushButton);
 
     // second preset button column
