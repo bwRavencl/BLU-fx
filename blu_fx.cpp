@@ -83,250 +83,250 @@ BLUfxPreset BLUfxPresets [PRESET_MAX] =
 {
     // PRESET_DEFAULT
     {
-        .brightness = 0.0f,
-        .contrast = 1.0f,
-        .saturation = 1.0f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.0f, // brightness
+        1.0f, // contrast
+        1.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_POLAROID
     {
-        .brightness = 0.05f,
-        .contrast = 1.1f,
-        .saturation = 1.4f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = -0.2f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.6f
+        0.05f, // brightness
+        1.1f, // contrast
+        1.4f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        -0.2f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.6f // vignette
     },
     // PRESET_FOGGED_UP
     {
-        .brightness = 0.05f,
-        .contrast = 1.2f,
-        .saturation = 0.7f,
-        .redScale = 0.15f,
-        .greenScale = 0.15f,
-        .blueScale = 0.15f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.3f
+        0.05f, // brightness
+        1.2f, // contrast
+        0.7f, // saturation
+        0.15f, // red scale
+        0.15f, // green scale
+        0.15f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.3f // vignette
     },
     // PRESET_HIGH_DYNAMIC_RANGE
     {
-        .brightness = 0.0f,
-        .contrast = 1.15f,
-        .saturation = 0.9f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.6f
+        0.0f, // brightness
+        1.15f, // contrast
+        0.9f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.6f // vignette
     },
     // PRESET_EDITORS_CHOICE
     {
-        .brightness = 0.05f,
-        .contrast = 1.1f,
-        .saturation = 1.3f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.3f
+        0.05f, // brightness
+        1.1f, // contrast
+        1.3f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.3f // vignette
     },
     // PRESET_SLIGHTLY_ENHANCED
     {
-        .brightness = 0.05f,
-        .contrast = 1.1f,
-        .saturation = 1.1f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.05f, // brightness
+        1.1f, // contrast
+        1.1f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_EXTRA_GLOOMY
     {
-        .brightness = -0.15f,
-        .contrast = 1.3f,
-        .saturation = 1.0f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        -0.15f, // brightness
+        1.3f, // contrast
+        1.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_RED_ISH
     {
-        .brightness = 0.0f,
-        .contrast = 1.1f,
-        .saturation = 1.1f,
-        .redScale = 0.1f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.0f, // brightness
+        1.0f, // contrast
+        1.0f, // saturation
+        0.1f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_GREEN_ISH
     {
-        .brightness = 0.0f,
-        .contrast = 1.1f,
-        .saturation = 1.1f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.1f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.0f, // brightness
+        1.0f, // contrast
+        1.0f, // saturation
+        0.0f, // red scale
+        0.1f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_BLUE_ISH
     {
-        .brightness = 0.0f,
-        .contrast = 1.1f,
-        .saturation = 1.1f,
-        .redScale = 0.0f,
-        .greenScale = 0.1f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.0f, // brightness
+        1.0f, // contrast
+        1.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.1f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_SHINY_CALIFORNIA
     {
-        .brightness = 0.1f,
-        .contrast = 1.5f,
-        .saturation = 1.3f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = -0.1f,
-        .vignette = 0.0f
+        0.1f, // brightness
+        1.5f, // contrast
+        1.3f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        -0.1f, // blue offset
+        0.0f // vignette
     },
     // PRESET_DUSTY_DRY
     {
-        .brightness = 0.0f,
-        .contrast = 1.3f,
-        .saturation = 1.3f,
-        .redScale = 0.2f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.0f,
-        .blueOffset = 0.0f,
-        .vignette = 0.6f
+        0.0f, // brightness
+        1.3f, // contrast
+        1.3f, // saturation
+        0.2f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.0f, // green offset
+        0.0f, // blue offset
+        0.6f // vignette
     },
     // PRESET_GRAY_WINTER
     {
-        .brightness = 0.07f,
-        .contrast = 1.15f,
-        .saturation = 1.3f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.2f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.05f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.07f, // brightness
+        1.15f, // contrast
+        1.3f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.05f, // green offset
+        0.0f, // blue offset
+        0.6f // vignette
     },
     // PRESET_FANCY_IMAGINATION
     {
-        .brightness = 0.0f,
-        .contrast = 1.6f,
-        .saturation = 1.5f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = -0.1f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.05f,
-        .blueOffset = 0.0f,
-        .vignette = 0.6f
+        0.0f, // brightness
+        1.6f, // contrast
+        1.5f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        -0.1f, // blue scale
+        0.0f, // red offset
+        0.05f, // green offset
+        0.0f, // blue offset
+        0.6f // vignette
     },
     // PRESET_SIXTIES
     {
-        .brightness = 0.0f,
-        .contrast = 1.6f,
-        .saturation = 1.5f,
-        .redScale = 0.2f,
-        .greenScale = 0.0f,
-        .blueScale = -0.1f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.05f,
-        .blueOffset = 0.0f,
-        .vignette = 0.65f
+        0.0f, // brightness
+        1.6f, // contrast
+        1.5f, // saturation
+        0.2f, // red scale
+        0.0f, // green scale
+        -0.1f, // blue scale
+        0.0f, // red offset
+        0.05f, // green offset
+        0.0f, // blue offset
+        0.65f // vignette
     },
     // PRESET_COLD_WINTER
     {
-        .brightness = 0.0f,
-        .contrast = 1.55f,
-        .saturation = 0.6f,
-        .redScale = 0.0f,
-        .greenScale = 0.05f,
-        .blueScale = 0.2f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.05f,
-        .blueOffset = 0.0f,
-        .vignette = 0.25f
+        0.0f, // brightness
+        1.55f, // contrast
+        0.0f, // saturation
+        0.0f, // red scale
+        0.05f, // green scale
+        0.2f, // blue scale
+        0.0f, // red offset
+        0.05f, // green offset
+        0.0f, // blue offset
+        0.25f // vignette
     },
     // PRESET_VINTAGE_FILM
     {
-        .brightness = 0.0f,
-        .contrast = 1.05f,
-        .saturation = 0.0f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.07f,
-        .redOffset = 0.07f,
-        .greenOffset = 0.03f,
-        .blueOffset = 0.0f,
-        .vignette = 0.0f
+        0.0f, // brightness
+        1.05f, // contrast
+        0.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.07f, // blue scale
+        0.07f, // red offset
+        0.03f, // green offset
+        0.0f, // blue offset
+        0.0f // vignette
     },
     // PRESET_COLORLESS
     {
-        .brightness = -0.03f,
-        .contrast = 1.3f,
-        .saturation = 0.0f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.03f,
-        .blueOffset = 0.0f,
-        .vignette = 0.65f
+        -0.03f, // brightness
+        1.3f, // contrast
+        0.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.03f, // green offset
+        0.0f, // blue offset
+        0.65f // vignette
     },
     // PRESET_MONOCHROME
     {
-        .brightness = -0.13f,
-        .contrast = 1.2f,
-        .saturation = 0.0f,
-        .redScale = 0.0f,
-        .greenScale = 0.0f,
-        .blueScale = 0.0f,
-        .redOffset = 0.0f,
-        .greenOffset = 0.03f,
-        .blueOffset = 0.0f,
-        .vignette = 0.7f
+        -0.13f, // brightness
+        1.2f, // contrast
+        0.0f, // saturation
+        0.0f, // red scale
+        0.0f, // green scale
+        0.0f, // blue scale
+        0.0f, // red offset
+        0.03f, // green offset
+        0.0f, // blue offset
+        0.7f // vignette
     }
 };
 
@@ -905,7 +905,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
             vignette = Round(XPGetWidgetProperty(vignetteSlider, xpProperty_ScrollBarSliderPosition, 0) / 100.0f);
         else if (inParam1 == (long) raleighScaleSlider)
         {
-            raleighScale = Round(XPGetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarSliderPosition, 0));
+            raleighScale = Round((float) XPGetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarSliderPosition, 0));
             UpdateRaleighScale(0);
         }
         else if (inParam1 == (long) maxFpsSlider)
