@@ -1284,9 +1284,9 @@ PLUGIN_API int XPluginStart(
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
 
     // create menu-entries
-    int SubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
-    XPLMMenuID Menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), SubMenuItem, MenuHandlerCallback, 0);
-    XPLMAppendMenuItem(Menu, "Settings", (void*) 0, 1);
+    int subMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
+    XPLMMenuID menu = XPLMCreateMenu(NAME, XPLMFindPluginsMenu(), subMenuItem, MenuHandlerCallback, 0);
+    XPLMAppendMenuItem(menu, "Settings", (void*) 0, 1);
 
     // read and apply config file
     LoadSettings();
