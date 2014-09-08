@@ -392,10 +392,10 @@ static Display *display = NULL;
 #endif
 
 // global dataref variables
-static XPLMDataRef cinemaVeriteDataRef, viewTypeDataRef, raleighScaleDataRef;
+static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL;
 
 // global widget variables
-static XPWidgetID settingsWidget, postProcessingCheckbox, fpsLimiterCheckbox, controlCinemaVeriteCheckbox, brightnessCaption, contrastCaption, saturationCaption, redScaleCaption, greenScaleCaption, blueScaleCaption, redOffsetCaption, greenOffsetCaption, blueOffsetCaption, vignetteCaption, raleighScaleCaption, maxFpsCaption, disableCinemaVeriteTimeCaption, brightnessSlider, contrastSlider, saturationSlider, redScaleSlider, greenScaleSlider, blueScaleSlider, redOffsetSlider, greenOffsetSlider, blueOffsetSlider, vignetteSlider, raleighScaleSlider, maxFpsSlider, disableCinemaVeriteTimeSlider, presetButtons[PRESET_MAX], resetRaleighScaleButton;
+static XPWidgetID settingsWidget = NULL, postProcessingCheckbox = NULL, fpsLimiterCheckbox = NULL, controlCinemaVeriteCheckbox = NULL, brightnessCaption = NULL, contrastCaption = NULL, saturationCaption = NULL, redScaleCaption = NULL, greenScaleCaption = NULL, blueScaleCaption = NULL, redOffsetCaption = NULL, greenOffsetCaption = NULL, blueOffsetCaption = NULL, vignetteCaption = NULL, raleighScaleCaption = NULL, maxFpsCaption = NULL, disableCinemaVeriteTimeCaption, brightnessSlider = NULL, contrastSlider = NULL, saturationSlider = NULL, redScaleSlider = NULL, greenScaleSlider = NULL, blueScaleSlider = NULL, redOffsetSlider = NULL, greenOffsetSlider = NULL, blueOffsetSlider = NULL, vignetteSlider = NULL, raleighScaleSlider = NULL, maxFpsSlider = NULL, disableCinemaVeriteTimeSlider = NULL, presetButtons[PRESET_MAX] = {NULL}, resetRaleighScaleButton = NULL;
 
 // draw-callback that adds post-processing
 static int PostProcessingCallback(
