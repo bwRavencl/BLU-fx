@@ -401,10 +401,7 @@ static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighSc
 static XPWidgetID settingsWidget = NULL, postProcessingCheckbox = NULL, fpsLimiterCheckbox = NULL, controlCinemaVeriteCheckbox = NULL, brightnessCaption = NULL, contrastCaption = NULL, saturationCaption = NULL, redScaleCaption = NULL, greenScaleCaption = NULL, blueScaleCaption = NULL, redOffsetCaption = NULL, greenOffsetCaption = NULL, blueOffsetCaption = NULL, vignetteCaption = NULL, raleighScaleCaption = NULL, maxFpsCaption = NULL, disableCinemaVeriteTimeCaption, brightnessSlider = NULL, contrastSlider = NULL, saturationSlider = NULL, redScaleSlider = NULL, greenScaleSlider = NULL, blueScaleSlider = NULL, redOffsetSlider = NULL, greenOffsetSlider = NULL, blueOffsetSlider = NULL, vignetteSlider = NULL, raleighScaleSlider = NULL, maxFpsSlider = NULL, disableCinemaVeriteTimeSlider = NULL, presetButtons[PRESET_MAX] = {NULL}, resetRaleighScaleButton = NULL;
 
 // draw-callback that adds post-processing
-static int PostProcessingCallback(
-    XPLMDrawingPhase     inPhase,
-    int                  inIsBefore,
-    void *               inRefcon)
+static int PostProcessingCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
 {
     int x, y;
     XPLMGetScreenSize(&x, &y);
@@ -503,11 +500,7 @@ static int PostProcessingCallback(
 }
 
 // flightloop-callback that limits the number of flightcycles
-static float LimiterFlightCallback(
-    float                inElapsedSinceLastCall,
-    float                inElapsedTimeSinceLastFlightLoop,
-    int                  inCounter,
-    void *               inRefcon)
+static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
     endTimeFlight = XPLMGetElapsedTime();
     float dt = endTimeFlight - startTimeFlight;
@@ -527,10 +520,7 @@ static float LimiterFlightCallback(
 }
 
 // draw-callback that limits the number of drawcycles
-static int LimiterDrawCallback(
-    XPLMDrawingPhase     inPhase,
-    int                  inIsBefore,
-    void *               inRefcon)
+static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
 {
     endTimeDraw = XPLMGetElapsedTime();
     float dt = endTimeDraw - startTimeDraw;
@@ -550,11 +540,7 @@ static int LimiterDrawCallback(
 }
 
 // flightloop-callback that auto-controls cinema-verite
-static float ControlCinemaVeriteCallback(
-    float                inElapsedSinceLastCall,
-    float                inElapsedTimeSinceLastFlightLoop,
-    int                  inCounter,
-    void *               inRefcon)
+static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
 #if APL
     int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
@@ -1238,7 +1224,7 @@ static void CreateSettingsWidget(int x, int y, int w, int h)
 }
 
 // handles the menu-entries
-static void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
+static void MenuHandlerCallback(void *inMenuRef, void *inItemRef)
 {
     // settings menu entry
     if ((long) inItemRef == 0)
@@ -1258,10 +1244,7 @@ static void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
     }
 }
 
-PLUGIN_API int XPluginStart(
-    char *		outName,
-    char *		outSig,
-    char *		outDesc)
+PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 {
     // set plugin info
     strcpy(outName, NAME);
@@ -1324,10 +1307,7 @@ PLUGIN_API int XPluginEnable(void)
     return 1;
 }
 
-PLUGIN_API void XPluginReceiveMessage(
-    XPLMPluginID	inFromWho,
-    long			inMessage,
-    void *			inParam)
+PLUGIN_API void XPluginReceiveMessage(XPLMPluginID inFromWho, long inMessage, void *inParam)
 {
     if (inMessage == XPLM_MSG_SCENERY_LOADED)
         UpdateRaleighScale(0);
