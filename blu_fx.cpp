@@ -1,4 +1,19 @@
-/* Copyright 2014 Matteo Hausner */
+/* Copyright (C) 2014  Matteo Hausner
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 #include "XPLMDataAccess.h"
 #include "XPLMDefs.h"
@@ -35,7 +50,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.4"
+#define VERSION "0.5"
 
 // define config file path
 #if IBM
@@ -500,7 +515,7 @@ static int PostProcessingCallback(
 }
 
 // flightloop-callback that limits the number of flightcycles
-float LimiterFlightCallback(
+static float LimiterFlightCallback(
     float                inElapsedSinceLastCall,
     float                inElapsedTimeSinceLastFlightLoop,
     int                  inCounter,
@@ -547,7 +562,7 @@ static int LimiterDrawCallback(
 }
 
 // flightloop-callback that auto-controls cinema-verite
-float ControlCinemaVeriteCallback(
+static float ControlCinemaVeriteCallback(
     float                inElapsedSinceLastCall,
     float                inElapsedTimeSinceLastFlightLoop,
     int                  inCounter,
@@ -600,7 +615,7 @@ float ControlCinemaVeriteCallback(
 }
 
 // removes the fragment-shader from video memory, if deleteProgram is set the shader-program is also removed
-void CleanupShader(int deleteProgram = 0)
+static void CleanupShader(int deleteProgram = 0)
 {
     glDetachShader(program, fragmentShader);
     glDeleteShader(fragmentShader);
@@ -610,7 +625,7 @@ void CleanupShader(int deleteProgram = 0)
 }
 
 // function to load, compile and link the fragment-shader
-void InitShader(const char *fragmentShaderString)
+static void InitShader(const char *fragmentShaderString)
 {
     program = glCreateProgram();
 
@@ -655,13 +670,13 @@ void InitShader(const char *fragmentShaderString)
 }
 
 // returns a float rounded to two decimal places
-float Round(const float f)
+static float Round(const float f)
 {
     return ((int) (f * 100.0f)) / 100.0f;
 }
 
 // sets the raleigh scale dataref to the selected raleigh scale value, passing reset = 1 resets the dataref to its default value
-void UpdateRaleighScale(int reset)
+static void UpdateRaleighScale(int reset)
 {
     if (raleighScaleDataRef == NULL)
         raleighScaleDataRef = XPLMFindDataRef("sim/private/controls/atmo/atmo_scale_raleigh");
@@ -670,7 +685,7 @@ void UpdateRaleighScale(int reset)
 }
 
 // updates all caption widgets and slider positions associated with settings variables
-void UpdateSettingsWidgets(void)
+static void UpdateSettingsWidgets(void)
 {
     XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, postProcesssingEnabled);
     XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, fpsLimiterEnabled);
@@ -744,7 +759,7 @@ void UpdateSettingsWidgets(void)
 }
 
 // saves current settings to the config file
-void SaveSettings(void)
+static void SaveSettings(void)
 {
     std::fstream file;
     file.open(CONFIG_PATH, std::ios_base::out | std::ios_base::trunc);
@@ -773,7 +788,7 @@ void SaveSettings(void)
 }
 
 // loads settings from the config file
-void LoadSettings(void)
+static void LoadSettings(void)
 {
     std::ifstream file;
     file.open(CONFIG_PATH);
@@ -826,7 +841,7 @@ void LoadSettings(void)
 }
 
 // handles the settings widget
-int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2)
+static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2)
 {
     if (inMessage == xpMessage_CloseButtonPushed)
     {
@@ -952,7 +967,7 @@ int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long i
 }
 
 // creates the settings widget
-void CreateSettingsWidget(int x, int y, int w, int h)
+static void CreateSettingsWidget(int x, int y, int w, int h)
 {
     int x2 = x + w;
     int y2 = y - h;
@@ -1220,13 +1235,12 @@ void CreateSettingsWidget(int x, int y, int w, int h)
     XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
 
     // add about sub window
-    XPCreateWidget(x + 10, y - 900, x2 - 10, y - 960 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
+    XPCreateWidget(x + 10, y - 900, x2 - 10, y - 945 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
 
     // add about caption
     XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
     XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Copyright 2014 for non-commerical use only!", 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 945, x2 - 20, y - 960, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
+    XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
 
     // init checkbox and slider positions
     UpdateSettingsWidgets();
@@ -1236,7 +1250,7 @@ void CreateSettingsWidget(int x, int y, int w, int h)
 }
 
 // handles the menu-entries
-void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
+static void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
 {
     // settings menu entry
     if ((long) inItemRef == 0)
@@ -1246,7 +1260,7 @@ void MenuHandlerCallback(void* inMenuRef, void* inItemRef)
             int x, y;
             XPLMGetScreenSize(&x, &y);
 
-            CreateSettingsWidget(10, y - 100, 350, 980);
+            CreateSettingsWidget(10, y - 100, 350, 965);
         }
         else // settings already created
         {
