@@ -384,19 +384,7 @@ BLUfxPreset BLUfxPresets [PRESET_MAX] =
 
 // global settings variables
 static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterEnabled = DEFAULT_FPS_LIMITER_ENABLED, controlCinemaVeriteEnabled = DEFAULT_CONTROL_CINEMA_VERITE_ENABLED;
-static float maxFps = DEFAULT_MAX_FRAME_RATE,
-             disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME;
-static float brightness = BLUfxPresets[PRESET_DEFAULT].brightness,
-             contrast = BLUfxPresets[PRESET_DEFAULT].contrast,
-             saturation = BLUfxPresets[PRESET_DEFAULT].saturation,
-             redScale = BLUfxPresets[PRESET_DEFAULT].redScale,
-             greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale,
-             blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale,
-             redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset,
-             greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset,
-             blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset,
-             vignette = BLUfxPresets[PRESET_DEFAULT].vignette,
-             raleighScale = DEFAULT_RALEIGH_SCALE;
+static float maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, brightness = BLUfxPresets[PRESET_DEFAULT].brightness, contrast = BLUfxPresets[PRESET_DEFAULT].contrast, saturation = BLUfxPresets[PRESET_DEFAULT].saturation, redScale = BLUfxPresets[PRESET_DEFAULT].redScale, greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale, blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale, redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset, greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset, blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset, vignette = BLUfxPresets[PRESET_DEFAULT].vignette, raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
 static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
