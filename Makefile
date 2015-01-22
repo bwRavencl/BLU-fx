@@ -1,15 +1,15 @@
-BUILDDIR	:=	./build
-SRC_BASE	:=	.
-TARGET		:= blu_fx
+BUILDDIR    := ./build
+SRC_BASE    := .
+TARGET      := blu_fx
 
 SOURCES = \
-	blu_fx.cpp
+        blu_fx.cpp
 
-LIBS = 
+LIBS =
 
 INCLUDES = \
-	-I$(SRC_BASE)/SDK/CHeaders/XPLM \
-	-I$(SRC_BASE)/SDK/CHeaders/Widgets
+        -I$(SRC_BASE)/SDK/CHeaders/XPLM \
+        -I$(SRC_BASE)/SDK/CHeaders/Widgets
 
 DEFINES = -DAPL=0 -DIBM=0 -DLIN=1
 
@@ -17,23 +17,23 @@ DEFINES = -DAPL=0 -DIBM=0 -DLIN=1
 
 
 VPATH = $(SRC_BASE)
-	
-CSOURCES	:= $(filter %.c, $(SOURCES))
-CXXSOURCES	:= $(filter %.cpp, $(SOURCES))
 
-CDEPS		:= $(patsubst %.c, $(BUILDDIR)/obj32/%.cdep, $(CSOURCES))
-CXXDEPS		:= $(patsubst %.cpp, $(BUILDDIR)/obj32/%.cppdep, $(CXXSOURCES))
-COBJECTS	:= $(patsubst %.c, $(BUILDDIR)/obj32/%.o, $(CSOURCES))
-CXXOBJECTS	:= $(patsubst %.cpp, $(BUILDDIR)/obj32/%.o, $(CXXSOURCES))
-ALL_DEPS	:= $(sort $(CDEPS) $(CXXDEPS))
-ALL_OBJECTS	:= $(sort $(COBJECTS) $(CXXOBJECTS))
+CSOURCES        := $(filter %.c, $(SOURCES))
+CXXSOURCES      := $(filter %.cpp, $(SOURCES))
 
-CDEPS64			:= $(patsubst %.c, $(BUILDDIR)/obj64/%.cdep, $(CSOURCES))
-CXXDEPS64		:= $(patsubst %.cpp, $(BUILDDIR)/obj64/%.cppdep, $(CXXSOURCES))
-COBJECTS64		:= $(patsubst %.c, $(BUILDDIR)/obj64/%.o, $(CSOURCES))
-CXXOBJECTS64	:= $(patsubst %.cpp, $(BUILDDIR)/obj64/%.o, $(CXXSOURCES))
-ALL_DEPS64		:= $(sort $(CDEPS64) $(CXXDEPS64))
-ALL_OBJECTS64	:= $(sort $(COBJECTS64) $(CXXOBJECTS64))
+CDEPS           := $(patsubst %.c, $(BUILDDIR)/obj32/%.cdep, $(CSOURCES))
+CXXDEPS         := $(patsubst %.cpp, $(BUILDDIR)/obj32/%.cppdep, $(CXXSOURCES))
+COBJECTS        := $(patsubst %.c, $(BUILDDIR)/obj32/%.o, $(CSOURCES))
+CXXOBJECTS      := $(patsubst %.cpp, $(BUILDDIR)/obj32/%.o, $(CXXSOURCES))
+ALL_DEPS        := $(sort $(CDEPS) $(CXXDEPS))
+ALL_OBJECTS     := $(sort $(COBJECTS) $(CXXOBJECTS))
+
+CDEPS64                 := $(patsubst %.c, $(BUILDDIR)/obj64/%.cdep, $(CSOURCES))
+CXXDEPS64               := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.cppdep, $(CXXSOURCES))
+COBJECTS64              := $(patsubst %.c, $(BUILDDIR)/obj64/%.o, $(CSOURCES))
+CXXOBJECTS64    := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.o, $(CXXSOURCES))
+ALL_DEPS64              := $(sort $(CDEPS64) $(CXXDEPS64))
+ALL_OBJECTS64   := $(sort $(COBJECTS64) $(CXXOBJECTS64))
 
 CFLAGS := $(DEFINES) $(INCLUDES) -fPIC -fvisibility=hidden -DGL_GLEXT_PROTOTYPES
 
@@ -49,7 +49,7 @@ CFLAGS := $(DEFINES) $(INCLUDES) -fPIC -fvisibility=hidden -DGL_GLEXT_PROTOTYPES
 # Target rules - these just induce the right .xpl files.
 
 $(TARGET): $(BUILDDIR)/$(TARGET)/32/lin.xpl $(BUILDDIR)/$(TARGET)/64/lin.xpl
-	
+
 
 $(BUILDDIR)/$(TARGET)/64/lin.xpl: $(ALL_OBJECTS64)
 	@echo Linking $@
@@ -96,8 +96,8 @@ clean:
 # Include any dependency turds, but don't error out if they don't exist.
 # On the first build, every .c is dirty anyway.  On future builds, if the
 # .c changes, it is rebuilt (as is its dep) so who cares if dependencies
-# are stale.  If the .c is the same but a header has changed, this 
-# declares the header to be changed.  If a primary header includes a 
+# are stale.  If the .c is the same but a header has changed, this
+# declares the header to be changed.  If a primary header includes a
 # utility header and the primary header is changed, the dependency
 # needs a rebuild because EVERY header is included.  And if the secondary
 # header is changed, the primary header had it before (and is unchanged)
