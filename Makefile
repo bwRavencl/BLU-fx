@@ -28,11 +28,11 @@ CXXOBJECTS      := $(patsubst %.cpp, $(BUILDDIR)/obj32/%.o, $(CXXSOURCES))
 ALL_DEPS        := $(sort $(CDEPS) $(CXXDEPS))
 ALL_OBJECTS     := $(sort $(COBJECTS) $(CXXOBJECTS))
 
-CDEPS64                 := $(patsubst %.c, $(BUILDDIR)/obj64/%.cdep, $(CSOURCES))
-CXXDEPS64               := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.cppdep, $(CXXSOURCES))
-COBJECTS64              := $(patsubst %.c, $(BUILDDIR)/obj64/%.o, $(CSOURCES))
+CDEPS64         := $(patsubst %.c, $(BUILDDIR)/obj64/%.cdep, $(CSOURCES))
+CXXDEPS64       := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.cppdep, $(CXXSOURCES))
+COBJECTS64      := $(patsubst %.c, $(BUILDDIR)/obj64/%.o, $(CSOURCES))
 CXXOBJECTS64    := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.o, $(CXXSOURCES))
-ALL_DEPS64              := $(sort $(CDEPS64) $(CXXDEPS64))
+ALL_DEPS64      := $(sort $(CDEPS64) $(CXXDEPS64))
 ALL_OBJECTS64   := $(sort $(COBJECTS64) $(CXXOBJECTS64))
 
 CFLAGS := $(DEFINES) $(INCLUDES) -fPIC -fvisibility=hidden -DGL_GLEXT_PROTOTYPES

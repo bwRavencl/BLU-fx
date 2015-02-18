@@ -1276,13 +1276,13 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // read and apply config file
     LoadSettings();
 
-    // register flightloop-callbacks
+    // register flight loop callbacks
     if (fpsLimiterEnabled != 0)
         XPLMRegisterFlightLoopCallback(LimiterFlightCallback, -1, NULL);
     if (controlCinemaVeriteEnabled != 0)
         XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
 
-    // register draw-callbacks
+    // register draw callbacks
     if (postProcesssingEnabled != 0)
         XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
     if (fpsLimiterEnabled != 0)
