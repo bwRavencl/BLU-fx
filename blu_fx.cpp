@@ -562,7 +562,7 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
     int currentMouseX, currentMouseY;
     XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
 
-    if (mouseButtonDown == 1 || currentMouseX != lastMouseX || currentMouseY != lastMouseY)
+    if (mouseButtonDown != 0 || currentMouseX != lastMouseX || currentMouseY != lastMouseY)
     {
         lastMouseX = currentMouseX;
         lastMouseY = currentMouseY;
@@ -576,8 +576,7 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
         XPLMSetDatai(cinemaVeriteDataRef, 1);
     else
     {
-        float currentTime = XPLMGetElapsedTime();
-        float elapsedTime = currentTime - lastMouseMovementTime;
+        float elapsedTime = XPLMGetElapsedTime() - lastMouseMovementTime;
 
         if (mouseButtonDown || elapsedTime <= disableCinemaVeriteTime)
             XPLMSetDatai(cinemaVeriteDataRef, 0);
@@ -1295,6 +1294,11 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 PLUGIN_API void	XPluginStop(void)
 {
     CleanupShader(1);
+
+#if LIN
+    if(display != NULL)
+        XCloseDisplay(display);
+#endif
 }
 
 PLUGIN_API void XPluginDisable(void)
