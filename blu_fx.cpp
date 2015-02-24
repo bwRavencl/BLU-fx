@@ -50,7 +50,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.5"
+#define VERSION "0.6"
 
 // define config file path
 #if IBM
@@ -65,6 +65,12 @@
 #define DEFAULT_RALEIGH_SCALE 13.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
+
+// define XPScrollWheel plugin signature
+#define XP_SCROLL_WHEEL_PLUGIN_SIGNATURE "thranda.window.scrollwheel"
+
+// define XPScrollWheel scrollIndex array size
+#define XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE 512
 
 enum BLUfxPresets_t { PRESET_DEFAULT, PRESET_POLAROID, PRESET_FOGGED_UP,
                       PRESET_HIGH_DYNAMIC_RANGE, PRESET_EDITORS_CHOICE,
@@ -387,9 +393,9 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, brightness = BLUfxPresets[PRESET_DEFAULT].brightness, contrast = BLUfxPresets[PRESET_DEFAULT].contrast, saturation = BLUfxPresets[PRESET_DEFAULT].saturation, redScale = BLUfxPresets[PRESET_DEFAULT].redScale, greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale, blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale, redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset, greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset, blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset, vignette = BLUfxPresets[PRESET_DEFAULT].vignette, raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
-static int lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
+static int lastScrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE], lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
 static GLuint textureId = 0, program = 0, fragmentShader = 0;
-static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseMovementTime = 0.0f;
+static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseUsageTime = 0.0f;
 #if LIN
 static Display *display = NULL;
 #endif
@@ -539,9 +545,10 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
     return 1;
 }
 
-// flightloop-callback that auto-controls cinema-verite
-static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
+// check if either the left mouse button is down or the XPScrollWheel plugin has been active
+static int IsMouseInUse()
 {
+    // check if left mouse button is down
 #if APL
     int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
 #elif IBM
@@ -559,15 +566,44 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
     int mouseButtonDown = (mask & Button1Mask) >> 8;
 #endif
 
+    if (mouseButtonDown != 0)
+        return 1;
+
+    // check if the XPScrollWheel plugin has modified a DataRef since the last call
+    XPLMPluginID pluginId = XPLMFindPluginBySignature(XP_SCROLL_WHEEL_PLUGIN_SIGNATURE);
+    if (XPLMIsPluginEnabled(pluginId) != 0)
+    {
+        XPLMDataRef scrollindexDataRef = XPLMFindDataRef("thranda/scrollindex");
+        int scrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE];
+        XPLMGetDatavi(scrollindexDataRef, scrollindex, 0, XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE);
+
+        for (int i = 0; i < XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE; i++)
+        {
+            if (scrollindex[i] != lastScrollindex[i])
+            {
+                memcpy(lastScrollindex, scrollindex, XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE);
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+// flightloop-callback that auto-controls cinema-verite
+static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
+{
+    int mouseInUse = IsMouseInUse();
+
     int currentMouseX, currentMouseY;
     XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
 
-    if (mouseButtonDown != 0 || currentMouseX != lastMouseX || currentMouseY != lastMouseY)
+    if (mouseInUse != 0 || currentMouseX != lastMouseX || currentMouseY != lastMouseY)
     {
         lastMouseX = currentMouseX;
         lastMouseY = currentMouseY;
 
-        lastMouseMovementTime = XPLMGetElapsedTime();
+        lastMouseUsageTime = XPLMGetElapsedTime();
     }
 
     int viewType = XPLMGetDatai(viewTypeDataRef);
@@ -576,9 +612,9 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
         XPLMSetDatai(cinemaVeriteDataRef, 1);
     else
     {
-        float elapsedTime = XPLMGetElapsedTime() - lastMouseMovementTime;
+        float elapsedTime = XPLMGetElapsedTime() - lastMouseUsageTime;
 
-        if (mouseButtonDown || elapsedTime <= disableCinemaVeriteTime)
+        if (mouseInUse != 0 || elapsedTime <= disableCinemaVeriteTime)
             XPLMSetDatai(cinemaVeriteDataRef, 0);
         else
             XPLMSetDatai(cinemaVeriteDataRef, 1);
