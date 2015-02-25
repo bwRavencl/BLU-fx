@@ -393,7 +393,7 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, brightness = BLUfxPresets[PRESET_DEFAULT].brightness, contrast = BLUfxPresets[PRESET_DEFAULT].contrast, saturation = BLUfxPresets[PRESET_DEFAULT].saturation, redScale = BLUfxPresets[PRESET_DEFAULT].redScale, greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale, blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale, redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset, greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset, blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset, vignette = BLUfxPresets[PRESET_DEFAULT].vignette, raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
-static int lastScrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE], lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
+static int lastScrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE] = {0}, lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
 static GLuint textureId = 0, program = 0, fragmentShader = 0;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseUsageTime = 0.0f;
 #if LIN
