@@ -545,28 +545,36 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
     return 1;
 }
 
-// check if either the left mouse button is down or the XPScrollWheel plugin has been active
-static int IsMouseInUse()
+// check if either the left or right mouse button is down or the XPScrollWheel plugin has been active - the right button is only checked if checkRightButton is not zero
+static int IsMouseInUse(int checkRightButton)
 {
-    // check if left mouse button is down
+    // check if mouse buttons are down
+    int mouseButtonDown[2] = {0};
 #if APL
-    int mouseButtonDown = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
+    mouseButtonDown[0] = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
+    mouseButtonDown[1] = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonRight);
 #elif IBM
     // if the most significant bit is set, the key is down
-    SHORT state = GetAsyncKeyState(VK_LBUTTON);
-    SHORT msb = state >> 15;
-    int mouseButtonDown = (int) msb;
+    mouseButtonDown[0] = (int) GetAsyncKeyState(VK_LBUTTON) >> 15;
+    mouseButtonDown[1] = (int) GetAsyncKeyState(VK_RBUTTON) >> 15;
 #elif LIN
     if (display == NULL)
         display = XOpenDisplay(NULL);
-    Window root, child;
-    int rootX, rootY, winX, winY;
-    unsigned int mask;
-    XQueryPointer(display, DefaultRootWindow(display), &root, &child, &rootX, &rootY, &winX, &winY, &mask);
-    int mouseButtonDown = (mask & Button1Mask) >> 8;
+    if (display != NULL)
+    {
+        Window root, child;
+        int rootX, rootY, winX, winY;
+        unsigned int mask;
+        XQueryPointer(display, DefaultRootWindow(display), &root, &child, &rootX, &rootY, &winX, &winY, &mask);
+        mouseButtonDown[0] = (mask & Button1Mask) >> 8;
+        mouseButtonDown[1] = (mask & Button2Mask) >> 8;
+    }
 #endif
 
-    if (mouseButtonDown != 0)
+    if (mouseButtonDown[0] != 0)
+        return 1;
+
+    if (checkRightButton != 0 && mouseButtonDown[1] != 0)
         return 1;
 
     // check if the XPScrollWheel plugin has modified a DataRef since the last call
@@ -593,7 +601,7 @@ static int IsMouseInUse()
 // flightloop-callback that auto-controls cinema-verite
 static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
-    int mouseInUse = IsMouseInUse();
+    int mouseInUse = IsMouseInUse(0);
 
     int currentMouseX, currentMouseY;
     XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
@@ -614,7 +622,7 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
     {
         float elapsedTime = XPLMGetElapsedTime() - lastMouseUsageTime;
 
-        if (mouseInUse != 0 || elapsedTime <= disableCinemaVeriteTime)
+        if (elapsedTime <= disableCinemaVeriteTime)
             XPLMSetDatai(cinemaVeriteDataRef, 0);
         else
             XPLMSetDatai(cinemaVeriteDataRef, 1);
