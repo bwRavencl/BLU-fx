@@ -983,304 +983,301 @@ static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget,
     return 0;
 }
 
-// creates the settings widget
-static void CreateSettingsWidget(int x, int y, int w, int h)
-{
-    int x2 = x + w;
-    int y2 = y - h;
-
-    // widget window
-    settingsWidget = XPCreateWidget(x, y, x2, y2, 1, NAME" Settings", 1, 0, xpWidgetClass_MainWindow);
-
-    // add close box
-    XPSetWidgetProperty(settingsWidget, xpProperty_MainWindowHasCloseBoxes, 1);
-
-    // add post-processing sub window
-    XPCreateWidget(x + 10, y - 30, x2 - 10, y - 575 - 10, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_SubWindow);
-
-    // add post-processing settings caption
-    XPCreateWidget(x + 10, y - 30, x2 - 20, y - 45, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add post-processing checkbox
-    postProcessingCheckbox = XPCreateWidget(x + 20, y - 60, x2 - 20, y - 75, 1, "Enable Post-Processing", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonType, xpRadioButton);
-    XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
-
-    // add brightness caption
-    char stringBrightness[32];
-    sprintf(stringBrightness, "Brightness: %.2f", brightness);
-    brightnessCaption = XPCreateWidget(x + 30, y - 90, x2 - 50, y - 105, 1, stringBrightness, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add brightness slider
-    brightnessSlider = XPCreateWidget(x + 195, y - 90, x2 - 15, y - 105, 1, "Brightness", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMin, -500);
-    XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMax, 500);
-
-    // add contrast caption
-    char stringContrast[32];
-    sprintf(stringContrast, "Contrast: %.2f", contrast);
-    contrastCaption = XPCreateWidget(x + 30, y - 110, x2 - 50, y - 125, 1, stringContrast, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add contrast slider
-    contrastSlider = XPCreateWidget(x + 195, y - 110, x2 - 15, y - 125, 1, "Contrast", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMin, 5);
-    XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMax, 200);
-
-    // add saturation caption
-    char stringSaturation[32];
-    sprintf(stringSaturation, "Saturation: %.2f", saturation);
-    saturationCaption = XPCreateWidget(x + 30, y - 130, x2 - 50, y - 145, 1, stringSaturation, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add saturation slider
-    saturationSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Saturation", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMin, 0);
-    XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 250);
-
-    // add red scale caption
-    char stringRedScale[32];
-    sprintf(stringRedScale, "Red Scale: %.2f", redScale);
-    redScaleCaption = XPCreateWidget(x + 30, y - 150, x2 - 50, y - 165, 1, stringRedScale, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add red scale slider
-    redScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -75);
-    XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 75);
-
-    // add green scale caption
-    char stringGreenScale[32];
-    sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
-    greenScaleCaption = XPCreateWidget(x + 30, y - 170, x2 - 50, y - 185, 1, stringGreenScale, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add green scale slider
-    greenScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -75);
-    XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 75);
-
-    // add blue scale caption
-    char stringBlueScale[32];
-    sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
-    blueScaleCaption = XPCreateWidget(x + 30, y - 190, x2 - 50, y - 205, 1, stringBlueScale, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add blue scale slider
-    blueScaleSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -75);
-    XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 75);
-
-    // add red offset caption
-    char stringRedOffset[32];
-    sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
-    redOffsetCaption = XPCreateWidget(x + 30, y - 210, x2 - 50, y - 225, 1, stringRedOffset, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add red offset slider
-    redOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -50);
-    XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 50);
-
-    // add green offset caption
-    char stringGreenOffset[32];
-    sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
-    greenOffsetCaption = XPCreateWidget(x + 30, y - 230, x2 - 50, y - 245, 1, stringGreenOffset, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add green offset slider
-    greenOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -50);
-    XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 50);
-
-    // add blue offset caption
-    char stringBlueOffset[32];
-    sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
-    blueOffsetCaption = XPCreateWidget(x + 30, y - 250, x2 - 50, y - 265, 1, stringBlueOffset, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add blue offset slider
-    blueOffsetSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -50);
-    XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 50);
-
-    // add vignette caption
-    char stringVignette[32];
-    sprintf(stringVignette, "Vignette: %.2f", vignette);
-    vignetteCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringVignette, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add vignette slider
-    vignetteSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMin, 0);
-    XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMax, 100);
-
-    // add reset button
-    presetButtons[PRESET_DEFAULT] = XPCreateWidget(x + 30, y - 300, x + 30 + 80, y - 315, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_DEFAULT], xpProperty_ButtonType, xpPushButton);
-
-    // add post-processing presets caption
-    XPCreateWidget(x + 10, y - 330, x2 - 20, y - 345, 1, "Post-Processing Presets:", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // first preset button column
-
-    // add polaroid preset button
-    presetButtons[PRESET_POLAROID] = XPCreateWidget(x + 20, y - 360, x + 20 + 125, y - 375, 1, "Polaroid", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_POLAROID], xpProperty_ButtonType, xpPushButton);
-
-    // add fogged up preset button
-    presetButtons[PRESET_FOGGED_UP] = XPCreateWidget(x + 20, y - 385, x + 20 + 125, y - 400, 1, "Fogged Up", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_FOGGED_UP], xpProperty_ButtonType, xpPushButton);
-
-    // add high dynamic range preset button
-    presetButtons[PRESET_HIGH_DYNAMIC_RANGE] = XPCreateWidget(x + 20, y - 410, x + 20 + 125, y - 425, 1, "High Dynamic Range", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_HIGH_DYNAMIC_RANGE], xpProperty_ButtonType, xpPushButton);
-
-    // add editor's choice drab preset button
-    presetButtons[PRESET_EDITORS_CHOICE] = XPCreateWidget(x + 20, y - 435, x + 20 + 125, y - 450, 1, "Editor's Choice", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_EDITORS_CHOICE], xpProperty_ButtonType, xpPushButton);
-
-    // add slightly enhanced preset button
-    presetButtons[PRESET_SLIGHTLY_ENHANCED] = XPCreateWidget(x + 20, y - 460, x + 20 + 125, y - 475, 1, "Slightly Enhanced", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_SLIGHTLY_ENHANCED], xpProperty_ButtonType, xpPushButton);
-
-    // add extra gloomy preset button
-    presetButtons[PRESET_EXTRA_GLOOMY] = XPCreateWidget(x + 20, y - 485, x + 20 + 125, y - 500, 1, "Extra Gloomy", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_EXTRA_GLOOMY], xpProperty_ButtonType, xpPushButton);
-
-    // add red shift preset button
-    presetButtons[PRESET_RED_ISH] = XPCreateWidget(x + 20, y - 510, x + 20 + 125, y - 525, 1, "Red-ish", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_RED_ISH], xpProperty_ButtonType, xpPushButton);
-
-    // add green shift preset button
-    presetButtons[PRESET_GREEN_ISH] = XPCreateWidget(x + 20, y - 535, x + 20 + 125, y - 550, 1, "Green-ish", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_GREEN_ISH], xpProperty_ButtonType, xpPushButton);
-
-    // add blue shift preset button
-    presetButtons[PRESET_BLUE_ISH] = XPCreateWidget(x + 20, y - 560, x + 20 + 125, y - 575, 1, "Blue-ish", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_BLUE_ISH], xpProperty_ButtonType, xpPushButton);
-
-    // second preset button column
-
-    // add shiny california preset button
-    presetButtons[PRESET_SHINY_CALIFORNIA] = XPCreateWidget(x2 - 20 - 125, y - 360, x2 - 20, y - 375, 1, "Shiny California", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_SHINY_CALIFORNIA], xpProperty_ButtonType, xpPushButton);
-
-    // add dusty dry preset button
-    presetButtons[PRESET_DUSTY_DRY] = XPCreateWidget(x2 - 20 - 125, y - 385, x2 - 20, y - 400, 1, "Dusty Dry", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_DUSTY_DRY], xpProperty_ButtonType, xpPushButton);
-
-    // add gray winter preset button
-    presetButtons[PRESET_GRAY_WINTER] = XPCreateWidget(x2 - 20 - 125, y - 410, x2 - 20, y - 425, 1, "Gray Winter", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_GRAY_WINTER], xpProperty_ButtonType, xpPushButton);
-
-    // add fancy imagination dreams preset button
-    presetButtons[PRESET_FANCY_IMAGINATION] = XPCreateWidget(x2 - 20 - 125, y - 435, x2 - 20, y - 450, 1, "Fancy Imagination", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_FANCY_IMAGINATION], xpProperty_ButtonType, xpPushButton);
-
-    // add sixties normal preset button
-    presetButtons[PRESET_SIXTIES] = XPCreateWidget(x2 - 20 - 125, y - 460, x2 - 20, y - 475, 1, "Sixties", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_SIXTIES], xpProperty_ButtonType, xpPushButton);
-
-    // add cold winter preset button
-    presetButtons[PRESET_COLD_WINTER] = XPCreateWidget(x2 - 20 - 125, y - 485, x2 - 20, y - 500, 1, "Cold Winter", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_COLD_WINTER], xpProperty_ButtonType, xpPushButton);
-
-    // add vintage film preset button
-    presetButtons[PRESET_VINTAGE_FILM] = XPCreateWidget(x2 - 20 - 125, y - 510, x2 - 20, y - 525, 1, "Vintage Film", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_VINTAGE_FILM], xpProperty_ButtonType, xpPushButton);
-
-    // add colorless preset button
-    presetButtons[PRESET_COLORLESS] = XPCreateWidget(x2 - 20 - 125, y - 535, x2 - 20, y - 550, 1, "Colorless", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_COLORLESS], xpProperty_ButtonType, xpPushButton);
-
-    // add monochrome preset button
-    presetButtons[PRESET_MONOCHROME] = XPCreateWidget(x2 - 20 - 125, y - 560, x2 - 20, y - 575, 1, "Monochrome", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(presetButtons[PRESET_MONOCHROME], xpProperty_ButtonType, xpPushButton);
-
-    // add raleigh scale sub window
-    XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_SubWindow);
-
-    // add raleigh scale caption
-    XPCreateWidget(x + 10, y - 600, x2 - 20, y - 615, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add raleigh scale caption
-    char stringRaleighScale[32];
-    sprintf(stringRaleighScale, "Raleigh Scale: %.0f", raleighScale);
-    raleighScaleCaption = XPCreateWidget(x + 30, y - 630, x2 - 50, y - 645, 1, stringRaleighScale, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add raleigh scale slider
-    raleighScaleSlider = XPCreateWidget(x + 195, y - 630, x2 - 15, y - 645, 1, "Raleigh Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMin, 1);
-    XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMax, 100);
-
-    // add raleigh scale reset button
-    resetRaleighScaleButton = XPCreateWidget(x + 30, y - 660, x + 30 + 80, y - 675, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(resetRaleighScaleButton, xpProperty_ButtonType, xpPushButton);
-
-    // add fps-limiter sub window
-    XPCreateWidget(x + 10, y - 700, x2 - 10, y - 775 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
-
-    // add fps-limiter caption
-    XPCreateWidget(x + 10, y - 700, x2 - 20, y - 715, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add fps-limiter checkbox
-    fpsLimiterCheckbox = XPCreateWidget(x + 20, y - 730, x2 - 20, y - 745, 1, "Enable FPS-Limiter", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonType, xpRadioButton);
-    XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
-
-    // add max fps caption
-    char stringMaxFps[32];
-    sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
-    maxFpsCaption = XPCreateWidget(x + 30, y - 760, x2 - 50, y - 775, 1, stringMaxFps, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add max fps slider
-    maxFpsSlider = XPCreateWidget(x + 195, y - 760, x2 - 15, y - 775, 1, "Max FPS", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMin, 20);
-    XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMax, 200);
-
-    // add auto disable enable cinema verite sub window
-    XPCreateWidget(x + 10, y - 800, x2 - 10, y - 875 - 10, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_SubWindow);
-
-    // add auto disable enable cinema verite caption
-    XPCreateWidget(x + 10, y - 800, x2 - 20, y - 815, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add control cinema verite checkbox
-    controlCinemaVeriteCheckbox = XPCreateWidget(x + 20, y - 830, x2 - 20, y - 845, 1, "Control Cinema Verite", 0, settingsWidget, xpWidgetClass_Button);
-    XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonType, xpRadioButton);
-    XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
-
-    // add disable cinema verite time caption
-    char stringDisableCinemaVeriteTime[32];
-    sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
-    disableCinemaVeriteTimeCaption = XPCreateWidget(x + 30, y - 850, x2 - 50, y - 865, 1, stringDisableCinemaVeriteTime, 0, settingsWidget, xpWidgetClass_Caption);
-
-    // add disable cinema verite time slider
-    disableCinemaVeriteTimeSlider = XPCreateWidget(x + 195, y - 850, x2 - 15, y - 865, 1, "Disable Cinema Verite Timer", 0, settingsWidget, xpWidgetClass_ScrollBar);
-    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMin, 1);
-    XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
-
-    // add about sub window
-    XPCreateWidget(x + 10, y - 900, x2 - 10, y - 945 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
-
-    // add about caption
-    XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
-    XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
-
-    // init checkbox and slider positions
-    UpdateSettingsWidgets();
-
-    // register widget handler
-    XPAddWidgetCallback(settingsWidget, (XPWidgetFunc_t) SettingsWidgetHandler);
-}
-
 // handles the menu-entries
 static void MenuHandlerCallback(void *inMenuRef, void *inItemRef)
 {
     // settings menu entry
     if ((long) inItemRef == 0)
     {
-        if (settingsWidget == 0) // settings not created yet
+        if (settingsWidget == NULL)
         {
-            int x, y;
-            XPLMGetScreenSize(&x, &y);
+            // create settings widget
+            int x = 10, y = 0, w = 350, h = 965;
+            XPLMGetScreenSize(NULL, &y);
+            y -= 100;
 
-            CreateSettingsWidget(10, y - 100, 350, 965);
+            int x2 = x + w;
+            int y2 = y - h;
+
+            // widget window
+            settingsWidget = XPCreateWidget(x, y, x2, y2, 1, NAME" Settings", 1, 0, xpWidgetClass_MainWindow);
+
+            // add close box
+            XPSetWidgetProperty(settingsWidget, xpProperty_MainWindowHasCloseBoxes, 1);
+
+            // add post-processing sub window
+            XPCreateWidget(x + 10, y - 30, x2 - 10, y - 575 - 10, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+            // add post-processing settings caption
+            XPCreateWidget(x + 10, y - 30, x2 - 20, y - 45, 1, "Post-Processing Settings:", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add post-processing checkbox
+            postProcessingCheckbox = XPCreateWidget(x + 20, y - 60, x2 - 20, y - 75, 1, "Enable Post-Processing", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonType, xpRadioButton);
+            XPSetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
+
+            // add brightness caption
+            char stringBrightness[32];
+            sprintf(stringBrightness, "Brightness: %.2f", brightness);
+            brightnessCaption = XPCreateWidget(x + 30, y - 90, x2 - 50, y - 105, 1, stringBrightness, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add brightness slider
+            brightnessSlider = XPCreateWidget(x + 195, y - 90, x2 - 15, y - 105, 1, "Brightness", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMin, -500);
+            XPSetWidgetProperty(brightnessSlider, xpProperty_ScrollBarMax, 500);
+
+            // add contrast caption
+            char stringContrast[32];
+            sprintf(stringContrast, "Contrast: %.2f", contrast);
+            contrastCaption = XPCreateWidget(x + 30, y - 110, x2 - 50, y - 125, 1, stringContrast, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add contrast slider
+            contrastSlider = XPCreateWidget(x + 195, y - 110, x2 - 15, y - 125, 1, "Contrast", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMin, 5);
+            XPSetWidgetProperty(contrastSlider, xpProperty_ScrollBarMax, 200);
+
+            // add saturation caption
+            char stringSaturation[32];
+            sprintf(stringSaturation, "Saturation: %.2f", saturation);
+            saturationCaption = XPCreateWidget(x + 30, y - 130, x2 - 50, y - 145, 1, stringSaturation, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add saturation slider
+            saturationSlider = XPCreateWidget(x + 195, y - 130, x2 - 15, y - 145, 1, "Saturation", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMin, 0);
+            XPSetWidgetProperty(saturationSlider, xpProperty_ScrollBarMax, 250);
+
+            // add red scale caption
+            char stringRedScale[32];
+            sprintf(stringRedScale, "Red Scale: %.2f", redScale);
+            redScaleCaption = XPCreateWidget(x + 30, y - 150, x2 - 50, y - 165, 1, stringRedScale, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add red scale slider
+            redScaleSlider = XPCreateWidget(x + 195, y - 150, x2 - 15, y - 165, 1, "Red Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMin, -75);
+            XPSetWidgetProperty(redScaleSlider, xpProperty_ScrollBarMax, 75);
+
+            // add green scale caption
+            char stringGreenScale[32];
+            sprintf(stringGreenScale, "Green Scale: %.2f", greenScale);
+            greenScaleCaption = XPCreateWidget(x + 30, y - 170, x2 - 50, y - 185, 1, stringGreenScale, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add green scale slider
+            greenScaleSlider = XPCreateWidget(x + 195, y - 170, x2 - 15, y - 185, 1, "Green Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMin, -75);
+            XPSetWidgetProperty(greenScaleSlider, xpProperty_ScrollBarMax, 75);
+
+            // add blue scale caption
+            char stringBlueScale[32];
+            sprintf(stringBlueScale, "Blue Scale: %.2f", blueScale);
+            blueScaleCaption = XPCreateWidget(x + 30, y - 190, x2 - 50, y - 205, 1, stringBlueScale, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add blue scale slider
+            blueScaleSlider = XPCreateWidget(x + 195, y - 190, x2 - 15, y - 205, 1, "Blue Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMin, -75);
+            XPSetWidgetProperty(blueScaleSlider, xpProperty_ScrollBarMax, 75);
+
+            // add red offset caption
+            char stringRedOffset[32];
+            sprintf(stringRedOffset, "Red Offset: %.2f", redOffset);
+            redOffsetCaption = XPCreateWidget(x + 30, y - 210, x2 - 50, y - 225, 1, stringRedOffset, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add red offset slider
+            redOffsetSlider = XPCreateWidget(x + 195, y - 210, x2 - 15, y - 225, 1, "Red Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMin, -50);
+            XPSetWidgetProperty(redOffsetSlider, xpProperty_ScrollBarMax, 50);
+
+            // add green offset caption
+            char stringGreenOffset[32];
+            sprintf(stringGreenOffset, "Green Offset: %.2f", greenOffset);
+            greenOffsetCaption = XPCreateWidget(x + 30, y - 230, x2 - 50, y - 245, 1, stringGreenOffset, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add green offset slider
+            greenOffsetSlider = XPCreateWidget(x + 195, y - 230, x2 - 15, y - 245, 1, "Green Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMin, -50);
+            XPSetWidgetProperty(greenOffsetSlider, xpProperty_ScrollBarMax, 50);
+
+            // add blue offset caption
+            char stringBlueOffset[32];
+            sprintf(stringBlueOffset, "Blue Offset: %.2f", blueOffset);
+            blueOffsetCaption = XPCreateWidget(x + 30, y - 250, x2 - 50, y - 265, 1, stringBlueOffset, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add blue offset slider
+            blueOffsetSlider = XPCreateWidget(x + 195, y - 250, x2 - 15, y - 265, 1, "Blue Offset", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMin, -50);
+            XPSetWidgetProperty(blueOffsetSlider, xpProperty_ScrollBarMax, 50);
+
+            // add vignette caption
+            char stringVignette[32];
+            sprintf(stringVignette, "Vignette: %.2f", vignette);
+            vignetteCaption = XPCreateWidget(x + 30, y - 270, x2 - 50, y - 285, 1, stringVignette, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add vignette slider
+            vignetteSlider = XPCreateWidget(x + 195, y - 270, x2 - 15, y - 285, 1, "Vignette", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMin, 0);
+            XPSetWidgetProperty(vignetteSlider, xpProperty_ScrollBarMax, 100);
+
+            // add reset button
+            presetButtons[PRESET_DEFAULT] = XPCreateWidget(x + 30, y - 300, x + 30 + 80, y - 315, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_DEFAULT], xpProperty_ButtonType, xpPushButton);
+
+            // add post-processing presets caption
+            XPCreateWidget(x + 10, y - 330, x2 - 20, y - 345, 1, "Post-Processing Presets:", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // first preset button column
+
+            // add polaroid preset button
+            presetButtons[PRESET_POLAROID] = XPCreateWidget(x + 20, y - 360, x + 20 + 125, y - 375, 1, "Polaroid", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_POLAROID], xpProperty_ButtonType, xpPushButton);
+
+            // add fogged up preset button
+            presetButtons[PRESET_FOGGED_UP] = XPCreateWidget(x + 20, y - 385, x + 20 + 125, y - 400, 1, "Fogged Up", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_FOGGED_UP], xpProperty_ButtonType, xpPushButton);
+
+            // add high dynamic range preset button
+            presetButtons[PRESET_HIGH_DYNAMIC_RANGE] = XPCreateWidget(x + 20, y - 410, x + 20 + 125, y - 425, 1, "High Dynamic Range", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_HIGH_DYNAMIC_RANGE], xpProperty_ButtonType, xpPushButton);
+
+            // add editor's choice drab preset button
+            presetButtons[PRESET_EDITORS_CHOICE] = XPCreateWidget(x + 20, y - 435, x + 20 + 125, y - 450, 1, "Editor's Choice", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_EDITORS_CHOICE], xpProperty_ButtonType, xpPushButton);
+
+            // add slightly enhanced preset button
+            presetButtons[PRESET_SLIGHTLY_ENHANCED] = XPCreateWidget(x + 20, y - 460, x + 20 + 125, y - 475, 1, "Slightly Enhanced", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_SLIGHTLY_ENHANCED], xpProperty_ButtonType, xpPushButton);
+
+            // add extra gloomy preset button
+            presetButtons[PRESET_EXTRA_GLOOMY] = XPCreateWidget(x + 20, y - 485, x + 20 + 125, y - 500, 1, "Extra Gloomy", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_EXTRA_GLOOMY], xpProperty_ButtonType, xpPushButton);
+
+            // add red shift preset button
+            presetButtons[PRESET_RED_ISH] = XPCreateWidget(x + 20, y - 510, x + 20 + 125, y - 525, 1, "Red-ish", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_RED_ISH], xpProperty_ButtonType, xpPushButton);
+
+            // add green shift preset button
+            presetButtons[PRESET_GREEN_ISH] = XPCreateWidget(x + 20, y - 535, x + 20 + 125, y - 550, 1, "Green-ish", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_GREEN_ISH], xpProperty_ButtonType, xpPushButton);
+
+            // add blue shift preset button
+            presetButtons[PRESET_BLUE_ISH] = XPCreateWidget(x + 20, y - 560, x + 20 + 125, y - 575, 1, "Blue-ish", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_BLUE_ISH], xpProperty_ButtonType, xpPushButton);
+
+            // second preset button column
+
+            // add shiny california preset button
+            presetButtons[PRESET_SHINY_CALIFORNIA] = XPCreateWidget(x2 - 20 - 125, y - 360, x2 - 20, y - 375, 1, "Shiny California", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_SHINY_CALIFORNIA], xpProperty_ButtonType, xpPushButton);
+
+            // add dusty dry preset button
+            presetButtons[PRESET_DUSTY_DRY] = XPCreateWidget(x2 - 20 - 125, y - 385, x2 - 20, y - 400, 1, "Dusty Dry", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_DUSTY_DRY], xpProperty_ButtonType, xpPushButton);
+
+            // add gray winter preset button
+            presetButtons[PRESET_GRAY_WINTER] = XPCreateWidget(x2 - 20 - 125, y - 410, x2 - 20, y - 425, 1, "Gray Winter", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_GRAY_WINTER], xpProperty_ButtonType, xpPushButton);
+
+            // add fancy imagination dreams preset button
+            presetButtons[PRESET_FANCY_IMAGINATION] = XPCreateWidget(x2 - 20 - 125, y - 435, x2 - 20, y - 450, 1, "Fancy Imagination", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_FANCY_IMAGINATION], xpProperty_ButtonType, xpPushButton);
+
+            // add sixties normal preset button
+            presetButtons[PRESET_SIXTIES] = XPCreateWidget(x2 - 20 - 125, y - 460, x2 - 20, y - 475, 1, "Sixties", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_SIXTIES], xpProperty_ButtonType, xpPushButton);
+
+            // add cold winter preset button
+            presetButtons[PRESET_COLD_WINTER] = XPCreateWidget(x2 - 20 - 125, y - 485, x2 - 20, y - 500, 1, "Cold Winter", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_COLD_WINTER], xpProperty_ButtonType, xpPushButton);
+
+            // add vintage film preset button
+            presetButtons[PRESET_VINTAGE_FILM] = XPCreateWidget(x2 - 20 - 125, y - 510, x2 - 20, y - 525, 1, "Vintage Film", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_VINTAGE_FILM], xpProperty_ButtonType, xpPushButton);
+
+            // add colorless preset button
+            presetButtons[PRESET_COLORLESS] = XPCreateWidget(x2 - 20 - 125, y - 535, x2 - 20, y - 550, 1, "Colorless", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_COLORLESS], xpProperty_ButtonType, xpPushButton);
+
+            // add monochrome preset button
+            presetButtons[PRESET_MONOCHROME] = XPCreateWidget(x2 - 20 - 125, y - 560, x2 - 20, y - 575, 1, "Monochrome", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(presetButtons[PRESET_MONOCHROME], xpProperty_ButtonType, xpPushButton);
+
+            // add raleigh scale sub window
+            XPCreateWidget(x + 10, y - 600, x2 - 10, y - 675 - 10, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+            // add raleigh scale caption
+            XPCreateWidget(x + 10, y - 600, x2 - 20, y - 615, 1, "Raleigh Scale:", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add raleigh scale caption
+            char stringRaleighScale[32];
+            sprintf(stringRaleighScale, "Raleigh Scale: %.0f", raleighScale);
+            raleighScaleCaption = XPCreateWidget(x + 30, y - 630, x2 - 50, y - 645, 1, stringRaleighScale, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add raleigh scale slider
+            raleighScaleSlider = XPCreateWidget(x + 195, y - 630, x2 - 15, y - 645, 1, "Raleigh Scale", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMin, 1);
+            XPSetWidgetProperty(raleighScaleSlider, xpProperty_ScrollBarMax, 100);
+
+            // add raleigh scale reset button
+            resetRaleighScaleButton = XPCreateWidget(x + 30, y - 660, x + 30 + 80, y - 675, 1, "Reset", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(resetRaleighScaleButton, xpProperty_ButtonType, xpPushButton);
+
+            // add fps-limiter sub window
+            XPCreateWidget(x + 10, y - 700, x2 - 10, y - 775 - 10, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+            // add fps-limiter caption
+            XPCreateWidget(x + 10, y - 700, x2 - 20, y - 715, 1, "FPS-Limiter:", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add fps-limiter checkbox
+            fpsLimiterCheckbox = XPCreateWidget(x + 20, y - 730, x2 - 20, y - 745, 1, "Enable FPS-Limiter", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonType, xpRadioButton);
+            XPSetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
+
+            // add max fps caption
+            char stringMaxFps[32];
+            sprintf(stringMaxFps, "Max FPS: %.0f", maxFps);
+            maxFpsCaption = XPCreateWidget(x + 30, y - 760, x2 - 50, y - 775, 1, stringMaxFps, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add max fps slider
+            maxFpsSlider = XPCreateWidget(x + 195, y - 760, x2 - 15, y - 775, 1, "Max FPS", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMin, 20);
+            XPSetWidgetProperty(maxFpsSlider, xpProperty_ScrollBarMax, 200);
+
+            // add auto disable enable cinema verite sub window
+            XPCreateWidget(x + 10, y - 800, x2 - 10, y - 875 - 10, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+            // add auto disable enable cinema verite caption
+            XPCreateWidget(x + 10, y - 800, x2 - 20, y - 815, 1, "Auto disable / enable Cinema Verite:", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add control cinema verite checkbox
+            controlCinemaVeriteCheckbox = XPCreateWidget(x + 20, y - 830, x2 - 20, y - 845, 1, "Control Cinema Verite", 0, settingsWidget, xpWidgetClass_Button);
+            XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonType, xpRadioButton);
+            XPSetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonBehavior, xpButtonBehaviorCheckBox);
+
+            // add disable cinema verite time caption
+            char stringDisableCinemaVeriteTime[32];
+            sprintf(stringDisableCinemaVeriteTime, "On input disable for: %.0f sec", disableCinemaVeriteTime);
+            disableCinemaVeriteTimeCaption = XPCreateWidget(x + 30, y - 850, x2 - 50, y - 865, 1, stringDisableCinemaVeriteTime, 0, settingsWidget, xpWidgetClass_Caption);
+
+            // add disable cinema verite time slider
+            disableCinemaVeriteTimeSlider = XPCreateWidget(x + 195, y - 850, x2 - 15, y - 865, 1, "Disable Cinema Verite Timer", 0, settingsWidget, xpWidgetClass_ScrollBar);
+            XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMin, 1);
+            XPSetWidgetProperty(disableCinemaVeriteTimeSlider, xpProperty_ScrollBarMax, 30);
+
+            // add about sub window
+            XPCreateWidget(x + 10, y - 900, x2 - 10, y - 945 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
+
+            // add about caption
+            XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
+            XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
+            XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
+
+            // init checkbox and slider positions
+            UpdateSettingsWidgets();
+
+            // register widget handler
+            XPAddWidgetCallback(settingsWidget, (XPWidgetFunc_t) SettingsWidgetHandler);
         }
-        else // settings already created
+        else
         {
+            // settings widget already created
             if (!XPIsWidgetVisible(settingsWidget))
                 XPShowWidget(settingsWidget);
         }
