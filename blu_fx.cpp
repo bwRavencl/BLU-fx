@@ -1288,8 +1288,8 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 {
     // set plugin info
     strcpy(outName, NAME);
-    strcpy(outSig, "de.bwravencl."NAME_LOWERCASE);
-    strcpy(outDesc, NAME" enhances your X-Plane experience!");
+    strcpy(outSig, "de.bwravencl." NAME_LOWERCASE);
+    strcpy(outDesc, NAME " enhances your X-Plane experience!");
 
     // init glew
 #if IBM
