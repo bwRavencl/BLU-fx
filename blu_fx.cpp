@@ -35,14 +35,11 @@
 #endif
 
 #if APL
-#include "ApplicationServices/ApplicationServices.h"
 #include <OpenGL/gl.h>
 #elif IBM
 #include <GL/glew.h>
-#include <windows.h>
 #elif LIN
 #include <GL/gl.h>
-#include <X11/Xlib.h>
 #endif
 
 // define name
@@ -50,7 +47,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.6"
+#define VERSION "0.7"
 
 // define config file path
 #if IBM
@@ -65,12 +62,6 @@
 #define DEFAULT_RALEIGH_SCALE 13.0f
 #define DEFAULT_MAX_FRAME_RATE 35.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
-
-// define XPScrollWheel plugin signature
-#define XP_SCROLL_WHEEL_PLUGIN_SIGNATURE "thranda.window.scrollwheel"
-
-// define XPScrollWheel scrollIndex array size
-#define XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE 512
 
 enum BLUfxPresets_t { PRESET_DEFAULT, PRESET_POLAROID, PRESET_FOGGED_UP,
                       PRESET_HIGH_DYNAMIC_RANGE, PRESET_EDITORS_CHOICE,
@@ -393,12 +384,10 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, brightness = BLUfxPresets[PRESET_DEFAULT].brightness, contrast = BLUfxPresets[PRESET_DEFAULT].contrast, saturation = BLUfxPresets[PRESET_DEFAULT].saturation, redScale = BLUfxPresets[PRESET_DEFAULT].redScale, greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale, blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale, redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset, greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset, blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset, vignette = BLUfxPresets[PRESET_DEFAULT].vignette, raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
-static int lastScrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE] = {0}, lastMouseX = 0, lastMouseY = 0, lastResolutionX = 0, lastResolutionY = 0;
+static int lastResolutionX = 0, lastResolutionY = 0, bringFakeWindowToFront = 0;
 static GLuint textureId = 0, program = 0, fragmentShader = 0;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseUsageTime = 0.0f;
-#if LIN
-static Display *display = NULL;
-#endif
+static XPLMWindowID fakeWindow = NULL;
 
 // global dataref variables
 static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL;
@@ -505,6 +494,25 @@ static int PostProcessingCallback(XPLMDrawingPhase inPhase, int inIsBefore, void
     return 1;
 }
 
+// flightloop-callback that resizes and brings the fake window back to the front if needed
+static float UpdateFakeWindowCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
+{
+    if (fakeWindow != NULL)
+    {
+        int x = 0, y = 0;
+        XPLMGetScreenSize(&x, &y);
+        XPLMSetWindowGeometry(fakeWindow, 0, y, x, 0);
+
+        if (bringFakeWindowToFront == 0)
+        {
+            XPLMBringWindowToFront(fakeWindow);
+            bringFakeWindowToFront = 1;
+        }
+    }
+
+    return -1.0f;
+}
+
 // flightloop-callback that limits the number of flightcycles
 static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
@@ -545,80 +553,10 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
     return 1;
 }
 
-// check if either the left or right mouse button is down or the XPScrollWheel plugin has been active - the right button is only checked if checkRightButton is not zero
-static int IsMouseInUse(int checkRightButton)
-{
-    // check if mouse buttons are down
-    int mouseButtonDown[2] = {0};
-#if APL
-    mouseButtonDown[0] = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft);
-    mouseButtonDown[1] = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonRight);
-#elif IBM
-    // if the most significant bit is set, the key is down
-    mouseButtonDown[0] = (int) GetAsyncKeyState(VK_LBUTTON) >> 15;
-    mouseButtonDown[1] = (int) GetAsyncKeyState(VK_RBUTTON) >> 15;
-#elif LIN
-    if (display == NULL)
-        display = XOpenDisplay(NULL);
-    if (display != NULL)
-    {
-        Window root, child;
-        int rootX, rootY, winX, winY;
-        unsigned int mask;
-        XQueryPointer(display, DefaultRootWindow(display), &root, &child, &rootX, &rootY, &winX, &winY, &mask);
-        mouseButtonDown[0] = (mask & Button1Mask) >> 8;
-        mouseButtonDown[1] = (mask & Button2Mask) >> 8;
-    }
-#endif
-
-    if (mouseButtonDown[0] != 0)
-        return 1;
-
-    if (checkRightButton != 0 && mouseButtonDown[1] != 0)
-        return 1;
-
-    // check if the XPScrollWheel plugin has modified a DataRef since the last call
-    XPLMPluginID pluginId = XPLMFindPluginBySignature(XP_SCROLL_WHEEL_PLUGIN_SIGNATURE);
-    if (XPLMIsPluginEnabled(pluginId) != 0)
-    {
-        XPLMDataRef scrollindexDataRef = XPLMFindDataRef("thranda/scrollindex");
-        int scrollindex[XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE];
-        XPLMGetDatavi(scrollindexDataRef, scrollindex, 0, XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE);
-
-        for (int i = 0; i < XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE; i++)
-        {
-            if (scrollindex[i] != lastScrollindex[i])
-            {
-                memcpy(lastScrollindex, scrollindex, XP_SCROLL_WHEEL_PLUGIN_SCROLL_INDEX_SIZE);
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
 // flightloop-callback that auto-controls cinema-verite
 static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
-    int mouseInUse = IsMouseInUse(0);
-
-    int currentMouseX, currentMouseY;
-    XPLMGetMouseLocation(&currentMouseX, &currentMouseY);
-
-    if (mouseInUse != 0 || currentMouseX != lastMouseX || currentMouseY != lastMouseY)
-    {
-        lastMouseX = currentMouseX;
-        lastMouseY = currentMouseY;
-
-        lastMouseUsageTime = XPLMGetElapsedTime();
-    }
-
-    int viewType = XPLMGetDatai(viewTypeDataRef);
-
-    if (viewType != 1026) // not 3D Cockpit+
-        XPLMSetDatai(cinemaVeriteDataRef, 1);
-    else
+        if (XPLMGetDatai(viewTypeDataRef) == 1026) // 3D Cockpit
     {
         float elapsedTime = XPLMGetElapsedTime() - lastMouseUsageTime;
 
@@ -627,6 +565,8 @@ static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inE
         else
             XPLMSetDatai(cinemaVeriteDataRef, 1);
     }
+    else
+        XPLMSetDatai(cinemaVeriteDataRef, 1);
 
     return -1.0f;
 }
@@ -1284,6 +1224,42 @@ static void MenuHandlerCallback(void *inMenuRef, void *inItemRef)
     }
 }
 
+static void DrawWindow(XPLMWindowID inWindowID, void *inRefcon)
+{
+}
+
+static void HandleKey(XPLMWindowID inWindowID, char inKey, XPLMKeyFlags inFlags, char inVirtualKey, void *inRefcon, int losingFocus)
+{
+}
+
+static int HandleMouseClick(XPLMWindowID inWindowID, int x, int y, XPLMMouseStatus inMouse, void *inRefcon)
+{
+    lastMouseUsageTime = XPLMGetElapsedTime();
+    
+    return 0;
+}
+
+static XPLMCursorStatus HandleCursor(XPLMWindowID inWindowID, int x, int y, void *inRefcon)
+{
+    static int lastX = x, lastY = y;
+    
+    if (x != lastX || y != lastY)
+    {
+        lastMouseUsageTime = XPLMGetElapsedTime();
+        lastX = x;
+        lastY = y;
+    }
+
+    return xplm_CursorDefault;
+}
+
+static int HandleMouseWheel(XPLMWindowID inWindowID, int x, int y, int wheel, int clicks, void *inRefcon)
+{
+    lastMouseUsageTime = XPLMGetElapsedTime();
+
+    return 0;
+}
+
 PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 {
     // set plugin info
@@ -1316,7 +1292,26 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // read and apply config file
     LoadSettings();
 
+    // create fake window
+    XPLMCreateWindow_t fakeWindowParameters;
+    memset(&fakeWindowParameters, 0, sizeof(fakeWindowParameters));
+    fakeWindowParameters.structSize = sizeof(fakeWindowParameters);
+    fakeWindowParameters.left = 0;
+    int x = 0, y = 0;
+    XPLMGetScreenSize(&x, &y);
+    fakeWindowParameters.top = y;
+    fakeWindowParameters.right = x;
+    fakeWindowParameters.bottom = 0;
+    fakeWindowParameters.visible = 1;
+    fakeWindowParameters.drawWindowFunc = DrawWindow;
+    fakeWindowParameters.handleKeyFunc = HandleKey;
+    fakeWindowParameters.handleMouseClickFunc = HandleMouseClick;
+    fakeWindowParameters.handleCursorFunc = HandleCursor;
+    fakeWindowParameters.handleMouseWheelFunc = HandleMouseWheel;
+    fakeWindow = XPLMCreateWindowEx(&fakeWindowParameters);
+
     // register flight loop callbacks
+    XPLMRegisterFlightLoopCallback(UpdateFakeWindowCallback, -1, NULL);
     if (fpsLimiterEnabled != 0)
         XPLMRegisterFlightLoopCallback(LimiterFlightCallback, -1, NULL);
     if (controlCinemaVeriteEnabled != 0)
@@ -1335,11 +1330,6 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 PLUGIN_API void	XPluginStop(void)
 {
     CleanupShader(1);
-
-#if LIN
-    if(display != NULL)
-        XCloseDisplay(display);
-#endif
 }
 
 PLUGIN_API void XPluginDisable(void)
@@ -1354,6 +1344,8 @@ PLUGIN_API int XPluginEnable(void)
 
 PLUGIN_API void XPluginReceiveMessage(XPLMPluginID inFromWho, long inMessage, void *inParam)
 {
-    if (inMessage == XPLM_MSG_SCENERY_LOADED)
+    if (inMessage == XPLM_MSG_PLANE_LOADED)
+        bringFakeWindowToFront = 0;
+    else if (inMessage == XPLM_MSG_SCENERY_LOADED)
         UpdateRaleighScale(0);
 }
