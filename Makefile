@@ -2,14 +2,11 @@ BUILDDIR    := ./build
 SRC_BASE    := .
 TARGET      := blu_fx
 
-SOURCES = \
-        blu_fx.cpp
+SOURCES = blu_fx.cpp
 
 LIBS =
 
-INCLUDES = \
-        -I$(SRC_BASE)/SDK/CHeaders/XPLM \
-        -I$(SRC_BASE)/SDK/CHeaders/Widgets
+INCLUDES = -I$(SRC_BASE)/SDK/CHeaders/XPLM -I$(SRC_BASE)/SDK/CHeaders/Widgets
 
 DEFINES = -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1
 
