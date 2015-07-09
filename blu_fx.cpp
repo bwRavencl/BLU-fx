@@ -47,7 +47,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.7"
+#define VERSION "0.8"
 
 // define config file path
 #if IBM
@@ -384,13 +384,13 @@ static int postProcesssingEnabled = DEFAULT_POST_PROCESSING_ENABLED, fpsLimiterE
 static float maxFps = DEFAULT_MAX_FRAME_RATE, disableCinemaVeriteTime = DEFAULT_DISABLE_CINEMA_VERITE_TIME, brightness = BLUfxPresets[PRESET_DEFAULT].brightness, contrast = BLUfxPresets[PRESET_DEFAULT].contrast, saturation = BLUfxPresets[PRESET_DEFAULT].saturation, redScale = BLUfxPresets[PRESET_DEFAULT].redScale, greenScale = BLUfxPresets[PRESET_DEFAULT].greenScale, blueScale = BLUfxPresets[PRESET_DEFAULT].blueScale, redOffset = BLUfxPresets[PRESET_DEFAULT].redOffset, greenOffset = BLUfxPresets[PRESET_DEFAULT].greenOffset, blueOffset = BLUfxPresets[PRESET_DEFAULT].blueOffset, vignette = BLUfxPresets[PRESET_DEFAULT].vignette, raleighScale = DEFAULT_RALEIGH_SCALE;
 
 // global internal variables
-static int lastResolutionX = 0, lastResolutionY = 0, bringFakeWindowToFront = 0;
+static int lastResolutionX = 0, lastResolutionY = 0, bringFakeWindowToFront = 0, overrideControlCinemaVerite = 0;
 static GLuint textureId = 0, program = 0, fragmentShader = 0;
 static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f, endTimeDraw = 0.0f, lastMouseUsageTime = 0.0f;
 static XPLMWindowID fakeWindow = NULL;
 
 // global dataref variables
-static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL;
+static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL, overrideControlCinemaVeriteDataRef = NULL;
 
 // global widget variables
 static XPWidgetID settingsWidget = NULL, postProcessingCheckbox = NULL, fpsLimiterCheckbox = NULL, controlCinemaVeriteCheckbox = NULL, brightnessCaption = NULL, contrastCaption = NULL, saturationCaption = NULL, redScaleCaption = NULL, greenScaleCaption = NULL, blueScaleCaption = NULL, redOffsetCaption = NULL, greenOffsetCaption = NULL, blueOffsetCaption = NULL, vignetteCaption = NULL, raleighScaleCaption = NULL, maxFpsCaption = NULL, disableCinemaVeriteTimeCaption, brightnessSlider = NULL, contrastSlider = NULL, saturationSlider = NULL, redScaleSlider = NULL, greenScaleSlider = NULL, blueScaleSlider = NULL, redOffsetSlider = NULL, greenOffsetSlider = NULL, blueOffsetSlider = NULL, vignetteSlider = NULL, raleighScaleSlider = NULL, maxFpsSlider = NULL, disableCinemaVeriteTimeSlider = NULL, presetButtons[PRESET_MAX] = {NULL}, resetRaleighScaleButton = NULL;
@@ -556,17 +556,20 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
 // flightloop-callback that auto-controls cinema-verite
 static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
-        if (XPLMGetDatai(viewTypeDataRef) == 1026) // 3D Cockpit
+    if (overrideControlCinemaVerite != 1)
     {
-        float elapsedTime = XPLMGetElapsedTime() - lastMouseUsageTime;
+        if (XPLMGetDatai(viewTypeDataRef) == 1026) // 3D Cockpit
+        {
+            float elapsedTime = XPLMGetElapsedTime() - lastMouseUsageTime;
 
-        if (elapsedTime <= disableCinemaVeriteTime)
-            XPLMSetDatai(cinemaVeriteDataRef, 0);
+            if (elapsedTime <= disableCinemaVeriteTime)
+                XPLMSetDatai(cinemaVeriteDataRef, 0);
+            else
+                XPLMSetDatai(cinemaVeriteDataRef, 1);
+        }
         else
             XPLMSetDatai(cinemaVeriteDataRef, 1);
     }
-    else
-        XPLMSetDatai(cinemaVeriteDataRef, 1);
 
     return -1.0f;
 }
@@ -624,6 +627,18 @@ static void InitShader(const char *fragmentShaderString)
     }
 
     CleanupShader(0);
+}
+
+// get accessor for override_cinema_verite_control DataRef
+int GetOverrideControlCinemaVeriteDataRefCallback(void* inRefcon)
+{
+    return overrideControlCinemaVerite;
+}
+
+// set accessor for override_control_cinema_verite DataRef
+void SetOverrideControlCinemaVeriteDataRefCallback(void* inRefcon, int inValue)
+{
+    overrideControlCinemaVerite = inValue;
 }
 
 // returns a float rounded to two decimal places
@@ -1235,14 +1250,14 @@ static void HandleKey(XPLMWindowID inWindowID, char inKey, XPLMKeyFlags inFlags,
 static int HandleMouseClick(XPLMWindowID inWindowID, int x, int y, XPLMMouseStatus inMouse, void *inRefcon)
 {
     lastMouseUsageTime = XPLMGetElapsedTime();
-    
+
     return 0;
 }
 
 static XPLMCursorStatus HandleCursor(XPLMWindowID inWindowID, int x, int y, void *inRefcon)
 {
     static int lastX = x, lastY = y;
-    
+
     if (x != lastX || y != lastY)
     {
         lastMouseUsageTime = XPLMGetElapsedTime();
@@ -1283,6 +1298,9 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // obtain datarefs
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
+
+    // register own dataref
+    overrideControlCinemaVeriteDataRef = XPLMRegisterDataAccessor(NAME_LOWERCASE "/override_control_cinema_verite", xplmType_Int,  1, GetOverrideControlCinemaVeriteDataRefCallback, SetOverrideControlCinemaVeriteDataRefCallback,  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     // create menu-entries
     int subMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), NAME, 0, 1);
@@ -1330,6 +1348,22 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 PLUGIN_API void	XPluginStop(void)
 {
     CleanupShader(1);
+
+    // unregister own DataRef
+    XPLMUnregisterDataAccessor(overrideControlCinemaVeriteDataRef);
+
+    // unregister flight loop callbacks
+    XPLMUnregisterFlightLoopCallback(UpdateFakeWindowCallback, NULL);
+    if (fpsLimiterEnabled != 0)
+        XPLMUnregisterFlightLoopCallback(LimiterFlightCallback, NULL);
+    if (controlCinemaVeriteEnabled != 0)
+        XPLMUnregisterFlightLoopCallback(ControlCinemaVeriteCallback, NULL);
+
+    // unregister draw callbacks
+    if (postProcesssingEnabled != 0)
+        XPLMUnregisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
+    if (fpsLimiterEnabled != 0)
+        XPLMUnregisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
 }
 
 PLUGIN_API void XPluginDisable(void)
