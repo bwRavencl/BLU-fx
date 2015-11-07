@@ -37,7 +37,7 @@
 #if APL
 #include <OpenGL/gl.h>
 #elif IBM
-#include <GL/glew.h>
+#include "GLee.h"
 #elif LIN
 #include <GL/gl.h>
 #endif
@@ -47,13 +47,13 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.8"
+#define VERSION "0.9"
 
 // define config file path
 #if IBM
-#define CONFIG_PATH ".\\Resources\\plugins\\"NAME_LOWERCASE"\\"NAME_LOWERCASE".ini"
+#define CONFIG_PATH ".\\Resources\\plugins\\" NAME_LOWERCASE "\\" NAME_LOWERCASE ".ini"
 #else
-#define CONFIG_PATH "./Resources/plugins/"NAME_LOWERCASE"/"NAME_LOWERCASE".ini"
+#define CONFIG_PATH "./Resources/plugins/" NAME_LOWERCASE "/" NAME_LOWERCASE ".ini"
 #endif
 
 #define DEFAULT_POST_PROCESSING_ENABLED 1
@@ -904,7 +904,7 @@ static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget,
     }
     else if (inMessage == xpMsg_PushButtonPressed)
     {
-        if ((long) inParam1 == (long) resetRaleighScaleButton)
+        if (inParam1 == (long) resetRaleighScaleButton)
         {
             raleighScale = DEFAULT_RALEIGH_SCALE;
             UpdateRaleighScale(1);
@@ -1220,8 +1220,8 @@ static void MenuHandlerCallback(void *inMenuRef, void *inItemRef)
             XPCreateWidget(x + 10, y - 900, x2 - 10, y - 945 - 10, 1, "About:", 0, settingsWidget, xpWidgetClass_SubWindow);
 
             // add about caption
-            XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME" "VERSION, 0, settingsWidget, xpWidgetClass_Caption);
-            XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using "NAME" by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
+            XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME " " VERSION, 0, settingsWidget, xpWidgetClass_Caption);
+            XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using " NAME " by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
             XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
 
             // init checkbox and slider positions
@@ -1281,16 +1281,6 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     strcpy(outName, NAME);
     strcpy(outSig, "de.bwravencl." NAME_LOWERCASE);
     strcpy(outDesc, NAME " enhances your X-Plane experience!");
-
-    // init glew
-#if IBM
-    GLenum err = glewInit();
-    if (err != GLEW_OK)
-    {
-        XPLMDebugString(NAME": The following error occured while initializing GLEW:\n");
-        XPLMDebugString((const char*) glewGetErrorString(err));
-    }
-#endif
 
     // prepare fragment-shader
     InitShader(FRAGMENT_SHADER);
