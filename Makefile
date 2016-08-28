@@ -32,7 +32,7 @@ CXXOBJECTS64    := $(patsubst %.cpp, $(BUILDDIR)/obj64/%.o, $(CXXSOURCES))
 ALL_DEPS64      := $(sort $(CDEPS64) $(CXXDEPS64))
 ALL_OBJECTS64   := $(sort $(COBJECTS64) $(CXXOBJECTS64))
 
-CFLAGS := $(DEFINES) $(INCLUDES) -fPIC -fvisibility=hidden -DGL_GLEXT_PROTOTYPES
+CFLAGS := $(DEFINES) $(INCLUDES) -Wall -fPIC -fvisibility=hidden -DGL_GLEXT_PROTOTYPES
 
 
 # Phony directive tells make that these are "virtual" targets, even if a file named "clean" exists.

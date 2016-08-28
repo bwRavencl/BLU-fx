@@ -774,37 +774,37 @@ static void LoadSettings(void)
             std::string val = line.substr(line.find("=") + 1);
             std::istringstream iss(val);
 
-            if(line.find("postProcesssingEnabled") != -1)
+            if(line.find("postProcesssingEnabled") != std::string::npos)
                 iss >> postProcesssingEnabled;
-            else if(line.find("fpsLimiterEnabled") != -1)
+            else if(line.find("fpsLimiterEnabled") != std::string::npos)
                 iss >> fpsLimiterEnabled;
-            else if(line.find("controlCinemaVeriteEnabled") != -1)
+            else if(line.find("controlCinemaVeriteEnabled") != std::string::npos)
                 iss >> controlCinemaVeriteEnabled;
-            else if(line.find("brightness") != -1)
+            else if(line.find("brightness") != std::string::npos)
                 iss >> brightness;
-            else if(line.find("contrast") != -1)
+            else if(line.find("contrast") != std::string::npos)
                 iss >> contrast;
-            else if(line.find("saturation") != -1)
+            else if(line.find("saturation") != std::string::npos)
                 iss >> saturation;
-            else if(line.find("redScale") != -1)
+            else if(line.find("redScale") != std::string::npos)
                 iss >> redScale;
-            else if(line.find("greenScale") != -1)
+            else if(line.find("greenScale") != std::string::npos)
                 iss >> greenScale;
-            else if(line.find("blueScale") != -1)
+            else if(line.find("blueScale") != std::string::npos)
                 iss >> blueScale;
-            else if(line.find("redOffset") != -1)
+            else if(line.find("redOffset") != std::string::npos)
                 iss >> redOffset;
-            else if(line.find("greenOffset") != -1)
+            else if(line.find("greenOffset") != std::string::npos)
                 iss >> greenOffset;
-            else if(line.find("blueOffset") != -1)
+            else if(line.find("blueOffset") != std::string::npos)
                 iss >> blueOffset;
-            else if(line.find("vignette") != -1)
+            else if(line.find("vignette") != std::string::npos)
                 iss >> vignette;
-            else if(line.find("raleighScale") != -1)
+            else if(line.find("raleighScale") != std::string::npos)
                 iss >> raleighScale;
-            else if(line.find("maxFps") != -1)
+            else if(line.find("maxFps") != std::string::npos)
                 iss >> maxFps;
-            else if(line.find("disableCinemaVeriteTime") != -1)
+            else if(line.find("disableCinemaVeriteTime") != std::string::npos)
                 iss >> disableCinemaVeriteTime;
         }
 
@@ -1335,7 +1335,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 }
 
 
-PLUGIN_API void	XPluginStop(void)
+PLUGIN_API void XPluginStop(void)
 {
     CleanupShader(1);
 
