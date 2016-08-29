@@ -390,7 +390,7 @@ static float startTimeFlight = 0.0f, endTimeFlight = 0.0f, startTimeDraw = 0.0f,
 static XPLMWindowID fakeWindow = NULL;
 
 // global dataref variables
-static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL, overrideControlCinemaVeriteDataRef = NULL;
+static XPLMDataRef cinemaVeriteDataRef = NULL, viewTypeDataRef = NULL, raleighScaleDataRef = NULL, overrideControlCinemaVeriteDataRef = NULL, ignitionKeyDataRef = NULL;
 
 // global widget variables
 static XPWidgetID settingsWidget = NULL, postProcessingCheckbox = NULL, fpsLimiterCheckbox = NULL, controlCinemaVeriteCheckbox = NULL, brightnessCaption = NULL, contrastCaption = NULL, saturationCaption = NULL, redScaleCaption = NULL, greenScaleCaption = NULL, blueScaleCaption = NULL, redOffsetCaption = NULL, greenOffsetCaption = NULL, blueOffsetCaption = NULL, vignetteCaption = NULL, raleighScaleCaption = NULL, maxFpsCaption = NULL, disableCinemaVeriteTimeCaption, brightnessSlider = NULL, contrastSlider = NULL, saturationSlider = NULL, redScaleSlider = NULL, greenScaleSlider = NULL, blueScaleSlider = NULL, redOffsetSlider = NULL, greenOffsetSlider = NULL, blueOffsetSlider = NULL, vignetteSlider = NULL, raleighScaleSlider = NULL, maxFpsSlider = NULL, disableCinemaVeriteTimeSlider = NULL, presetButtons[PRESET_MAX] = {NULL}, resetRaleighScaleButton = NULL;
@@ -513,6 +513,21 @@ static float UpdateFakeWindowCallback(float inElapsedSinceLastCall, float inElap
     return -1.0f;
 }
 
+// check if any engine ignition key is in start position
+static int IsEngineStarting()
+{
+    int ignitionKey[8];
+    XPLMGetDatavi(ignitionKeyDataRef, ignitionKey, 0, 8);
+
+    for (int i = 0; i < 8; i++)
+    {
+        if (ignitionKey[i] == 4)
+            return 1;
+    }
+
+    return 0;
+}
+
 // flightloop-callback that limits the number of flightcycles
 static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
@@ -521,7 +536,8 @@ static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsed
 
     float t = 1.0f / maxFps - dt;
 
-    if(t > 0.0f)
+
+    if(t > 0.0f && IsEngineStarting() == 0)
 #if IBM
         Sleep((DWORD) (t * 1000.0f));
 #else
@@ -541,7 +557,7 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
 
     float t = 1.0f / maxFps - dt;
 
-    if(t > 0.0f)
+    if(t > 0.0f && IsEngineStarting() == 0)
 #if IBM
         Sleep((DWORD) (t * 1000.0f));
 #else
@@ -1288,6 +1304,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     // obtain datarefs
     cinemaVeriteDataRef = XPLMFindDataRef("sim/graphics/view/cinema_verite");
     viewTypeDataRef = XPLMFindDataRef("sim/graphics/view/view_type");
+    ignitionKeyDataRef = XPLMFindDataRef("sim/cockpit2/engine/actuators/ignition_key");
 
     // register own dataref
     overrideControlCinemaVeriteDataRef = XPLMRegisterDataAccessor(NAME_LOWERCASE "/override_control_cinema_verite", xplmType_Int,  1, GetOverrideControlCinemaVeriteDataRefCallback, SetOverrideControlCinemaVeriteDataRefCallback,  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
