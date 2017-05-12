@@ -9,3 +9,4 @@ ipch
 *.user
 *.sln
 *.sln.docstates
+.vs

@@ -1,4 +1,4 @@
-/* Copyright (C) 2015  Matteo Hausner
+/* Copyright (C) 2017  Matteo Hausner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@
 #include "XPWidgets.h"
 
 #include <fstream>
-#include <string.h>
 #include <sstream>
 
 #if !IBM
+#include <string.h>
 #include <unistd.h>
 #endif
 
@@ -47,7 +47,7 @@
 #define NAME_LOWERCASE "blu_fx"
 
 // define version
-#define VERSION "0.9"
+#define VERSION "1.0"
 
 // define config file path
 #if IBM
@@ -74,19 +74,19 @@ enum BLUfxPresets_t { PRESET_DEFAULT, PRESET_POLAROID, PRESET_FOGGED_UP,
 
 struct BLUfxPreset_t
 {
-    /* Basic */
+    // basic
     float brightness;
     float contrast;
     float saturation;
-    /* Scale */
+    // scale
     float redScale;
     float greenScale;
     float blueScale;
-    /* Offset */
+    // offset
     float redOffset;
     float greenOffset;
     float blueOffset;
-    /* Misc */
+    // misc
     float vignette;
 };
 typedef BLUfxPreset_t BLUfxPreset;
@@ -528,22 +528,32 @@ static int IsEngineStarting()
     return 0;
 }
 
+// lets the thread sleep to achieve the set maximum frame rate
+inline static void LimitFps(float dt)
+{
+	float t = 1.0f / maxFps - dt;
+
+	if (t > 0.0f && IsEngineStarting() == 0)
+	{
+#if IBM
+		DWORD currentTime = timeGetTime();
+		DWORD targetTime = currentTime + (DWORD) (t * 1000.0f);
+		while (currentTime < targetTime)
+		{
+			Sleep(0);
+			currentTime = timeGetTime();
+		}
+#else
+		usleep((useconds_t)(t * 1000000.0f));
+#endif
+	}
+}
+
 // flightloop-callback that limits the number of flightcycles
 static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
     endTimeFlight = XPLMGetElapsedTime();
-    float dt = endTimeFlight - startTimeFlight;
-
-    float t = 1.0f / maxFps - dt;
-
-
-    if(t > 0.0f && IsEngineStarting() == 0)
-#if IBM
-        Sleep((DWORD) (t * 1000.0f));
-#else
-        usleep((useconds_t) (t * 1000000.0f));
-#endif
-
+	LimitFps(endTimeFlight - startTimeFlight);
     startTimeFlight = XPLMGetElapsedTime();
 
     return -1.0f;
@@ -553,17 +563,7 @@ static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsed
 static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
 {
     endTimeDraw = XPLMGetElapsedTime();
-    float dt = endTimeDraw - startTimeDraw;
-
-    float t = 1.0f / maxFps - dt;
-
-    if(t > 0.0f && IsEngineStarting() == 0)
-#if IBM
-        Sleep((DWORD) (t * 1000.0f));
-#else
-        usleep((useconds_t) (t * 1000000.0f));
-#endif
-
+	LimitFps(endTimeDraw - startTimeDraw);
     startTimeDraw = XPLMGetElapsedTime();
 
     return 1;
@@ -1238,7 +1238,7 @@ static void MenuHandlerCallback(void *inMenuRef, void *inItemRef)
             // add about caption
             XPCreateWidget(x + 10, y - 900, x2 - 20, y - 915, 1, NAME " " VERSION, 0, settingsWidget, xpWidgetClass_Caption);
             XPCreateWidget(x + 10, y - 915, x2 - 20, y - 930, 1, "Thank you for using " NAME " by Matteo Hausner", 0, settingsWidget, xpWidgetClass_Caption);
-            XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or www.bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
+            XPCreateWidget(x + 10, y - 930, x2 - 20, y - 945, 1, "Contact: matteo.hausner@gmail.com or bwravencl.de", 0, settingsWidget, xpWidgetClass_Caption);
 
             // init checkbox and slider positions
             UpdateSettingsWidgets();
