@@ -60,17 +60,32 @@
 #define DEFAULT_FPS_LIMITER_ENABLED 0
 #define DEFAULT_CONTROL_CINEMA_VERITE_ENABLED 1
 #define DEFAULT_RALEIGH_SCALE 13.0f
-#define DEFAULT_MAX_FRAME_RATE 35.0f
+#define DEFAULT_MAX_FRAME_RATE 30.0f
 #define DEFAULT_DISABLE_CINEMA_VERITE_TIME 5.0f
 
-enum BLUfxPresets_t { PRESET_DEFAULT, PRESET_POLAROID, PRESET_FOGGED_UP,
-                      PRESET_HIGH_DYNAMIC_RANGE, PRESET_EDITORS_CHOICE,
-                      PRESET_SLIGHTLY_ENHANCED, PRESET_EXTRA_GLOOMY, PRESET_RED_ISH,
-                      PRESET_GREEN_ISH, PRESET_BLUE_ISH, PRESET_SHINY_CALIFORNIA,
-                      PRESET_DUSTY_DRY, PRESET_GRAY_WINTER, PRESET_FANCY_IMAGINATION,
-                      PRESET_SIXTIES, PRESET_COLD_WINTER, PRESET_VINTAGE_FILM, PRESET_COLORLESS,
-                      PRESET_MONOCHROME, PRESET_MAX
-                    };
+enum BLUfxPresets_t
+{
+    PRESET_DEFAULT,
+    PRESET_POLAROID,
+    PRESET_FOGGED_UP,
+    PRESET_HIGH_DYNAMIC_RANGE,
+    PRESET_EDITORS_CHOICE,
+    PRESET_SLIGHTLY_ENHANCED,
+    PRESET_EXTRA_GLOOMY,
+    PRESET_RED_ISH,
+    PRESET_GREEN_ISH,
+    PRESET_BLUE_ISH,
+    PRESET_SHINY_CALIFORNIA,
+    PRESET_DUSTY_DRY,
+    PRESET_GRAY_WINTER,
+    PRESET_FANCY_IMAGINATION,
+    PRESET_SIXTIES,
+    PRESET_COLD_WINTER,
+    PRESET_VINTAGE_FILM,
+    PRESET_COLORLESS,
+    PRESET_MONOCHROME,
+    PRESET_MAX
+};
 
 struct BLUfxPreset_t
 {
@@ -473,10 +488,10 @@ static int PostProcessingCallback(XPLMDrawingPhase inPhase, int inIsBefore, void
     glColor3f(1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
     int settingsWindowOpen = XPIsWidgetVisible(settingsWidget);
-    glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 0.0f);
-    glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
-    glTexCoord2f(((settingsWindowOpen == 0) ? 0.0f : 0.5f), 1.0f);
-    glVertex2f(((settingsWindowOpen == 0) ? 0.0f : (GLfloat) (x / 2.0f)), (GLfloat) y);
+    glTexCoord2f((!settingsWindowOpen ? 0.0f : 0.5f), 0.0f);
+    glVertex2f((!settingsWindowOpen ? 0.0f : (GLfloat) (x / 2.0f)), 0.0f);
+    glTexCoord2f((!settingsWindowOpen ? 0.0f : 0.5f), 1.0f);
+    glVertex2f((!settingsWindowOpen ? 0.0f : (GLfloat) (x / 2.0f)), (GLfloat) y);
     glTexCoord2f(1.0f, 1.0f);
     glVertex2f((GLfloat) x, (GLfloat) y);
     glTexCoord2f(1.0f, 0.0f);
@@ -503,7 +518,7 @@ static float UpdateFakeWindowCallback(float inElapsedSinceLastCall, float inElap
         XPLMGetScreenSize(&x, &y);
         XPLMSetWindowGeometry(fakeWindow, 0, y, x, 0);
 
-        if (bringFakeWindowToFront == 0)
+        if (!bringFakeWindowToFront)
         {
             XPLMBringWindowToFront(fakeWindow);
             bringFakeWindowToFront = 1;
@@ -531,29 +546,29 @@ static int IsEngineStarting()
 // lets the thread sleep to achieve the set maximum frame rate
 inline static void LimitFps(float dt)
 {
-	float t = 1.0f / maxFps - dt;
+    float t = 1.0f / maxFps - dt;
 
-	if (t > 0.0f && IsEngineStarting() == 0)
-	{
+    if (t > 0.0f && !IsEngineStarting())
+    {
 #if IBM
-		DWORD currentTime = timeGetTime();
-		DWORD targetTime = currentTime + (DWORD) (t * 1000.0f);
-		while (currentTime < targetTime)
-		{
-			Sleep(0);
-			currentTime = timeGetTime();
-		}
+        DWORD currentTime = timeGetTime();
+        DWORD targetTime = currentTime + (DWORD) (t * 1000.0f);
+        while (currentTime < targetTime)
+        {
+            Sleep(0);
+            currentTime = timeGetTime();
+        }
 #else
-		usleep((useconds_t)(t * 1000000.0f));
+        usleep((useconds_t)(t * 1000000.0f));
 #endif
-	}
+    }
 }
 
 // flightloop-callback that limits the number of flightcycles
 static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
     endTimeFlight = XPLMGetElapsedTime();
-	LimitFps(endTimeFlight - startTimeFlight);
+    LimitFps(endTimeFlight - startTimeFlight);
     startTimeFlight = XPLMGetElapsedTime();
 
     return -1.0f;
@@ -563,7 +578,7 @@ static float LimiterFlightCallback(float inElapsedSinceLastCall, float inElapsed
 static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *inRefcon)
 {
     endTimeDraw = XPLMGetElapsedTime();
-	LimitFps(endTimeDraw - startTimeDraw);
+    LimitFps(endTimeDraw - startTimeDraw);
     startTimeDraw = XPLMGetElapsedTime();
 
     return 1;
@@ -572,7 +587,7 @@ static int LimiterDrawCallback(XPLMDrawingPhase inPhase, int inIsBefore, void *i
 // flightloop-callback that auto-controls cinema-verite
 static float ControlCinemaVeriteCallback(float inElapsedSinceLastCall, float inElapsedTimeSinceLastFlightLoop, int inCounter, void *inRefcon)
 {
-    if (overrideControlCinemaVerite != 1)
+    if (!overrideControlCinemaVerite)
     {
         if (XPLMGetDatai(viewTypeDataRef) == 1026) // 3D Cockpit
         {
@@ -596,7 +611,7 @@ static void CleanupShader(int deleteProgram = 0)
     glDetachShader(program, fragmentShader);
     glDeleteShader(fragmentShader);
 
-    if (deleteProgram != 0)
+    if (deleteProgram)
         glDeleteProgram(program);
 }
 
@@ -669,7 +684,7 @@ static void UpdateRaleighScale(int reset)
     if (raleighScaleDataRef == NULL)
         raleighScaleDataRef = XPLMFindDataRef("sim/private/controls/atmo/atmo_scale_raleigh");
     if (raleighScaleDataRef != NULL)
-        XPLMSetDataf(raleighScaleDataRef, reset == 0 ? raleighScale : DEFAULT_RALEIGH_SCALE);
+        XPLMSetDataf(raleighScaleDataRef, !reset ? raleighScale : DEFAULT_RALEIGH_SCALE);
 }
 
 // updates all caption widgets and slider positions associated with settings variables
@@ -845,7 +860,7 @@ static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget,
         {
             postProcesssingEnabled = (int) XPGetWidgetProperty(postProcessingCheckbox, xpProperty_ButtonState, 0);
 
-            if (postProcesssingEnabled == 0)
+            if (!postProcesssingEnabled)
             {
                 XPLMUnregisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
                 UpdateRaleighScale(1);
@@ -861,7 +876,7 @@ static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget,
         {
             fpsLimiterEnabled = (int) XPGetWidgetProperty(fpsLimiterCheckbox, xpProperty_ButtonState, 0);
 
-            if (fpsLimiterEnabled == 0)
+            if (!fpsLimiterEnabled)
             {
                 XPLMUnregisterFlightLoopCallback(LimiterFlightCallback, NULL);
                 XPLMUnregisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
@@ -877,7 +892,7 @@ static int SettingsWidgetHandler(XPWidgetMessage inMessage, XPWidgetID inWidget,
         {
             controlCinemaVeriteEnabled = (int) XPGetWidgetProperty(controlCinemaVeriteCheckbox, xpProperty_ButtonState, 0);
 
-            if (controlCinemaVeriteEnabled == 0)
+            if (!controlCinemaVeriteEnabled)
                 XPLMUnregisterFlightLoopCallback(ControlCinemaVeriteCallback, NULL);
             else
                 XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
@@ -1337,15 +1352,15 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 
     // register flight loop callbacks
     XPLMRegisterFlightLoopCallback(UpdateFakeWindowCallback, -1, NULL);
-    if (fpsLimiterEnabled != 0)
+    if (fpsLimiterEnabled)
         XPLMRegisterFlightLoopCallback(LimiterFlightCallback, -1, NULL);
-    if (controlCinemaVeriteEnabled != 0)
+    if (controlCinemaVeriteEnabled)
         XPLMRegisterFlightLoopCallback(ControlCinemaVeriteCallback, -1, NULL);
 
     // register draw callbacks
-    if (postProcesssingEnabled != 0)
+    if (postProcesssingEnabled)
         XPLMRegisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
-    if (fpsLimiterEnabled != 0)
+    if (fpsLimiterEnabled)
         XPLMRegisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
 
     return 1;
@@ -1361,15 +1376,15 @@ PLUGIN_API void XPluginStop(void)
 
     // unregister flight loop callbacks
     XPLMUnregisterFlightLoopCallback(UpdateFakeWindowCallback, NULL);
-    if (fpsLimiterEnabled != 0)
+    if (fpsLimiterEnabled)
         XPLMUnregisterFlightLoopCallback(LimiterFlightCallback, NULL);
-    if (controlCinemaVeriteEnabled != 0)
+    if (controlCinemaVeriteEnabled)
         XPLMUnregisterFlightLoopCallback(ControlCinemaVeriteCallback, NULL);
 
     // unregister draw callbacks
-    if (postProcesssingEnabled != 0)
+    if (postProcesssingEnabled)
         XPLMUnregisterDrawCallback(PostProcessingCallback, xplm_Phase_Window, 1, NULL);
-    if (fpsLimiterEnabled != 0)
+    if (fpsLimiterEnabled)
         XPLMUnregisterDrawCallback(LimiterDrawCallback, xplm_Phase_Terrain, 1, NULL);
 }
 
