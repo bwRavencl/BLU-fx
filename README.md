@@ -1,4 +1,4 @@
-##BLU-fx
+## BLU-fx
 
-#####License Information:
+##### License Information:
 GNU General Public License v2.0
