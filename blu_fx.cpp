@@ -1366,7 +1366,6 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     return 1;
 }
 
-
 PLUGIN_API void XPluginStop(void)
 {
     CleanupShader(1);
