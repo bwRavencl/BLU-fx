@@ -1,4 +1,4 @@
-/* Copyright (C) 2017  Matteo Hausner
+/* Copyright (C) 2018  Matteo Hausner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1334,21 +1334,20 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
 
     // create fake window
     XPLMCreateWindow_t fakeWindowParameters;
-    memset(&fakeWindowParameters, 0, sizeof(fakeWindowParameters));
-    fakeWindowParameters.structSize = sizeof(fakeWindowParameters);
-    fakeWindowParameters.left = 0;
-    int x = 0, y = 0;
-    XPLMGetScreenSize(&x, &y);
-    fakeWindowParameters.top = y;
-    fakeWindowParameters.right = x;
-    fakeWindowParameters.bottom = 0;
+    // hack: XPLM300 windows seem to be unable to pass clicks through - the struct size defines which API version is used, by removing the parameters introduced with XPLM300 we can trick X-Plane into thinking we are an XPLM200 plugin for which the click passthrough works
+    fakeWindowParameters.structSize = sizeof(fakeWindowParameters) - (sizeof(fakeWindowParameters.decorateAsFloatingWindow) + sizeof(fakeWindowParameters.layer) + sizeof(fakeWindowParameters.handleRightClickFunc));
+    XPLMGetScreenBoundsGlobal(&fakeWindowParameters.left, &fakeWindowParameters.top, &fakeWindowParameters.right, &fakeWindowParameters.bottom);
     fakeWindowParameters.visible = 1;
     fakeWindowParameters.drawWindowFunc = DrawWindow;
     fakeWindowParameters.handleKeyFunc = HandleKey;
     fakeWindowParameters.handleMouseClickFunc = HandleMouseClick;
     fakeWindowParameters.handleCursorFunc = HandleCursor;
     fakeWindowParameters.handleMouseWheelFunc = HandleMouseWheel;
+    fakeWindowParameters.decorateAsFloatingWindow = xplm_WindowDecorationNone;
+    fakeWindowParameters.layer = xplm_WindowLayerFlightOverlay;
+    fakeWindowParameters.handleRightClickFunc = HandleMouseClick;
     fakeWindow = XPLMCreateWindowEx(&fakeWindowParameters);
+    XPLMSetWindowPositioningMode(fakeWindow, xplm_WindowFullScreenOnAllMonitors, -1);
 
     // register flight loop callbacks
     XPLMRegisterFlightLoopCallback(UpdateFakeWindowCallback, -1, NULL);

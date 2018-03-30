@@ -32,7 +32,7 @@ INTERFACE
    ad-hoc collections of dataref objects previously used by art assets. Then, 
    per-frame, you can manipulate the instance by passing in a "block" of 
    packed floats representing the current values of the datarefs for your 
-   instance. (Note that the ordering of this set of packed float must exactly 
+   instance. (Note that the ordering of this set of packed floats must exactly 
    match the ordering of the datarefs when you created your instance.)         
 }
 

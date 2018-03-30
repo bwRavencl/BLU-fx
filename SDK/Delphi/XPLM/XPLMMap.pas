@@ -10,30 +10,32 @@ UNIT XPLMMap;
 INTERFACE
 {
    This API allows you to create new layers within X-Plane maps. Your layers 
-   can draw arbitrary OpenGL, but they conveniently also have access to the 
+   can draw arbitrary OpenGL, but they conveniently also have access to 
    X-Plane's built-in icon and label drawing functions. 
    
-   As of X-Plane 11, map drawing happens in three stages: 1) backgrounds and 
-   "fill," 2) icons, and 3) labels. Thus, all background drawing gets layered 
-   beneath all icons, which likewise get layered beneath all labels. Within 
-   each stage, the map obeys a consistent layer ordering, such that "fill" 
-   layers (layers that cover a large amount of map area, like the terrain and 
-   clouds) appear beneath "markings" layers (like airport icons). This ensures 
-   that layers with fine details don't get obscured by layers with larger 
-   details. 
+   As of X-Plane 11, map drawing happens in three stages: 
+   
+   1. backgrounds and "fill," 2. icons, and 3. labels. 
+   
+   Thus, all background drawing gets layered beneath all icons, which likewise 
+   get layered beneath all labels. Within each stage, the map obeys a 
+   consistent layer ordering, such that "fill" layers (layers that cover a 
+   large amount of map area, like the terrain and clouds) appear beneath 
+   "markings" layers (like airport icons). This ensures that layers with fine 
+   details don't get obscured by layers with larger details. 
    
    The XPLM map API reflects both aspects of this draw layering: you can 
    register a layer as providing either markings or fill, and X-Plane will 
    draw your fill layers beneath your markings layers (regardless of 
-   registration order). Likewise, you are guaranteed that your layers icons 
+   registration order). Likewise, you are guaranteed that your layer's icons 
    (added from within an icon callback) will go above your layer's OpenGL 
    drawing, and your labels will go above your icons. 
    
-   The XPLM guarantees that all plugin fill layers go on top of all native 
-   X-Plane fill layers, and all plugin markings layers go on top of all 
-   X-Plane markings layers (with the exception of the aircraft icons). It also 
-   guarantees that the draw order of your own plugin's layers will be 
-   consistent. But, for layers created by different plugins, the only 
+   The XPLM guarantees that all plugin-created fill layers go on top of all 
+   native X-Plane fill layers, and all plugin-created markings layers go on 
+   top of all X-Plane markings layers (with the exception of the aircraft 
+   icons). It also guarantees that the draw order of your own plugin's layers 
+   will be consistent. But, for layers created by different plugins, the only 
    guarantee is that we will draw all of one plugin's layers of each type 
    (fill, then markings), then all of the others'; we don't guarantee which 
    plugin's fill and markings layers go on top of the other's. 
@@ -156,7 +158,7 @@ TYPE
                                     mapUnitsPerUserInterfaceUnit: single;    
                                     mapStyle            : XPLMMapStyle;    
                                     projection          : XPLMMapProjectionID;    
-                                    refcon              : pointer); cdecl;   
+                                    inRefcon            : pointer); cdecl;   
 
    {
     XPLMMapLabelDrawingCallback_f
@@ -181,7 +183,7 @@ TYPE
                                     mapUnitsPerUserInterfaceUnit: single;    
                                     mapStyle            : XPLMMapStyle;    
                                     projection          : XPLMMapProjectionID;    
-                                    refcon              : pointer); cdecl;   
+                                    inRefcon            : pointer); cdecl;   
 
 {$ENDIF}
 {$IFDEF XPLM300}
@@ -327,10 +329,11 @@ TYPE
      { map's layering system (set to NULL if you don't want this callback)         }
      labelCallback            : XPLMMapLabelDrawingCallback_f;
      { True if you want a checkbox to be created in the map UI to toggle this      }
-     { layer on and off; false if the layer should simply always be enable         }
+     { layer on and off; false if the layer should simply always be enabled        }
      showUiToggle             : integer;
      { Short label to use for this layer in the user interface                     }
      layerName                : Pchar;
+     { A reference to arbitrary data that will be passed to your callbacks         }
      refcon                   : pointer;
    END;
    PXPLMCreateMapLayer_t = ^XPLMCreateMapLayer_t;
