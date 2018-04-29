@@ -528,27 +528,12 @@ static float UpdateFakeWindowCallback(float inElapsedSinceLastCall, float inElap
     return -1.0f;
 }
 
-// check if any engine ignition key is in start position
-static int IsEngineStarting()
-{
-    int ignitionKey[8];
-    XPLMGetDatavi(ignitionKeyDataRef, ignitionKey, 0, 8);
-
-    for (int i = 0; i < 8; i++)
-    {
-        if (ignitionKey[i] == 4)
-            return 1;
-    }
-
-    return 0;
-}
-
 // lets the thread sleep to achieve the set maximum frame rate
 inline static void LimitFps(float dt)
 {
     float t = 1.0f / maxFps - dt;
 
-    if (t > 0.0f && !IsEngineStarting())
+    if (t > 0.0f)
     {
 #if IBM
         DWORD currentTime = timeGetTime();
